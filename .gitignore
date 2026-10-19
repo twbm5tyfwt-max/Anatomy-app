@@ -1,0 +1,8 @@
+node_modules/
+dist/
+test-results/
+playwright-report/
+*.tsbuildinfo
+/forma-preview.html
+/forma-preview.png
+/forma-preview.zip
