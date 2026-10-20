@@ -25,7 +25,7 @@ const plates = Object.fromEntries(
 
 const modelData =
   "data:model/gltf-binary;base64," +
-  (await readFile(join(root, "public/models/bodyparts.glb"))).toString(
+  (await readFile(join(root, "public/models/anatomy.glb"))).toString(
     "base64",
   );
 try {
@@ -40,8 +40,8 @@ try {
         enforce: "pre",
         transform(source, id) {
           if (!id.includes("/src/")) return;
-          if (id.endsWith("/Explorer3D.tsx"))
-            source = source.replaceAll("/models/bodyparts.glb", modelData);
+          if (id.endsWith("/AnatomyScene.tsx"))
+            source = source.replaceAll("/models/anatomy.glb", modelData);
           if (id.endsWith("/atlas.tsx")) {
             for (const [name, data] of Object.entries(plates))
               source = source.replaceAll("/anatomy/" + name, data);
@@ -122,6 +122,7 @@ try {
     "LICENSE-bodyparts.txt",
     await readFile(join(root, "public/models/LICENSE-bodyparts.txt")),
   );
+  archive.file("LICENSE-z-anatomy.txt", await readFile(join(root, "public/models/LICENSE-z-anatomy.txt")));
   let notices = "";
   async function collectLicenses(directory) {
     for (const entry of await readdir(directory, { withFileTypes: true })) {

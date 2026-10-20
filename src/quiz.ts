@@ -1,3 +1,5 @@
+import { anatomyQuestions } from "./anatomyQuestions";
+import type { AnatomyQuestionView } from "./anatomyQuestions";
 import { structures, tissues } from "./content";
 import { frontMuscles } from "./atlas";
 export type CourseCard = {
@@ -19,8 +21,12 @@ export type Question = {
   format: "choice" | "typed" | "image" | "click";
   structureId?: string;
   tissueId?: string;
+  anatomy?: AnatomyQuestionView;
+  anatomySourceId?: string;
 };
 export type QuizScope = {
+  anatomy?: boolean;
+  anatomyTopic?: string;
   system: string;
   region: string;
   tissue: string;
@@ -53,6 +59,22 @@ export function createQuestions(
   missed: string[] = [],
 ): Question[] {
   const qs: Question[] = [];
+  if (scope.anatomy && !scope.course) {
+    let bank = anatomyQuestions(scope, options).filter(
+      (q) => !scope.missedOnly || missed.includes(q.id),
+    );
+    if (scope.format === "image")
+      bank = bank.filter((q) => q.format === "image");
+    if (scope.format === "click")
+      bank = bank.filter((q) => q.format === "click");
+    if (scope.format === "choice")
+      bank = bank.filter((q) => q.format === "choice");
+    if (scope.format === "typed")
+      bank = bank
+        .filter((q) => q.format === "choice")
+        .map((q) => ({ ...q, format: "typed" as const }));
+    return shuffle(bank).slice(0, scope.count);
+  }
   if (scope.course) {
     cards.forEach((c) =>
       qs.push({

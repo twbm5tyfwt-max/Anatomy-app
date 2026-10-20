@@ -1,351 +1,86 @@
-import { chromium, expect } from "@playwright/test";
-import { createHash } from "node:crypto";
-import { readFileSync } from "node:fs";
-import * as THREE from "three";
-const manifest = JSON.parse(
-  readFileSync(new URL("../src/model-manifest.json", import.meta.url)),
-).models;
-const picks = JSON.parse(
-  readFileSync(new URL("./fixtures/3d-picks.json", import.meta.url)),
-);
-const browser = await chromium.launch({
-  executablePath: "/usr/bin/chromium",
-  headless: true,
-  args: ["--no-sandbox"],
-});
-const page = await browser.newPage({ viewport: { width: 1440, height: 1100 } });
+import {chromium,expect} from '@playwright/test';
+import {existsSync,readFileSync} from 'node:fs';
+import * as THREE from 'three';
+const models=JSON.parse(readFileSync(new URL('../src/model-manifest.json',import.meta.url))).models;
+const browser=await chromium.launch({...(existsSync('/usr/bin/chromium')?{executablePath:'/usr/bin/chromium'}:{}),headless:true,args:['--no-sandbox']});
+const page=await browser.newPage({viewport:{width:1440,height:1100}});
 page.setDefaultTimeout(30000);
-const errors = [];
-page.on("pageerror", (e) => errors.push(e.message));
-const base = process.env.FORMA_BASE_URL || "http://127.0.0.1:3000";
-const canvas = page.locator(".three-canvas");
-let passed = 0,
-  surfaceCount = 0;
-async function run(name, fn) {
-  await fn();
-  console.log("PASS", name);
-  passed++;
-}
-async function settled() {
-  await expect(canvas).toHaveAttribute("data-animating", "false", {
-    timeout: 30000,
-  });
-}
-async function clear() {
-  const button = page.getByRole("button", {
-    name: "Clear selected structure",
-    exact: true,
-  });
-  if (await button.count()) await button.click();
-  await settled();
-}
-async function observeMotion() {
-  await page.evaluate(() => {
-    window.motionSamples = [];
-    const el = document.querySelector(".three-canvas");
-    window.motionObserver?.disconnect();
-    window.motionObserver = new MutationObserver(() => {
-      const sample = {
-        progress: +el.dataset.motionProgress,
-        scale: +el.dataset.focusScale,
-        lifted: +el.dataset.liftedParts,
-        inspecting: el.dataset.inspecting,
-      };
-      if (
-        JSON.stringify(sample) !== JSON.stringify(window.motionSamples.at(-1))
-      )
-        window.motionSamples.push(sample);
-    });
-    window.motionObserver.observe(el, { attributes: true });
-  });
-}
-try {
-  await page.goto(base);
-  await page.waitForFunction(
-    () => document.querySelector(".three-canvas")?.dataset.modelCount === "924",
-    null,
-    { timeout: 90000 },
-  );
-  await settled();
-  await run(
-    "one body starts with fewer deep muscles; an actual chest click lifts all three regions gradually",
-    async () => {
-      await expect(canvas).toHaveAttribute("data-depth", "surface");
-      surfaceCount = +(await canvas.getAttribute("data-visible-meshes"));
-      expect(surfaceCount).toBeGreaterThan(249);
-      expect(surfaceCount).toBeLessThan(686);
-      const body = new THREE.Box3();
-      for (const m of manifest.filter((m) => m.id !== "FMA7163")) {
-        body.expandByPoint(new THREE.Vector3(...m.bounds[0]));
-        body.expandByPoint(new THREE.Vector3(...m.bounds[1]));
-      }
-      const rect = await page.locator(".three-canvas canvas").boundingBox();
-      const camera = new THREE.PerspectiveCamera(
-        36,
-        rect.width / rect.height,
-        0.001,
-        100,
-      );
-      camera.position.set(0, 0, 3.25);
-      camera.updateMatrixWorld();
-      const point = new THREE.Vector3(...picks.pectoralis)
-        .sub(body.getCenter(new THREE.Vector3()))
-        .project(camera);
-      await observeMotion();
-      await page.mouse.click(
-        rect.x + ((point.x + 1) / 2) * rect.width,
-        rect.y + ((1 - point.y) / 2) * rect.height,
-      );
-      await expect(page.locator(".inspection-card h2")).toHaveText(
-        "Right pectoralis major",
-      );
-      await expect(canvas).toHaveAttribute("data-highlighted-parts", "3");
-      await settled();
-      const samples = await page.evaluate(() => window.motionSamples);
-      expect(
-        samples.some(
-          (s) => s.inspecting === "true" && s.scale === 1 && s.progress === 0,
-        ),
-      ).toBe(true);
-      expect(
-        samples.some((s) => s.progress > 0 && s.progress < 1 && s.scale > 1),
-      ).toBe(true);
-      expect(+(await canvas.getAttribute("data-focus-scale"))).toBeGreaterThan(
-        3,
-      );
-      expect(+(await canvas.getAttribute("data-visible-meshes"))).toBe(
-        surfaceCount,
-      );
-      // The lifted chest occupies the center; a second real surface click clears it.
-      await page.mouse.click(
-        rect.x + rect.width * 0.5,
-        rect.y + rect.height * 0.5,
-      );
-      await expect(canvas).toHaveAttribute("data-inspecting", "false");
-      await settled();
-      await expect(canvas).toHaveAttribute("data-lifted-parts", "0");
-    },
-  );
-  await run(
-    "the pectoralis exposes clavicular, sternocostal and abdominal regions without inventing three equal heads",
-    async () => {
-      await page
-        .getByRole("button", { name: "Pectoralis major", exact: true })
-        .click();
-      await settled();
-      const regions = page.locator(".muscle-components");
-      for (const name of [
-        "Clavicular part",
-        "Sternocostal part",
-        "Abdominal part",
-      ])
-        await expect(
-          regions.getByRole("button", { name, exact: true }),
-        ).toBeVisible();
-      await expect(regions).toContainText("main heads");
-      await regions
-        .getByRole("button", { name: "Clavicular part", exact: true })
-        .click();
-      await expect(canvas).toHaveAttribute("data-highlighted-parts", "1");
-      await settled();
-      await expect(page.locator(".inspection-card h2")).toHaveText(
-        "Clavicular part of right pectoralis major",
-      );
-      await regions.getByRole("button", { name: /Whole muscle/ }).click();
-      await settled();
-      await expect(canvas).toHaveAttribute("data-highlighted-parts", "3");
-      await clear();
-    },
-  );
-  await run(
-    "a bone rotates about the selection and retains functions, landmarks, and bookmarks",
-    async () => {
-      await page
-        .getByRole("button", { name: "Find a part", exact: true })
-        .click();
-      await page
-        .getByRole("textbox", { name: "Search 3D model parts" })
-        .fill("Right humerus");
-      await page
-        .locator(".model-browser")
-        .getByRole("button", { name: /Right humerus/ })
-        .click();
-      await settled();
-      await expect(page.locator(".inspection-notes")).toContainText(
-        "shoulder and elbow",
-      );
-      const first = await page.locator(".three-canvas canvas").screenshot();
-      await page
-        .getByRole("button", { name: "3D left view", exact: true })
-        .click();
-      const second = await page.locator(".three-canvas canvas").screenshot();
-      expect(createHash("sha256").update(first).digest("hex")).not.toBe(
-        createHash("sha256").update(second).digest("hex"),
-      );
-      await page
-        .getByRole("button", { name: "Landmarks", exact: true })
-        .click();
-      await expect(page.locator(".landmark-guide")).toContainText(
-        "Olecranon fossa",
-      );
-      await page
-        .locator(".landmark-guide")
-        .getByRole("button", { name: "View from posterior" })
-        .click();
-      await page
-        .getByRole("button", { name: "Bookmark structure", exact: true })
-        .click();
-      await clear();
-    },
-  );
-  await run(
-    "system visibility and highlighting stay on the same body, with deep anatomy optional",
-    async () => {
-      await page
-        .getByRole("button", { name: "Highlight Skeletal system", exact: true })
-        .click();
-      await expect(canvas).toHaveAttribute(
-        "data-highlighted-systems",
-        "skeletal",
-      );
-      await expect(
-        page.getByRole("button", { name: "Hide Muscular system", exact: true }),
-      ).toHaveAttribute("aria-pressed", "true");
-      await expect(
-        page.getByRole("button", { name: "3D back view", exact: true }),
-      ).toHaveClass("active");
-      await page
-        .getByRole("button", {
-          name: "Unhighlight Skeletal system",
-          exact: true,
-        })
-        .click();
-      await expect(canvas).toHaveAttribute("data-highlighted-systems", "");
-      await page
-        .getByRole("button", { name: "Hide Muscular system", exact: true })
-        .click();
-      await expect(canvas).toHaveAttribute("data-visible-meshes", "249");
-      await page
-        .getByRole("button", { name: "Show Muscular system", exact: true })
-        .click();
-      await expect(canvas).toHaveAttribute(
-        "data-visible-meshes",
-        String(surfaceCount),
-      );
-      await page
-        .getByRole("button", { name: "All layers", exact: true })
-        .click();
-      await expect(canvas).toHaveAttribute("data-visible-meshes", "686");
-      await page
-        .getByRole("button", { name: "Superficial", exact: true })
-        .click();
-      await page.getByLabel("Lift selection slowly", { exact: true }).uncheck();
-      await page.getByRole("button", { name: "Humerus", exact: true }).click();
-      await expect(canvas).toHaveAttribute("data-inspecting", "false");
-      await expect(canvas).toHaveAttribute("data-highlighted-parts", "1");
-      await expect(canvas).toHaveAttribute("data-lifted-parts", "0");
-      await page
-        .locator(".inspection-actions")
-        .getByRole("button", { name: "Hide", exact: true })
-        .click();
-      await settled();
-      await expect(canvas).toHaveAttribute(
-        "data-visible-meshes",
-        String(surfaceCount - 1),
-      );
-      await page
-        .getByRole("button", { name: "Undo 3D removal", exact: true })
-        .click();
-      await expect(canvas).toHaveAttribute(
-        "data-visible-meshes",
-        String(surfaceCount),
-      );
-    },
-  );
-  await run(
-    "custom colors persist and bookmarked parts reopen on mobile",
-    async () => {
-      await page
-        .getByRole("button", { name: "Customize", exact: true })
-        .click();
-      await page.getByRole("button", { name: "Dark", exact: true }).click();
-      await page
-        .getByRole("button", { name: "Rose accent", exact: true })
-        .click();
-      await page.getByLabel("Bone model color").fill("#d2cbfa");
-      await page.getByLabel("Muscle model color").fill("#b76a87");
-      await page
-        .getByRole("button", { name: "Close appearance settings" })
-        .click();
-      await page.reload();
-      await expect(page.locator("html")).toHaveAttribute(
-        "data-appearance",
-        "dark",
-      );
-      await page
-        .getByRole("button", { name: "Customize", exact: true })
-        .click();
-      await expect(page.getByLabel("Bone model color")).toHaveValue("#d2cbfa");
-      await expect(page.getByLabel("Muscle model color")).toHaveValue(
-        "#b76a87",
-      );
-      await page
-        .getByRole("button", { name: "Close appearance settings" })
-        .click();
-      await page
-        .getByRole("button", { name: "My Progress", exact: true })
-        .click();
-      await page
-        .locator(".saved-structures")
-        .getByRole("button", { name: /Right humerus/ })
-        .click();
-      await expect(page.locator(".inspection-card h2")).toHaveText(
-        "Right humerus",
-      );
-      await page.setViewportSize({ width: 390, height: 844 });
-      expect(
-        await page.evaluate(
-          () => document.documentElement.scrollWidth <= window.innerWidth,
-        ),
-      ).toBe(true);
-    },
-  );
-  await run(
-    "reduced-motion preference removes the lift transition",
-    async () => {
-      const context = await browser.newContext({
-        reducedMotion: "reduce",
-        viewport: { width: 1200, height: 950 },
-      });
-      try {
-        const p = await context.newPage();
-        p.on("pageerror", (e) => errors.push(e.message));
-        await p.goto(base);
-        await p.waitForFunction(
-          () =>
-            document.querySelector(".three-canvas")?.dataset.modelCount ===
-            "924",
-          null,
-          { timeout: 90000 },
-        );
-        await p
-          .getByRole("button", { name: "Pectoralis major", exact: true })
-          .click();
-        await expect(p.locator(".three-canvas")).toHaveAttribute(
-          "data-motion-progress",
-          "1.000",
-        );
-        await expect(p.locator(".three-canvas")).toHaveAttribute(
-          "data-animating",
-          "false",
-        );
-      } finally {
-        await context.close();
-      }
-    },
-  );
-  expect(errors).toEqual([]);
-  console.log(passed, "3D workflows passed; no browser runtime errors.");
-} finally {
-  await browser.close();
-}
+const errors=[];page.on('pageerror',e=>errors.push(e.message));
+const base=process.env.FORMA_BASE_URL||'http://127.0.0.1:3000';
+const canvas=page.locator('.three-canvas');
+let passed=0;
+async function run(name,fn){await fn();console.log('PASS',name);passed++;}
+async function settled(){await expect(canvas).toHaveAttribute('data-animating','false');}
+async function pick(name,pattern){await page.getByRole('textbox',{name:'Search 3D anatomy'}).fill(name);await page.locator('.pro-browser-results button').filter({hasText:pattern||name}).first().click();await settled();}
+try{
+ await page.goto(base);await expect(canvas).toHaveAttribute('data-model-count','4291',{timeout:120000});await settled();
+ await run('new registered atlas loads with opaque depth-tested geometry',async()=>{
+  expect(+(await canvas.getAttribute('data-visible-meshes'))).toBeGreaterThan(400);
+  await expect(canvas).toHaveAttribute('data-transparency','solid');
+  await page.screenshot({path:'delivery/forma-preview.png'});
+ });
+ await run('actual bone surface picking and progressive camera focus preserve the body',async()=>{
+  const box=new THREE.Box3();for(const m of models.filter(m=>m.layer==='bones'||m.layer==='skin')){box.expandByPoint(new THREE.Vector3(...m.bounds[0]));box.expandByPoint(new THREE.Vector3(...m.bounds[1]));}
+  const bone=models.find(m=>m.name==='Right humerus'&&!m.parentId),center=box.getCenter(new THREE.Vector3());
+  const point=new THREE.Vector3((bone.bounds[0][0]+bone.bounds[1][0])/2,(bone.bounds[0][1]+bone.bounds[1][1])/2,bone.bounds[1][2]).sub(center);
+  const rect=await canvas.boundingBox(),distance=+(await canvas.getAttribute('data-camera-distance'));
+  const camera=new THREE.PerspectiveCamera(35,rect.width/rect.height,.001,15);camera.position.copy(new THREE.Vector3(0,.02,1).normalize().multiplyScalar(distance));camera.lookAt(0,0,0);camera.updateMatrixWorld();point.project(camera);
+  await page.mouse.click(rect.x+(point.x+1)*rect.width/2,rect.y+(1-point.y)*rect.height/2);
+  await expect(page.locator('.pro-inspector h2')).toHaveText('Right humerus');
+  const visible=await canvas.getAttribute('data-visible-meshes');
+  await page.evaluate(()=>{window.focusSamples=[];const el=document.querySelector('.three-canvas');new MutationObserver(()=>{if(el.dataset.animating==='true')window.focusSamples.push(+el.dataset.motionProgress)}).observe(el,{attributes:true});});
+  await page.locator('.pro-selection-actions').getByRole('button',{name:'Focus',exact:true}).click();await settled();
+  expect(await page.evaluate(()=>new Set(focusSamples.map(x=>Math.round(x*10))).size)).toBeGreaterThan(1);
+  await expect(canvas).toHaveAttribute('data-visible-meshes',visible);
+ });
+ await run('search, slow focus, isolate, reviewed labels, hide, and undo',async()=>{
+  await pick('L3',/^Third lumbar vertebra/);await expect(page.locator('.pro-inspector')).toContainText(/lumbar/i);
+  await page.locator('.pro-selection-actions').getByRole('button',{name:'Isolate',exact:true}).click();await settled();
+  expect(+(await canvas.getAttribute('data-visible-meshes'))).toBeLessThan(10);
+  await page.getByRole('combobox',{name:'Anatomy selection mode'}).selectOption('landmark');
+  await page.locator('.pro-landmarks > button').filter({hasText:'Spinous process'}).click();await settled();
+  expect(+(await canvas.getAttribute('data-visible-landmarks'))).toBeGreaterThan(0);
+  await page.screenshot({path:'delivery/forma-spine.png'});
+  await page.locator('.pro-selection-actions').getByRole('button',{name:'Hide',exact:true}).click();
+  await expect(canvas).toHaveAttribute('data-visible-meshes','0');
+  await page.getByRole('button',{name:'Undo anatomy change',exact:true}).click();
+  await expect(canvas).not.toHaveAttribute('data-visible-meshes','0');
+ });
+ await run('source intervertebral opening keeps adjacent bones and disc',async()=>{
+  await pick('L3',/^Third lumbar vertebra/);await page.locator('.pro-inspector').getByRole('button',{name:'Landmarks',exact:true}).click();if(await page.getByRole('button',{name:'All landmarks',exact:true}).count())await page.getByRole('button',{name:'All landmarks',exact:true}).click();await page.locator('.pro-landmarks > button').filter({hasText:'Intervertebral foramen'}).click();await settled();
+  expect(+(await canvas.getAttribute('data-visible-meshes'))).toBeGreaterThan(3);
+  await expect(page.locator('.pro-inspector')).toContainText(/spinal nerve/i);
+  await page.screenshot({path:'delivery/forma-foramen.png'});
+ });
+ await run('isolation respects bone opacity and connective visibility',async()=>{
+  await page.getByRole('button',{name:'Bones transparency controls',exact:true}).click();
+  await page.getByRole('slider',{name:'Bones opacity',exact:true}).fill('30');
+  await expect(canvas).toHaveAttribute('data-transparency','depth-tested');
+  await expect(canvas).toHaveAttribute('data-coverage-mode',/multisample|hashed/);
+  await page.getByRole('button',{name:'Close transparency controls'}).click();
+ });
+ await run('regional source geometry covers shoulder, pelvis and knee',async()=>{
+  await page.getByRole('tab',{name:'Explore',exact:true}).click();
+  for(const name of ['Shoulder','Pelvis','Knee']){
+   await page.locator('.pro-presets').getByRole('button',{name,exact:true}).click();await settled();
+   expect(+(await canvas.getAttribute('data-visible-meshes'))).toBeGreaterThan(5);
+   await page.screenshot({path:`delivery/forma-${name.toLowerCase()}.png`});
+  }
+ });
+ await run('matched-scale compare and return to a focused structure',async()=>{
+  await page.getByRole('button',{name:'Compare vertebrae',exact:true}).click();
+  await expect(canvas).toHaveCount(2);await expect(canvas.first()).toHaveAttribute('data-model-count','4291',{timeout:120000});await expect(canvas.last()).toHaveAttribute('data-model-count','4291',{timeout:120000});
+  await expect(canvas.first()).toHaveAttribute('data-animating','false');await expect(canvas.last()).toHaveAttribute('data-animating','false');
+  const a=+(await canvas.first().getAttribute('data-camera-distance')),b=+(await canvas.last().getAttribute('data-camera-distance'));expect(Math.abs(a-b)).toBeLessThan(.001);
+  await page.screenshot({path:'delivery/forma-compare.png'});
+  await pick('Axis',/^Axis/);await expect(canvas).toHaveCount(1);await expect(canvas).toHaveAttribute('data-isolated','true');
+  expect(+(await canvas.getAttribute('data-camera-distance'))).toBeLessThan(.5);
+ });
+ await run('mobile atlas fits viewport and retains camera controls',async()=>{
+  await page.setViewportSize({width:390,height:844});await page.getByRole('button',{name:'Reset anatomy',exact:true}).click();await settled();
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+  await expect(page.getByRole('button',{name:'Anatomy superior view'})).toBeVisible();
+  await page.screenshot({path:'delivery/forma-mobile.png',fullPage:true});
+ });
+ expect(errors).toEqual([]);console.log(`${passed} 3D workflows passed; no runtime errors.`);
+}finally{await browser.close();}

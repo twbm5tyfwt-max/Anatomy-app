@@ -30,6 +30,8 @@ try {
     await page
       .getByRole("button", { name: "Hide Skeletal system", exact: true })
       .click();
+  const showMuscles = page.getByRole("button", {name: "Show Muscular system", exact: true});
+  if(await showMuscles.count()) await showMuscles.click();
   await run(
     "select, mask, undo, isolate, restore, and switch views",
     async () => {
@@ -86,6 +88,8 @@ try {
     await page
       .getByRole("button", { name: "Body Explorer", exact: true })
       .click();
+    await page.getByRole("button",{name:"2D reference",exact:true}).click();
+    if(await page.getByRole("button",{name:"Show Muscular system",exact:true}).count()) await page.getByRole("button",{name:"Show Muscular system",exact:true}).click();
     if (
       await page
         .getByRole("button", { name: "Hide Skeletal system", exact: true })

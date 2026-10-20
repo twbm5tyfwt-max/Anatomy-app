@@ -1,3 +1,6 @@
+import { anatomyQuestionModels } from "./anatomyQuestions";
+import { AnatomyQuestion } from "./AnatomyQuestion";
+import { modelParts } from "./modelCatalog";
 import { useEffect, useState } from "react";
 import {
   ArrowRight,
@@ -24,6 +27,8 @@ import {
   type CourseCard,
 } from "./quiz";
 export const defaultScope: QuizScope = {
+  anatomy: false,
+  anatomyTopic: "",
   system: "muscular",
   region: "",
   tissue: "",
@@ -266,6 +271,13 @@ export function Quizzes({
             {systems.find((s) => s.id === q.topic)?.name || q.topic}
           </span>
           <h2>{q.prompt}</h2>
+          {q.anatomy && (
+            <AnatomyQuestion
+              question={q.anatomy}
+              checked={!!isChecked}
+              onAnswer={(name) => setAnswers({ ...answers, [q.id]: name })}
+            />
+          )}
           {q.structureId && (
             <div className="quiz-anatomy">
               <Atlas
@@ -321,7 +333,15 @@ export function Quizzes({
           ) : q.format === "click" ? (
             <p className="click-selection">
               Selected:{" "}
-              <strong>{answered || "Click a region on the plate"}</strong>
+              <strong>
+                {q.anatomy
+                  ? answered
+                    ? isChecked
+                      ? answered
+                      : "Marker selected"
+                    : "Choose an unlabeled marker"
+                  : answered || "Click a region on the plate"}
+              </strong>
             </p>
           ) : (
             <div className="answer-options">
@@ -423,6 +443,20 @@ export function Quizzes({
               onClick={() =>
                 change({
                   ...defaultScope,
+                  anatomy: true,
+                  anatomyTopic: "spine",
+                  system: "skeletal",
+                  structure: "",
+                  format: "mixed",
+                })
+              }
+            >
+              3D spine & landmarks
+            </button>
+            <button
+              onClick={() =>
+                change({
+                  ...defaultScope,
                   system: "skeletal",
                   region: "Head & neck",
                 })
@@ -467,10 +501,18 @@ export function Quizzes({
               Study collection
               <select
                 aria-label="Study collection"
-                value={scope.course ? "course" : "atlas"}
+                value={
+                  scope.course
+                    ? "course"
+                    : scope.anatomy
+                      ? "anatomy3d"
+                      : "atlas"
+                }
                 onChange={(e) =>
                   change({
                     course: e.target.value === "course",
+                    anatomy: e.target.value === "anatomy3d",
+                    anatomyTopic: "",
                     system: "",
                     tissue: "",
                     region: "",
@@ -480,6 +522,9 @@ export function Quizzes({
                 }
               >
                 <option value="atlas">Forma anatomy collection</option>
+                <option value="anatomy3d">
+                  3D anatomy & reviewed landmarks
+                </option>
                 <option value="course">
                   My reviewed course cards ({cards.length})
                 </option>
@@ -523,7 +568,7 @@ export function Quizzes({
               Tissue scope
               <select
                 aria-label="Tissue scope"
-                disabled={scope.course}
+                disabled={scope.course || scope.anatomy}
                 value={scope.tissue}
                 onChange={(e) =>
                   change({
@@ -558,17 +603,40 @@ export function Quizzes({
                 onChange={(e) => change({ structure: e.target.value })}
               >
                 <option value="">All matching structures</option>
-                {structures
-                  .filter(
-                    (s) =>
-                      (!scope.system || s.system === scope.system) &&
-                      (!scope.region || s.region === scope.region),
-                  )
-                  .map((s) => (
-                    <option value={s.id} key={s.id}>
-                      {s.name}
+                {scope.anatomy &&
+                  scope.structure.startsWith("model:") &&
+                  !anatomyQuestionModels().some(
+                    (m) => "model:" + m.id === scope.structure,
+                  ) && (
+                    <option value={scope.structure}>
+                      {modelParts.find((m) => m.id === scope.structure.slice(6))
+                        ?.name || "Selected 3D structure"}
                     </option>
-                  ))}
+                  )}
+                {scope.anatomy &&
+                  anatomyQuestionModels()
+                    .filter(
+                      (m) =>
+                        (!scope.system || m.system === scope.system) &&
+                        (!scope.region || m.region === scope.region),
+                    )
+                    .map((m) => (
+                      <option key={m.id} value={"model:" + m.id}>
+                        {m.name}
+                      </option>
+                    ))}
+                {!scope.anatomy &&
+                  structures
+                    .filter(
+                      (s) =>
+                        (!scope.system || s.system === scope.system) &&
+                        (!scope.region || s.region === scope.region),
+                    )
+                    .map((s) => (
+                      <option value={s.id} key={s.id}>
+                        {s.name}
+                      </option>
+                    ))}
               </select>
             </label>
             <label>
@@ -584,7 +652,9 @@ export function Quizzes({
                 <option value="typed">Typed identification</option>
                 <option value="image">Image identification</option>
                 <option value="click">
-                  Click the structure (muscle plate)
+                  {scope.anatomy
+                    ? "Select a 3D landmark"
+                    : "Click the structure (muscle plate)"}
                 </option>
               </select>
             </label>
@@ -612,7 +682,7 @@ export function Quizzes({
               </select>
             </label>
           </div>
-          {!scope.course && (
+          {!scope.course && !scope.anatomy && (
             <details className="combined-topics">
               <summary>
                 Combine with other topics <PlusTopicIcon />

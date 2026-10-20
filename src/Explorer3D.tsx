@@ -1,11 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
-import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";
 import {
   ArrowLeft,
   Bookmark,
+  BookOpen,
   Box,
   Check,
   ChevronDown,
@@ -15,1217 +12,1272 @@ import {
   Focus,
   Info,
   Layers,
-  LoaderCircle,
   Maximize,
+  Minus,
+  MousePointer2,
   RotateCcw,
   Search,
+  SlidersHorizontal,
+  Split,
   Undo2,
   X,
+  GraduationCap,
+  MapPin,
 } from "lucide-react";
+import {
+  AnatomyScene,
+  defaultLayers,
+  type SceneApi,
+  type CameraView,
+} from "./AnatomyScene";
 import {
   getModelStudy,
   getRegion,
   modelMatchesStudy,
   modelParts,
   type ModelPart,
+  type AnatomyLayer,
 } from "./modelCatalog";
-import { systems } from "./content";
 import {
   componentName,
   displayGroup,
   displayGroupKey,
   displayName,
-  isSurfaceMuscle,
-  muscleColor,
-  muscleFamily,
+  parentModel,
 } from "./modelDisplay";
+import {
+  landmarksFor,
+  spineModels,
+  spineCode,
+  spineRegion,
+  spineRegionNotes,
+  type AnatomyLandmark,
+} from "./landmarkCatalog";
+import { systems } from "./content";
 import type { Appearance } from "./Appearance";
-export type CameraView = "front" | "back" | "left" | "right";
-type SceneProps = {
-  selected: string | null;
-  selectedParts: string[];
-  highlightedSystems: string[];
-  depth: "surface" | "all";
-  distinct: boolean;
-  surfaceGuide: boolean;
-  onHover: (name: string | null) => void;
-  inspect: boolean;
-  visible: string[];
+import "./atlas-workspace.css";
+const byId = new Map(modelParts.map((m) => [m.id, m]));
+const layerGroups: [string, AnatomyLayer[]][] = [
+  ["Skin", ["skin"]],
+  ["Muscles", ["muscles"]],
+  [
+    "Connective",
+    ["tendons", "ligaments", "cartilage", "fascia", "capsules", "bursae"],
+  ],
+  ["Bones", ["bones"]],
+  ["Organs", ["organs"]],
+];
+const layerNames: Record<string, string> = {
+  skin: "Skin surface",
+  muscles: "Muscle bodies",
+  bones: "Bones",
+  tendons: "Tendons",
+  ligaments: "Ligaments",
+  capsules: "Articular capsules",
+  bursae: "Synovial bursae",
+  cartilage: "Cartilage & discs",
+  fascia: "Fascia & aponeuroses",
+  organs: "Organs, nerves & vessels",
+};
+type Snapshot = {
   hidden: string[];
-  region: string;
-  fade: boolean;
-  appearance: Appearance;
-  onSelect: (id: string) => void;
-  onReady: (api: SceneApi) => void;
-  onError: (message: string) => void;
-  onProgress: (n: number) => void;
+  isolated: string[] | null;
+  layers: Record<string, number>;
+  visible: string[];
 };
-type SceneApi = {
-  view: (view: CameraView) => void;
-  zoom: (factor: number) => void;
-  reset: () => void;
-};
-let assetPromise: Promise<THREE.Group> | null = null;
-function loadModel(progress: (n: number) => void) {
-  if (!assetPromise)
-    assetPromise = (async () => {
-      const response = await fetch("/models/bodyparts.glb");
-      if (!response.ok)
-        throw new Error(
-          "The 3D model could not be loaded. Check that the complete app files are present.",
-        );
-      const bytes = await response.arrayBuffer();
-      progress(70);
-      const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
-      const gltf = await loader.parseAsync(bytes, "");
-      return gltf.scene;
-    })();
-  return assetPromise;
+function children(ids: string[]) {
+  const set = new Set(ids);
+  return modelParts
+    .filter((m) => set.has(m.id) || (!!m.parentId && set.has(m.parentId)))
+    .map((m) => m.id);
 }
-function Scene(props: SceneProps) {
-  const host = useRef<HTMLDivElement>(null);
-  const live = useRef(props);
-  live.current = props;
-  useEffect(() => {
-    const target = host.current!;
-    let disposed = false,
-      raf = 0;
-    let renderer: THREE.WebGLRenderer;
-    try {
-      renderer = new THREE.WebGLRenderer({
-        antialias: true,
-        alpha: true,
-        powerPreference: "high-performance",
-      });
-    } catch {
-      props.onError(
-        "3D needs WebGL in your browser. Enable hardware acceleration or use the 2D reference view.",
-      );
-      return;
-    }
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
-    renderer.setClearColor(0x000000, 0);
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1;
-    renderer.localClippingEnabled = true;
-    target.appendChild(renderer.domElement);
-    renderer.domElement.setAttribute(
-      "aria-label",
-      "Interactive 3D human anatomy. Drag to rotate, scroll to zoom, click to highlight and enlarge; click again to clear.",
-    );
-    renderer.domElement.setAttribute("role", "img");
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(36, 1, 0.001, 100);
-    camera.position.set(0, 0, 3.25);
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.09;
-    controls.minDistance = 0.7;
-    controls.maxDistance = 7;
-    scene.add(new THREE.HemisphereLight(0xfff5ec, 0x626b78, 2.0));
-    const key = new THREE.DirectionalLight(0xfff6ec, 2.4);
-    key.position.set(-3, 4, 5);
-    scene.add(key);
-    const rim = new THREE.DirectionalLight(0xd7e5ff, 1.3);
-    rim.position.set(3, 1, -4);
-    scene.add(rim);
-    const fill = new THREE.DirectionalLight(0xffffff, 0.7);
-    fill.position.set(3, -2, 4);
-    scene.add(fill);
-    const root = new THREE.Group();
-    scene.add(root);
-    type Record3D = {
-      mesh: THREE.Mesh;
-      pivot: THREE.Group;
-      model: ModelPart;
-      material: THREE.MeshStandardMaterial;
-      baseColor: THREE.Color;
-      from: THREE.Vector3;
-      to: THREE.Vector3;
-      fromScale: number;
-      toScale: number;
-      start: number;
-    };
-    const records = new Map<string, Record3D>();
-    const modelsById = new Map(modelParts.map((m) => [m.id, m]));
-    const bodyBox = new THREE.Box3();
-    modelParts
-      .filter((m) => m.id !== "FMA7163")
-      .forEach((m) => {
-        bodyBox.expandByPoint(new THREE.Vector3(...m.bounds[0]));
-        bodyBox.expandByPoint(new THREE.Vector3(...m.bounds[1]));
-      });
-    const bodyCenter = bodyBox.getCenter(new THREE.Vector3());
-    // Keep the complete source face: clip the guide below the lowest jaw point.
-    const headCut =
-      (modelParts.find((m) => m.name === "Mandible")?.bounds[0][1] ?? 1.435) -
-      0.015;
-    root.position.copy(bodyCenter).negate();
-    let headGuide: THREE.Mesh | null = null;
-    let headMaterial: THREE.MeshStandardMaterial | null = null;
-    let lastSignature = "",
-      lastColors = "",
-      lastMotion = "";
-    let needsRender = true,
-      focusBlend = 0,
-      blendFrom = 0,
-      blendStart = 0;
-    const reducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-    const duration = reducedMotion ? 0 : 1600;
-    const targetFrom = new THREE.Vector3(),
-      targetTo = new THREE.Vector3();
-    controls.addEventListener("change", () => {
-      needsRender = true;
-    });
-    const resize = new ResizeObserver(() => {
-      const w = target.clientWidth,
-        h = target.clientHeight;
-      if (w && h) {
-        needsRender = true;
-        renderer.setSize(w, h, false);
-        camera.aspect = w / h;
-        camera.updateProjectionMatrix();
-      }
-    });
-    resize.observe(target);
-    let down: [number, number] = [0, 0],
-      lastHover = 0;
-    const hitAt = (e: PointerEvent) => {
-      const rect = renderer.domElement.getBoundingClientRect();
-      const pointer = new THREE.Vector2(
-        ((e.clientX - rect.left) / rect.width) * 2 - 1,
-        -((e.clientY - rect.top) / rect.height) * 2 + 1,
-      );
-      const ray = new THREE.Raycaster();
-      ray.setFromCamera(pointer, camera);
-      const hits = ray.intersectObjects(
-        [...records.values()].filter((r) => r.mesh.visible).map((r) => r.mesh),
-        false,
-      );
-      return (
-        hits.find(
-          (h) =>
-            (records.get(h.object.userData.modelId)?.material.opacity ?? 1) >
-            0.5,
-        ) || hits[0]
-      );
-    };
-    const pointerDown = (e: PointerEvent) => {
-      down = [e.clientX, e.clientY];
-      live.current.onHover(null);
-    };
-    const pointerUp = (e: PointerEvent) => {
-      if (Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 6) return;
-      const hit = hitAt(e);
-      if (hit) live.current.onSelect(hit.object.userData.modelId);
-      else live.current.onSelect("");
-    };
-    const pointerMove = (e: PointerEvent) => {
-      if (e.buttons || performance.now() - lastHover < 90) return;
-      lastHover = performance.now();
-      const hit = hitAt(e);
-      const m = hit && modelsById.get(hit.object.userData.modelId);
-      live.current.onHover(m ? displayName(m) : null);
-      renderer.domElement.style.cursor = m ? "pointer" : "grab";
-    };
-    const pointerLeave = () => live.current.onHover(null);
-    renderer.domElement.addEventListener("pointerdown", pointerDown);
-    renderer.domElement.addEventListener("pointerup", pointerUp);
-    renderer.domElement.addEventListener("pointermove", pointerMove);
-    renderer.domElement.addEventListener("pointerleave", pointerLeave);
-    const api: SceneApi = {
-      view(v) {
-        const distance = camera.position.distanceTo(controls.target);
-        const directions = {
-          front: new THREE.Vector3(0, 0.025, 1),
-          back: new THREE.Vector3(0, 0.025, -1),
-          left: new THREE.Vector3(1, 0.025, 0),
-          right: new THREE.Vector3(-1, 0.025, 0),
-        };
-        camera.position
-          .copy(controls.target)
-          .add(directions[v].normalize().multiplyScalar(distance));
-        controls.update();
-      },
-      zoom(factor) {
-        const dir = camera.position
-          .clone()
-          .sub(controls.target)
-          .multiplyScalar(factor);
-        dir.clampLength(0.7, 7);
-        camera.position.copy(controls.target).add(dir);
-        controls.update();
-      },
-      reset() {
-        camera.position.set(0, 0, 3.25);
-        controls.target.set(0, 0, 0);
-        controls.update();
-      },
-    };
-    loadModel(live.current.onProgress)
-      .then((asset) => {
-        if (disposed) return;
-        const copy = asset.clone(true);
-        copy.updateMatrixWorld(true);
-        const meshes: THREE.Mesh[] = [];
-        copy.traverse((obj) => {
-          if (obj instanceof THREE.Mesh) meshes.push(obj);
-        });
-        meshes.forEach((obj) => {
-          if (!(obj instanceof THREE.Mesh)) return;
-          const id = obj.name.replace(/_\d+$/, "");
-          const model =
-            modelsById.get(id) || modelsById.get(obj.parent?.name || "");
-          if (!model) return;
-          const material = (obj.material as THREE.MeshStandardMaterial).clone();
-          material.roughness = 0.85;
-          material.metalness = 0;
-          obj.material = material;
-          obj.userData.modelId = model.id;
-          // Animate a wrapper, preserving glTF's per-mesh dequantization transform.
-          const pivot = new THREE.Group();
-          copy.add(pivot);
-          pivot.attach(obj);
-          material.forceSinglePass = true;
-          records.set(model.id, {
-            mesh: obj,
-            pivot,
-            material,
-            baseColor: material.color.clone(),
-            model,
-            from: new THREE.Vector3(),
-            to: new THREE.Vector3(),
-            fromScale: 1,
-            toScale: 1,
-            start: 0,
-          });
-          if (model.id === "FMA7163") {
-            headMaterial = new THREE.MeshStandardMaterial({
-              color: "#c8b6a7",
-              roughness: 0.93,
-              metalness: 0,
-              side: THREE.DoubleSide,
-            });
-            headMaterial.clippingPlanes = [
-              new THREE.Plane(
-                new THREE.Vector3(0, 1, 0),
-                bodyCenter.y - headCut,
-              ),
-            ];
-            headGuide = new THREE.Mesh(obj.geometry, headMaterial);
-            headGuide.applyMatrix4(obj.matrixWorld);
-            headMaterial.forceSinglePass = true;
-            headGuide.name = "Natural head surface guide";
-          }
-        });
-        root.add(copy);
-        if (headGuide) root.add(headGuide);
-        lastSignature = "";
-        lastColors = "";
-        lastMotion = "";
-        needsRender = true;
-        target.dataset.modelCount = String(records.size);
-        live.current.onProgress(100);
-        live.current.onReady(api);
-      })
-      .catch((error) => {
-        if (!disposed)
-          live.current.onError(
-            error instanceof Error ? error.message : "3D loading failed.",
-          );
-      });
-    const ease = (t: number) => {
-      const x = Math.max(0, Math.min(1, t));
-      return x * x * (3 - 2 * x);
-    };
-    const animate = (time: number) => {
-      if (disposed) return;
-      const p = live.current;
-      const chosen = new Set(p.selectedParts);
-      const signature = [
-        p.selectedParts.join(","),
-        p.inspect,
-        p.visible.join(","),
-        p.highlightedSystems.join(","),
-        p.hidden.join(","),
-        p.region,
-        p.fade,
-        p.depth,
-        p.surfaceGuide,
-      ].join("|");
-      const motionKey = [p.inspect, p.selectedParts.join(",")].join("|");
-      if (motionKey !== lastMotion) {
-        lastMotion = motionKey;
-        const box = new THREE.Box3();
-        for (const id of chosen) {
-          const m = modelsById.get(id);
-          if (m) {
-            box.expandByPoint(new THREE.Vector3(...m.bounds[0]));
-            box.expandByPoint(new THREE.Vector3(...m.bounds[1]));
-          }
-        }
-        const center = box.isEmpty()
-          ? bodyCenter.clone()
-          : box.getCenter(new THREE.Vector3());
-        const scale = box.isEmpty()
-          ? 1
-          : Math.min(
-              25,
-              1.05 / Math.max(...box.getSize(new THREE.Vector3()).toArray()),
-            );
-        for (const [id, r] of records) {
-          const lifting = p.inspect && chosen.has(id);
-          r.from.copy(r.pivot.position);
-          r.fromScale = r.pivot.scale.x;
-          r.toScale = lifting ? scale : 1;
-          r.to.set(0, 0, 0);
-          if (lifting)
-            r.to
-              .copy(center)
-              .multiplyScalar(1 - scale)
-              .add(
-                bodyCenter
-                  .clone()
-                  .add(new THREE.Vector3(0, 0.08, 0.55))
-                  .sub(center),
-              );
-          r.start =
-            time + (lifting && r.fromScale === 1 && !reducedMotion ? 320 : 0);
-        }
-        targetFrom.copy(controls.target);
-        targetTo.set(0, p.inspect ? 0.08 : 0, p.inspect ? 0.55 : 0);
-        blendFrom = focusBlend;
-        blendStart = time + (p.inspect && !reducedMotion ? 320 : 0);
-        needsRender = true;
-      }
-      const blendProgress = duration ? ease((time - blendStart) / duration) : 1;
-      const previousBlend = focusBlend;
-      focusBlend = THREE.MathUtils.lerp(
-        blendFrom,
-        p.inspect ? 1 : 0,
-        blendProgress,
-      );
-      let moving = blendProgress < 1;
-      if (moving || previousBlend !== focusBlend)
-        controls.target.lerpVectors(targetFrom, targetTo, blendProgress);
-      if (
-        signature !== lastSignature ||
-        moving ||
-        previousBlend !== focusBlend
-      ) {
-        lastSignature = signature;
-        needsRender = true;
-        const selectedHead = p.selectedParts.some(
-          (id) => (modelsById.get(id)?.bounds[0][1] ?? 0) > headCut,
-        );
-        const guideVisible =
-          p.surfaceGuide &&
-          p.depth === "surface" &&
-          p.visible.includes("muscular") &&
-          !p.visible.includes("integumentary") &&
-          !p.highlightedSystems.includes("skeletal") &&
-          !selectedHead &&
-          (!p.region || p.region === "Head & neck");
-        for (const [id, r] of records) {
-          const selected = chosen.has(id);
-          const normal =
-            !p.hidden.includes(id) &&
-            p.visible.includes(r.model.system) &&
-            (!p.region || getRegion(r.model) === p.region) &&
-            (p.depth === "all" || isSurfaceMuscle(r.model));
-          const returning =
-            r.mesh.visible &&
-            (r.fromScale !== 1 || r.from.lengthSq() > 0) &&
-            time < r.start + duration;
-          const coveredHead =
-            guideVisible &&
-            r.model.system === "skeletal" &&
-            r.model.bounds[1][1] > headCut;
-          r.mesh.visible = (normal && !coveredHead) || selected || returning;
-          // Darken the intact body instead of piling up translucent back faces.
-          r.material.color
-            .copy(r.baseColor)
-            .multiplyScalar(selected ? 1 : 1 - focusBlend * 0.78);
-          let opacity = chosen.size && !selected && !p.inspect ? 0.22 : 1;
-          if (
-            p.highlightedSystems.length &&
-            !p.highlightedSystems.includes(r.model.system) &&
-            !selected
-          )
-            opacity *= 0.22;
-          if (p.fade && r.model.system === "muscular" && !selected)
-            opacity *= 0.12;
-          r.material.transparent = opacity < 0.99;
-          r.material.opacity = opacity;
-          r.material.depthWrite = opacity >= 0.99;
-          r.mesh.renderOrder = selected ? 2 : 0;
-          r.material.emissive.set(
-            selected || p.highlightedSystems.includes(r.model.system)
-              ? p.appearance.accent
-              : "#000000",
-          );
-          r.material.emissiveIntensity = selected
-            ? 0.14
-            : p.highlightedSystems.includes(r.model.system)
-              ? 0.08
-              : 0;
-        }
-        if (headGuide && headMaterial) {
-          headGuide.visible = guideVisible;
-          headMaterial.color
-            .set("#c8b6a7")
-            .multiplyScalar(1 - focusBlend * 0.78);
-        }
-        target.dataset.inspecting = String(p.inspect);
-        target.dataset.focusedModel = p.selected || "";
-        target.dataset.highlightedParts = String(chosen.size);
-        target.dataset.highlightedSystems = p.highlightedSystems.join(",");
-        target.dataset.visibleMeshes = String(
-          [...records.values()].filter((r) => r.mesh.visible).length,
-        );
-        target.dataset.depth = p.depth;
-      }
-      const colors = [
-        p.appearance.bone,
-        p.appearance.muscle,
-        p.appearance.accent,
-        p.distinct,
-      ].join("|");
-      if (colors !== lastColors) {
-        lastColors = colors;
-        needsRender = true;
-        for (const [id, r] of records) {
-          if (chosen.has(id) || p.highlightedSystems.includes(r.model.system))
-            r.material.emissive.set(p.appearance.accent);
-          if (r.model.system === "skeletal") r.baseColor.set(p.appearance.bone);
-          if (r.model.system === "muscular")
-            r.baseColor.copy(
-              muscleColor(r.model, p.appearance.muscle, p.distinct),
-            );
-          if (r.model.system === "cardiovascular")
-            r.baseColor.set(
-              /vein|vena/.test(r.model.name.toLowerCase())
-                ? "#597cc1"
-                : "#be485a",
-            );
-          r.material.color
-            .copy(r.baseColor)
-            .multiplyScalar(chosen.has(id) ? 1 : 1 - focusBlend * 0.78);
-        }
-      }
-      let maxProgress = 1;
-      for (const r of records.values()) {
-        const progress = duration ? ease((time - r.start) / duration) : 1;
-        if (
-          r.pivot.position.distanceToSquared(r.to) > 1e-10 ||
-          Math.abs(r.pivot.scale.x - r.toScale) > 1e-6
-        ) {
-          r.pivot.position.lerpVectors(r.from, r.to, progress);
-          r.pivot.scale.setScalar(
-            THREE.MathUtils.lerp(r.fromScale, r.toScale, progress),
-          );
-          moving = true;
-        }
-        if (chosen.has(r.model.id))
-          maxProgress = Math.min(maxProgress, progress);
-      }
-      target.dataset.motionProgress = maxProgress.toFixed(3);
-      target.dataset.focusScale = (
-        records.get(p.selected || "")?.pivot.scale.x ?? 1
-      ).toFixed(3);
-      target.dataset.animating = String(moving);
-      target.dataset.liftedParts = String(
-        [...records.values()].filter(
-          (r) =>
-            Math.abs(r.pivot.scale.x - 1) > 0.001 ||
-            r.pivot.position.lengthSq() > 1e-6,
-        ).length,
-      );
-      const changed = controls.update();
-      if (needsRender || moving || changed) {
-        renderer.render(scene, camera);
-        needsRender = false;
-      }
-      raf = requestAnimationFrame(animate);
-    };
-    raf = requestAnimationFrame(animate);
-    return () => {
-      disposed = true;
-      cancelAnimationFrame(raf);
-      resize.disconnect();
-      controls.dispose();
-      renderer.domElement.removeEventListener("pointerdown", pointerDown);
-      renderer.domElement.removeEventListener("pointerup", pointerUp);
-      renderer.domElement.removeEventListener("pointermove", pointerMove);
-      renderer.domElement.removeEventListener("pointerleave", pointerLeave);
-      for (const r of records.values()) r.material.dispose();
-      headMaterial?.dispose();
-      renderer.dispose();
-      renderer.domElement.remove();
-    };
-  }, []);
-  return <div className="three-canvas" ref={host} />;
+function primaryIds(sourceNames: string[]) {
+  return modelParts
+    .filter((m) => !m.parentId && sourceNames.includes(m.sourceName || ""))
+    .map((m) => m.id);
 }
+function sourceId(name: string) {
+  return modelParts.find((m) => m.sourceName === name && !m.parentId)?.id || "";
+}
+const initialCompare = [sourceId("Vertebra C4"), sourceId("Vertebra L3")];
 export function Explorer3D({
   visible,
+  onVisibleChange,
   highlightedSystems,
   onClearHighlights,
   region,
+  onRegionChange,
   request,
   appearance,
   onSelect,
   onBookmark,
   bookmarks,
   onQuiz,
+  onReference,
 }: {
   visible: string[];
+  onVisibleChange: (v: string[]) => void;
   highlightedSystems: string[];
   onClearHighlights: () => void;
   region: string;
+  onRegionChange: (r: string) => void;
   request: { id: string; version: number };
   appearance: Appearance;
   onSelect: (id: string) => void;
   onBookmark: (id: string) => void;
   bookmarks: string[];
   onQuiz: (id: string) => void;
+  onReference: () => void;
 }) {
-  const [selected, setSelected] = useState<string | null>(null);
-  const [inspect, setInspect] = useState(false);
-  const [scope, setScope] = useState<"group" | "part">("group");
-  const [hidden, setHidden] = useState<string[]>([]);
-  const [history, setHistory] = useState<string[][]>([]);
-  const [progress, setProgress] = useState(0);
-  const [error, setError] = useState("");
-  const [search, setSearch] = useState("");
-  const [browse, setBrowse] = useState(false);
-  const [fade, setFade] = useState(false);
-  const [depth, setDepth] = useState<"surface" | "all">("surface");
-  const [distinct, setDistinct] = useState(true);
-  const [surfaceGuide, setSurfaceGuide] = useState(true);
-  const [lift, setLift] = useState(true);
-  const [hover, setHover] = useState<string | null>(null);
-  const [infoTab, setInfoTab] = useState("Overview");
-  const [view, setView] = useState<CameraView>("front");
-  const api = useRef<SceneApi | null>(null);
-  const model = modelParts.find((m) => m.id === selected);
-  const group = model ? displayGroup(model) : [];
-  const selectedParts = model
-    ? scope === "group"
-      ? group.map((m) => m.id)
-      : [model.id]
+  const [workspace, setWorkspace] = useState<"body" | "explore">("body"),
+    [selected, setSelected] = useState<string | null>(null),
+    [scope, setScope] = useState<"whole" | "component" | "tissue">("whole");
+  const [hidden, setHidden] = useState<string[]>([]),
+    [isolated, setIsolated] = useState<string[] | null>(null),
+    [history, setHistory] = useState<Snapshot[]>([]);
+  const [layers, setLayers] = useState<Record<string, number>>({
+      ...defaultLayers,
+    }),
+    [layerMenu, setLayerMenu] = useState<string | null>(null);
+  const [selectionMode, setSelectionMode] = useState<
+      "structure" | "tissue" | "landmark"
+    >("structure"),
+    [labels, setLabels] = useState(true),
+    [quality, setQuality] = useState(true),
+    [autoFocus, setAutoFocus] = useState(false);
+  const [view, setView] = useState<CameraView>("front"),
+    [search, setSearch] = useState(""),
+    [browse, setBrowse] = useState(false),
+    [kind, setKind] = useState("All");
+  const [hover, setHover] = useState<string | null>(null),
+    [infoTab, setInfoTab] = useState("Overview"),
+    [landmark, setLandmark] = useState<AnatomyLandmark | null>(null);
+  const [attachmentKind, setAttachmentKind] = useState<
+      "origin" | "insertion" | null
+    >(null),
+    [expanded, setExpanded] = useState(false),
+    [compare, setCompare] = useState(false),
+    [compareIds, setCompareIds] = useState(initialCompare);
+  const [compareView, setCompareView] = useState<CameraView>("superior");
+  const api = useRef<SceneApi | null>(null),
+    compareApis = useRef<(SceneApi | null)[]>([null, null]),
+    searchRef = useRef<HTMLInputElement>(null),
+    previousVisible = useRef(visible);
+  const pendingFrame = useRef<{ ids: string[]; view?: CameraView } | null>(null);
+  function requestFrame(ids: string[], view?: CameraView) {
+    if (api.current && !compare) api.current.frame(ids, view);
+    else pendingFrame.current = { ids, view };
+  }
+  const model = selected ? byId.get(selected) : undefined,
+    base = model ? parentModel(model) : undefined;
+  const group = model
+    ? scope === "tissue"
+      ? [model]
+      : scope === "component"
+        ? displayGroup(model).filter(
+            (m) => m.id === base?.id || m.parentId === base?.id,
+          )
+        : displayGroup(model)
     : [];
-  const study = model ? getModelStudy(model) : null;
+  const selectedIds = group.map((m) => m.id),
+    study = model
+      ? getModelStudy(scope === "tissue" ? model : base || model)
+      : null;
   const title = model
-    ? scope === "group"
+    ? scope === "whole"
       ? displayName(model)
       : model.name
     : "";
+  const primaryGroup = group.filter((m) => !m.parentId);
+  const localLandmarks = base ? landmarksFor(base.id) : [];
+  const attachmentCandidates = modelParts.filter(
+    (m) =>
+      m.layer === "attachment" &&
+      !!m.attachmentFor &&
+      selectedIds.includes(m.attachmentFor),
+  );
+  const overlays = attachmentKind
+    ? attachmentCandidates
+        .filter((m) => m.attachmentKind === attachmentKind)
+        .map((m) => m.id)
+    : [];
+  function remember() {
+    setHistory((h) =>
+      [
+        ...h,
+        {
+          hidden: [...hidden],
+          isolated: isolated ? [...isolated] : null,
+          layers: { ...layers },
+          visible: [...visible],
+        },
+      ].slice(-30),
+    );
+  }
   function clear() {
-    setInspect(false);
     setSelected(null);
+    setLandmark(null);
+    setAttachmentKind(null);
     setHover(null);
   }
-  function pick(id: string) {
-    const next = modelParts.find((m) => m.id === id);
+  function restore() {
+    remember();
+    setHidden([]);
+    setIsolated(null);
+    setAttachmentKind(null);
+  }
+  function reset() {
+    remember();
+    clear();
+    setHidden([]);
+    setIsolated(null);
+    setLayers({ ...defaultLayers });
+    onVisibleChange(["skeletal"]);
+    onRegionChange("");
+    onClearHighlights();
+    setView("front");
+    setCompare(false);
+    requestFrame([], "front");
+  }
+  function undo() {
+    const old = history.at(-1);
+    if (!old) return;
+    setHistory(history.slice(0, -1));
+    setHidden(old.hidden);
+    setIsolated(old.isolated);
+    setLayers(old.layers);
+    onVisibleChange(old.visible);
+    setAttachmentKind(null);
+  }
+  function ensure(ids: string[]) {
+    const parts = ids
+      .map((id) => byId.get(id))
+      .filter((m): m is ModelPart => !!m);
+    onVisibleChange([...new Set([...visible, ...parts.map((m) => m.system)])]);
+    setLayers((l) => {
+      const n = { ...l };
+      for (const m of parts)
+        if (m.layer && m.layer !== "attachment" && !n[m.layer]) n[m.layer] = 1;
+      return n;
+    });
+    setHidden((h) => h.filter((id) => !ids.includes(id)));
+  }
+  function pick(id: string, focus = false) {
+    if (compare) setCompare(false);
+    const raw = byId.get(id);
+    if (!raw) {
+      clear();
+      return;
+    }
+    const m = selectionMode === "tissue" ? raw : parentModel(raw);
     if (
-      !next ||
-      (model &&
-        (next.id === selected ||
-          (displayGroupKey(next) === displayGroupKey(model) &&
-            scope === "group")))
+      !focus &&
+      selected &&
+      (selectionMode === "tissue"
+        ? m.id === selected
+        : displayGroupKey(m) === displayGroupKey(model!))
     ) {
       clear();
       return;
     }
-    setSelected(id);
-    setScope("group");
-    setInspect(lift);
+    const nextScope = selectionMode === "tissue" ? "tissue" : "whole";
+    const ids =
+      nextScope === "tissue" ? [m.id] : displayGroup(m).map((m) => m.id);
+    setSelected(m.id);
+    setScope(nextScope);
+    setLandmark(null);
+    setAttachmentKind(null);
     setInfoTab("Overview");
+    setBrowse(false);
     setHover(null);
-    setHidden((h) =>
-      h.filter((part) => !displayGroup(next).some((m) => m.id === part)),
-    );
-    onSelect("model:" + id);
+    onSelect("model:" + m.id);
+    ensure(ids);
+    if (focus) {
+      remember();
+      setIsolated(ids);
+      requestFrame(ids, "front");
+      setView("front");
+    } else if (autoFocus) requestFrame(ids);
   }
   useEffect(() => {
-    if (request.version === 0) return;
-    const target = request.id.startsWith("model:")
-      ? modelParts.find((m) => m.id === request.id.slice(6))
+    if (!request.version) return;
+    const m = request.id.startsWith("model:")
+      ? byId.get(request.id.slice(6))
       : modelParts.find((m) => modelMatchesStudy(m, request.id));
-    if (target) {
-      setSelected(target.id);
-      setScope("group");
-      setInspect(lift);
-      setInfoTab("Overview");
-      setHidden((h) =>
-        h.filter((part) => !displayGroup(target).some((m) => m.id === part)),
-      );
-    }
+    if (m) pick(m.id, true);
   }, [request.version]);
   useEffect(() => {
-    if (model && !visible.includes(model.system)) clear();
+    const added = visible.filter((v) => !previousVisible.current.includes(v));
+    previousVisible.current = visible;
+    if (added.length)
+      setLayers((l) => {
+        const n = { ...l };
+        for (const id of added) {
+          const types: AnatomyLayer[] =
+            id === "skeletal"
+              ? ["bones", "cartilage"]
+              : id === "muscular"
+                ? ["muscles", "tendons"]
+                : id === "integumentary"
+                  ? ["skin"]
+                  : ["organs"];
+          for (const type of types) if (!n[type]) n[type] = 1;
+        }
+        return n;
+      });
   }, [visible.join(",")]);
-  function cameraView(v: CameraView) {
+  useEffect(() => {
+    if (region) {
+      const ids = modelParts
+        .filter((m) => m.layer === "bones" && getRegion(m) === region)
+        .map((m) => m.id);
+      requestFrame(ids);
+    }
+  }, [region]);
+  useEffect(() => {
+    const f = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setExpanded(false);
+        setBrowse(false);
+        setLayerMenu(null);
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+        e.preventDefault();
+        setBrowse(true);
+        setTimeout(() => searchRef.current?.focus(), 0);
+      }
+    };
+    window.addEventListener("keydown", f);
+    return () => window.removeEventListener("keydown", f);
+  }, []);
+  function changeView(v: CameraView) {
     setView(v);
     api.current?.view(v);
   }
-  function back() {
-    setInspect(false);
+  function toggleLayer(name: string, types: AnatomyLayer[]) {
+    remember();
+    const enabled = types.every((t) => layers[t] > 0);
+    setLayers((l) => {
+      const n = { ...l };
+      types.forEach((t) => (n[t] = enabled ? 0 : 1));
+      return n;
+    });
+    if (!enabled) {
+      const ids = modelParts
+        .filter((m) => types.includes(m.layer as AnatomyLayer))
+        .map((m) => m.system);
+      onVisibleChange([...new Set([...visible, ...ids])]);
+    }
+    setLayerMenu(null);
   }
-  function hide() {
-    if (!selected) return;
-    setHistory([...history, hidden]);
-    setHidden([...new Set([...hidden, ...selectedParts])]);
+  function hideSelected() {
+    if (!selectedIds.length) return;
+    remember();
+    setHidden([...new Set([...hidden, ...selectedIds])]);
+    if (isolated)
+      setIsolated(isolated.filter((id) => !selectedIds.includes(id)));
     clear();
   }
-  const matches = modelParts.filter(
-    (m) =>
-      (search
-        ? `${m.name} ${m.system}`.toLowerCase().includes(search.toLowerCase())
-        : visible.includes(m.system)) &&
-      (!region || getRegion(m) === region),
-  );
-  const filtered = matches.filter(
-    (m, i) =>
-      matches.findIndex(
-        (other) => displayGroupKey(other) === displayGroupKey(m),
-      ) === i,
+  function isolateSelected() {
+    if (!selectedIds.length) return;
+    remember();
+    ensure(selectedIds);
+    setIsolated(selectedIds);
+    setAttachmentKind(null);
+    requestFrame(selectedIds);
+  }
+  function focusLandmark(l: AnatomyLandmark) {
+    setLandmark(l);
+    setInfoTab("Landmarks");
+    setSelectionMode("landmark");
+    const ids = children(l.contextIds);
+    ensure(ids);
+    setIsolated(ids);
+    setView(l.view);
+    requestFrame(ids, l.view);
+  }
+  function attachments(kind: "origin" | "insertion") {
+    const ids = attachmentCandidates
+      .filter((m) => m.attachmentKind === kind)
+      .map((m) => m.id);
+    if (!ids.length) return;
+    remember();
+    setAttachmentKind(kind);
+    setLandmark(null);
+    const nearby = new Set<string>();
+    for (const id of ids) {
+      const m = byId.get(id)!;
+      const c = m.bounds[0].map((v, i) => (v + m.bounds[1][i]) / 2);
+      const ranked = modelParts
+        .filter((m) => m.layer === "bones")
+        .map((m) => ({
+          m,
+          d: m.bounds[0].reduce(
+            (s, min, i) =>
+              s + Math.max(min - c[i], 0, c[i] - m.bounds[1][i]) ** 2,
+            0,
+          ),
+        }))
+        .sort((a, b) => a.d - b.d);
+      ranked.slice(0, 2).forEach((x) => nearby.add(x.m.id));
+    }
+    const context = children([...nearby]);
+    setIsolated([...context, ...ids]);
+    ensure(context);
+    setView("front");
+    requestFrame(context.length ? context : ids, "front");
+  }
+  function preset(name: string) {
+    remember();
+    clear();
+    setCompare(false);
+    setWorkspace("explore");
+    setHidden([]);
+    onVisibleChange(["skeletal"]);
+    setLayers({ ...defaultLayers, ligaments: 1, tendons: 1 });
+    let parts: ModelPart[] = [],
+      frame: string[] = [];
+    if (name === "Spine") {
+      parts = modelParts.filter(
+        (m) =>
+          /vertebr|atlas|axis|sacrum|coccyx/i.test(m.name) &&
+          m.system === "skeletal" &&
+          m.layer !== "attachment",
+      );
+      frame = spineModels.map((m) => m.id);
+    }
+    if (name === "Shoulder") {
+      frame = primaryIds(["Humerus.r", "Scapula.r", "Clavicle.r"]);
+      parts = modelParts.filter(
+        (m) =>
+          frame.includes(m.id) ||
+          (!!m.parentId && frame.includes(m.parentId)) ||
+          (m.ancestry.some((c) =>
+            /glenohumeral|shoulder|acromioclavicular|coracoclavicular/i.test(c),
+          ) &&
+            /\.r$/.test(m.sourceName || "")),
+      );
+    }
+    if (name === "Pelvis") {
+      frame = primaryIds(["Hip bone.r", "Hip bone.l", "Sacrum", "Coccyx"]);
+      const body = primaryIds(["Femur.r", "Femur.l"]);
+      parts = modelParts.filter(
+        (m) =>
+          [...frame, ...body].includes(m.id) ||
+          (!!m.parentId && [...frame, ...body].includes(m.parentId)) ||
+          m.ancestry.some((c) => /sacro-iliac|hip joint/i.test(c)),
+      );
+    }
+    if (name === "Knee") {
+      const main = primaryIds(["Femur.r", "Tibia.r", "Fibula.r", "Patella.r"]);
+      parts = modelParts.filter(
+        (m) =>
+          main.includes(m.id) ||
+          (!!m.parentId && main.includes(m.parentId)) ||
+          (m.ancestry.some((c) => /Knee joint/.test(c)) &&
+            /\.r$/.test(m.sourceName || "")),
+      );
+      frame = primaryIds([
+        "Patella.r",
+        "Anterior cruciate ligament.r",
+        "Posterior cruciate ligament.r",
+      ]);
+    }
+    const ids = parts.map((m) => m.id);
+    setIsolated(ids);
+    setView("front");
+    requestFrame(frame.length ? frame : ids, "front");
+  }
+  const seen = new Set<string>();
+  const matches = modelParts.filter((m) => {
+    if (m.layer === "attachment" || (m.parentId && selectionMode !== "tissue"))
+      return false;
+    if (
+      (kind === "Bones" && m.layer !== "bones") ||
+      (kind === "Muscles" && m.layer !== "muscles") ||
+      (kind === "Connective" &&
+        ![
+          "tendons",
+          "ligaments",
+          "cartilage",
+          "fascia",
+          "capsules",
+          "bursae",
+        ].includes(m.layer || ""))
+    )
+      return false;
+    if (
+      search &&
+      !`${m.name} ${m.sourceName} ${m.ancestry.join(" ")}`
+        .toLowerCase()
+        .includes(search.toLowerCase())
+    )
+      return false;
+    const key = selectionMode === "tissue" ? m.id : displayGroupKey(m);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  const frameSize = Math.max(
+    ...compareIds.map((id) => {
+      const b = byId.get(id)!.bounds;
+      return Math.max(...b[0].map((v, i) => b[1][i] - v));
+    }),
   );
   const sceneProps = {
-    selected,
-    selectedParts,
-    inspect,
     visible,
-    highlightedSystems,
+    selected: selectedIds,
     hidden,
-    region,
-    fade,
-    depth,
-    distinct,
-    surfaceGuide,
+    isolated,
+    layers,
+    highlightedSystems,
+    attachments: overlays,
     appearance,
-    onSelect: pick,
-    onHover: setHover,
-    onReady: (value: SceneApi) => {
-      api.current = value;
+    quality,
+    landmarks: selectionMode === "landmark" ? localLandmarks : [],
+    activeLandmark: landmark?.id,
+    labels,
+    selectionMode:
+      selectionMode === "landmark"
+        ? ("landmark" as const)
+        : ("structure" as const),
+    onSelect: (id: string) => pick(id),
+    onLandmark: (id: string) => {
+      const l = localLandmarks.find((l) => l.id === id);
+      if (l) focusLandmark(l);
     },
-    onError: setError,
-    onProgress: setProgress,
+    onHover: setHover,
+    onReady: (v: SceneApi) => {
+      api.current = v;
+      if (pendingFrame.current) {
+        v.frame(pendingFrame.current.ids, pendingFrame.current.view);
+        pendingFrame.current = null;
+      }
+    },
   };
-  const displayControls = (
-    <div className="display-controls">
-      <div className="control-label">
-        <Layers size={14} />
-        <strong>Muscle layers</strong>
-      </div>
-      <div className="segmented depth-switch" aria-label="Muscle layer detail">
-        <button
-          aria-pressed={depth === "surface"}
-          className={depth === "surface" ? "active" : ""}
-          onClick={() => setDepth("surface")}
-        >
-          Superficial
-        </button>
-        <button
-          aria-pressed={depth === "all"}
-          className={depth === "all" ? "active" : ""}
-          onClick={() => setDepth("all")}
-        >
-          All layers
-        </button>
-      </div>
-      <p>
-        Start with the major surface muscles. Add deeper structures when you
-        need them.
-      </p>
-      <label className="display-toggle">
-        <span>Distinct muscle colors</span>
-        <input
-          type="checkbox"
-          checked={distinct}
-          onChange={(e) => setDistinct(e.target.checked)}
-        />
-      </label>
-      <label className="display-toggle">
-        <span>Lift selection slowly</span>
-        <input
-          type="checkbox"
-          checked={lift}
-          onChange={(e) => {
-            setLift(e.target.checked);
-            if (!e.target.checked) setInspect(false);
-          }}
-        />
-      </label>
-      <details className="display-advanced">
-        <summary>
-          More display options <ChevronDown size={13} />
-        </summary>
-        <label className="display-toggle">
-          <span>Natural head surface</span>
-          <input
-            type="checkbox"
-            checked={surfaceGuide}
-            onChange={(e) => setSurfaceGuide(e.target.checked)}
-          />
-        </label>
-        <label className="display-toggle">
-          <span>See through muscles</span>
-          <input
-            type="checkbox"
-            checked={fade}
-            onChange={(e) => setFade(e.target.checked)}
-          />
-        </label>
-      </details>
-    </div>
-  );
   return (
-    <div className="explorer3d-grid">
-      <section className="scene-card panel">
-        <div className="scene-heading">
-          <div>
-            <span className="scene-logo">
-              <Box size={18} />
-            </span>
-            <h2>Human anatomy</h2>
-            <span className="live-3d">
-              <span />
-              LIVE 3D
-            </span>
-          </div>
+    <div
+      className={`pro-atlas ${expanded ? "is-expanded" : ""} ${compare ? "pro-is-comparing" : ""} ${appearance.studio === "adaptive" && appearance.mode === "light" ? "pro-light-studio" : ""}`}
+    >
+      <header className="pro-header">
+        <div
+          className="pro-workspace-tabs"
+          role="tablist"
+          aria-label="Anatomy workspace"
+        >
           <button
-            className={`secondary browse-toggle ${browse ? "active" : ""}`}
-            onClick={() => setBrowse(!browse)}
+            role="tab"
+            aria-selected={workspace === "body"}
+            onClick={() => {
+              setWorkspace("body");
+              setCompare(false);
+              setIsolated(null);
+              requestFrame([], "front");
+            }}
           >
-            <Search size={14} />
-            Find a part
+            <Box size={15} />
+            Body
+          </button>
+          <button
+            role="tab"
+            aria-selected={workspace === "explore"}
+            onClick={() => preset("Spine")}
+          >
+            <Focus size={15} />
+            Explore
           </button>
         </div>
-        <div
-          className={`scene-stage ${appearance.studio === "adaptive" ? "adaptive-studio" : ""}`}
+        <div className="pro-search">
+          <Search size={15} />
+          <input
+            ref={searchRef}
+            aria-label="Search 3D anatomy"
+            placeholder="Search anatomy…"
+            value={search}
+            onFocus={() => setBrowse(true)}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setBrowse(true);
+            }}
+          />
+          <kbd>⌘K</kbd>
+        </div>
+        <button
+          className="pro-reference"
+          aria-label="2D reference"
+          onClick={onReference}
         >
-          <Scene {...sceneProps} />
-          <div className="scene-top-label">
-            <span>
-              {inspect
-                ? study?.kind.toUpperCase()
-                : depth === "surface"
-                  ? "SUPERFICIAL MUSCLE OVERVIEW"
-                  : "ALL ANATOMICAL LAYERS"}
-            </span>
-            <strong>{model ? title : region || "Whole body"}</strong>
-          </div>
-          {progress < 100 && !error && (
-            <div className="scene-loading">
-              <LoaderCircle size={30} />
-              <strong>Preparing your 3D atlas</strong>
-              <span>Loading 924 named anatomical parts…</span>
-            </div>
-          )}
-          {error && (
-            <div className="scene-error">
-              <Info size={26} />
-              <strong>3D viewer unavailable</strong>
-              <p>{error}</p>
-              <p>Use the 2D reference tab above to keep studying.</p>
-            </div>
-          )}
-          {browse && (
-            <div className="model-browser">
-              <div>
-                <Search size={16} />
-                <input
-                  autoFocus
-                  placeholder="Search muscles, bones, organs…"
-                  aria-label="Search 3D model parts"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                />
+          <BookOpen size={14} />
+          <span>2D reference</span>
+        </button>
+        <button
+          className="pro-icon"
+          aria-label={expanded ? "Exit expanded atlas" : "Expand atlas"}
+          onClick={() => setExpanded(!expanded)}
+        >
+          <Maximize size={17} />
+        </button>
+      </header>
+      {workspace === "explore" && (
+        <div className="pro-presets">
+          <span>Explore a region</span>
+          {["Spine", "Shoulder", "Pelvis", "Knee"].map((n) => (
+            <button key={n} onClick={() => preset(n)}>
+              {n}
+            </button>
+          ))}
+          <button
+            className={compare ? "active" : ""}
+            onClick={() => {
+              api.current = null;
+              setCompare(!compare);
+              setCompareView("superior");
+            }}
+          >
+            <Split size={14} />
+            Compare vertebrae
+          </button>
+        </div>
+      )}
+      <div className={`pro-workspace ${study ? "has-selection" : ""}`}>
+        <section className="pro-viewer">
+          <div className="pro-stage">
+            {compare ? (
+              <div className="pro-comparison">
+                {compareIds.map((id, i) => {
+                  const m = byId.get(id)!;
+                  return (
+                    <div className="pro-compare-pane" key={i}>
+                      <div className="pro-compare-select">
+                        <select
+                          aria-label={`Comparison vertebra ${i + 1}`}
+                          value={id}
+                          onChange={(e) =>
+                            setCompareIds(
+                              compareIds.map((v, j) =>
+                                j === i ? e.target.value : v,
+                              ),
+                            )
+                          }
+                        >
+                          {spineModels.map((b) => (
+                            <option key={b.id} value={b.id}>
+                              {spineCode(b.name)} · {spineRegion(b.name)}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <AnatomyScene
+                        key={id}
+                        {...sceneProps}
+                        onlyIds={children([id])}
+                        selected={[]}
+                        isolated={null}
+                        landmarks={[]}
+                        initialView={compareView}
+                        frameSize={frameSize}
+                        onReady={(v) => {
+                          compareApis.current[i] = v;
+                        }}
+                      />
+                      <div className="pro-compare-caption">
+                        <strong>
+                          {spineCode(m.name)} · {spineRegion(m.name)}
+                        </strong>
+                        <p>{spineRegionNotes[spineRegion(m.name)]}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <AnatomyScene {...sceneProps} />
+            )}
+            <div className="pro-corner-label">
+              <span>
+                {compare
+                  ? "MATCHED SCALE · SOURCE GEOMETRY"
+                  : isolated
+                    ? "ISOLATED VIEW"
+                    : "WHOLE BODY"}
+              </span>
+              <strong>
+                {compare
+                  ? "Vertebral morphology"
+                  : landmark?.name || title || "Human anatomy"}
+              </strong>
+              {isolated && !compare && (
                 <button
-                  className="icon-button"
-                  aria-label="Close model browser"
-                  onClick={() => setBrowse(false)}
+                  onClick={() => {
+                    setIsolated(null);
+                    setAttachmentKind(null);
+                    requestFrame([], "front");
+                  }}
                 >
-                  <X size={15} />
+                  <ArrowLeft size={12} />
+                  Back to body
+                </button>
+              )}
+            </div>
+            <div className="pro-camera-tools">
+              <button
+                aria-label="Zoom anatomy in"
+                onClick={() => api.current?.zoom(0.8)}
+              >
+                <Expand size={16} />
+              </button>
+              <button
+                aria-label="Zoom anatomy out"
+                onClick={() => api.current?.zoom(1.25)}
+              >
+                <Minus size={16} />
+              </button>
+              <button aria-label="Reset anatomy" onClick={reset}>
+                <RotateCcw size={16} />
+              </button>
+              <button
+                aria-label="Undo anatomy change"
+                disabled={!history.length}
+                onClick={undo}
+              >
+                <Undo2 size={16} />
+              </button>
+            </div>
+            {hover && !compare && (
+              <div className="pro-hover" role="status">
+                {hover}
+              </div>
+            )}
+            {!compare && model && (
+              <div className="pro-selection-actions">
+                <span>{title}</span>
+                <button onClick={() => requestFrame(selectedIds)}>
+                  <Focus size={14} />
+                  Focus
+                </button>
+                <button onClick={isolateSelected}>
+                  <Box size={14} />
+                  Isolate
+                </button>
+                <button onClick={hideSelected}>
+                  <EyeOff size={14} />
+                  Hide
+                </button>
+                <button aria-label="Clear anatomy selection" onClick={clear}>
+                  <X size={14} />
                 </button>
               </div>
-              <span>
-                {filtered.length} matching structures
-                {filtered.length > 60
-                  ? " · showing first 60; narrow your search"
-                  : ""}
-              </span>
-              <div>
-                {filtered.slice(0, 60).map((m) => (
-                  <button
-                    key={m.id}
-                    onClick={() => {
-                      pick(m.id);
-                      setBrowse(false);
-                    }}
-                  >
-                    <span>
-                      {displayName(m)}
-                      <small>
-                        {systems.find((s) => s.id === m.system)?.name}
-                      </small>
-                    </span>
-                    <Focus size={14} />
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-          <div className="scene-side-tools">
-            <button
-              aria-label="Reset 3D view"
-              onClick={() => {
-                setView("front");
-                api.current?.reset();
-              }}
-            >
-              <RotateCcw size={17} />
-            </button>
-            <button
-              aria-label="Zoom 3D in"
-              onClick={() => api.current?.zoom(0.85)}
-            >
-              <Expand size={17} />
-            </button>
-            <button
-              aria-label="Undo 3D removal"
-              disabled={!history.length}
-              onClick={() => {
-                setHidden(history.at(-1)!);
-                setHistory(history.slice(0, -1));
-              }}
-            >
-              <Undo2 size={17} />
-            </button>
-          </div>
-          {hover && (
-            <div className="model-hover-label" role="status">
-              {hover}
-            </div>
-          )}
-          {inspect && (
-            <button className="back-body" onClick={back}>
-              <ArrowLeft size={15} />
-              Return to body
-            </button>
-          )}
-          <div className="scene-bottom">
-            <div className="scene-gesture">
-              <span className="gesture-dot" />
-              <span>
-                {inspect
-                  ? "Click again to clear · drag to rotate"
-                  : "Drag to rotate · scroll to zoom · click to select"}
-              </span>
-            </div>
-            <div className="camera-presets">
-              {(["front", "back", "left", "right"] as CameraView[]).map((v) => (
+            )}
+            <div className="pro-view-controls">
+              {(
+                [
+                  "front",
+                  "back",
+                  "left",
+                  "right",
+                  "superior",
+                  "inferior",
+                ] as CameraView[]
+              ).map((v) => (
                 <button
                   key={v}
-                  className={view === v ? "active" : ""}
-                  aria-label={`3D ${v} view`}
-                  onClick={() => cameraView(v)}
+                  className={
+                    (compare ? compareView : view) === v ? "active" : ""
+                  }
+                  aria-label={`Anatomy ${v} view`}
+                  onClick={() => {
+                    if (compare) {
+                      setCompareView(v);
+                      compareApis.current.forEach((api) => api?.view(v));
+                    } else changeView(v);
+                  }}
                 >
                   {v[0].toUpperCase() + v.slice(1)}
                 </button>
               ))}
             </div>
-          </div>
-        </div>
-        <div className="scene-footer">
-          <span>
-            <Layers size={14} />
-            {visible.length} {visible.length === 1 ? "system" : "systems"} shown
-            {highlightedSystems.length
-              ? ` · ${highlightedSystems.length} highlighted`
-              : ""}
-          </span>
-          <div>
-            {(model || highlightedSystems.length > 0) && (
-              <button
-                onClick={() => {
-                  clear();
-                  onClearHighlights();
-                }}
-              >
-                <X size={13} />
-                Clear highlights
-              </button>
-            )}
-            {hidden.length > 0 && (
-              <button
-                onClick={() => {
-                  setHidden([]);
-                  setHistory([]);
-                }}
-              >
-                {hidden.length} hidden · restore
-              </button>
-            )}
-            <span className="scene-source">BodyParts3D · CC BY-SA 2.1 JP</span>
-          </div>
-        </div>
-      </section>
-      <aside className="inspection-card panel">
-        {study && model ? (
-          <>
-            <div className="inspection-kicker">
-              <span className="badge">{study.kind}</span>
-              <button
-                className={`icon-button ${bookmarks.includes(study.id) ? "bookmarked" : ""}`}
-                aria-label={
-                  bookmarks.includes(study.id)
-                    ? "Remove structure bookmark"
-                    : "Bookmark structure"
-                }
-                onClick={() => onBookmark(study.id)}
-              >
-                <Bookmark size={19} />
-              </button>
-            </div>
-            <div className="inspection-title-row">
-              <h2>{title}</h2>
-              <button
-                className="icon-button"
-                aria-label="Clear selected structure"
-                onClick={clear}
-              >
-                <X size={17} />
-              </button>
-            </div>
-            <p className="inspection-system">
-              {systems.find((s) => s.id === study.system)?.name} ·{" "}
-              {study.region}
-            </p>
-            <div className="inspection-actions">
-              <button
-                className="secondary"
-                onClick={() => (inspect ? back() : setInspect(true))}
-              >
-                <Focus size={14} />
-                {inspect ? "Return to body" : "Lift & enlarge"}
-              </button>
-              <button className="secondary" onClick={hide}>
-                <EyeOff size={14} />
-                Hide
-              </button>
-            </div>
-            {group.length > 1 && (
-              <div className="muscle-components">
-                <span>Muscle regions</span>
-                <button
-                  aria-pressed={scope === "group"}
-                  onClick={() => setScope("group")}
-                >
-                  Whole muscle <small>{group.length} regions</small>
-                </button>
-                {group.map((part) => (
+            {browse && (
+              <div className="pro-browser">
+                <div>
+                  <strong>Find a structure</strong>
                   <button
-                    key={part.id}
-                    aria-pressed={scope === "part" && selected === part.id}
-                    onClick={() => {
-                      setSelected(part.id);
-                      setScope("part");
-                    }}
+                    aria-label="Close anatomy browser"
+                    onClick={() => setBrowse(false)}
                   >
-                    <span
-                      className="part-swatch"
-                      style={{
-                        background:
-                          "#" +
-                          muscleColor(
-                            part,
-                            appearance.muscle,
-                            distinct,
-                          ).getHexString(),
-                      }}
-                    />
-                    {componentName(part)}
+                    <X size={16} />
+                  </button>
+                </div>
+                <div className="pro-browser-kinds">
+                  {["All", "Bones", "Muscles", "Connective"].map((k) => (
+                    <button
+                      key={k}
+                      aria-pressed={kind === k}
+                      onClick={() => setKind(k)}
+                    >
+                      {k}
+                    </button>
+                  ))}
+                </div>
+                <small>
+                  {matches.length} results
+                  {matches.length > 70 ? " · narrow your search" : ""}
+                </small>
+                <div className="pro-browser-results">
+                  {matches.slice(0, 70).map((m) => (
+                    <button key={m.id} onClick={() => pick(m.id, true)}>
+                      <span>
+                        {selectionMode === "tissue" ? m.name : displayName(m)}
+                        <small>
+                          {m.layer?.replace(/_/g, " ")} · {getRegion(m)}
+                        </small>
+                      </span>
+                      <Focus size={14} />
+                    </button>
+                  ))}
+                  {!matches.length && <p>No structures match this search.</p>}
+                </div>
+              </div>
+            )}
+          </div>
+          <div className="pro-layer-dock">
+            <span>
+              <Layers size={15} />
+              Layers
+            </span>
+            {layerGroups.map(([name, types]) => (
+              <div key={name} className="pro-layer-group">
+                <button
+                  aria-pressed={
+                    types.every((t) => layers[t] > 0)
+                      ? true
+                      : types.some((t) => layers[t] > 0)
+                        ? "mixed"
+                        : false
+                  }
+                  onClick={() => toggleLayer(name, types)}
+                >
+                  <span className={`layer-dot ${name.toLowerCase()}`} />
+                  {name}
+                </button>
+                <button
+                  aria-label={`${name} transparency controls`}
+                  className="layer-settings"
+                  onClick={() => setLayerMenu(layerMenu === name ? null : name)}
+                >
+                  <ChevronDown size={12} />
+                </button>
+              </div>
+            ))}
+            <button className="pro-restore" onClick={restore}>
+              Restore{hidden.length ? ` (${hidden.length})` : ""}
+            </button>
+            {layerMenu && (
+              <div className="pro-layer-popover">
+                <div>
+                  <strong>{layerMenu}</strong>
+                  <button
+                    aria-label="Close transparency controls"
+                    onClick={() => setLayerMenu(null)}
+                  >
+                    <X size={15} />
+                  </button>
+                </div>
+                {layerGroups
+                  .find(([n]) => n === layerMenu)![1]
+                  .map((l) => (
+                    <label key={l}>
+                      <span>
+                        {layerNames[l]}
+                        <output>{Math.round((layers[l] || 0) * 100)}%</output>
+                      </span>
+                      <input
+                        aria-label={`${layerNames[l]} opacity`}
+                        type="range"
+                        min="0"
+                        max="100"
+                        step="5"
+                        value={(layers[l] || 0) * 100}
+                        onChange={(e) => {
+                          const value = +e.target.value / 100;
+                          setLayers((v) => ({ ...v, [l]: value }));
+                          if (value)
+                            onVisibleChange([
+                              ...new Set([
+                                ...visible,
+                                ...modelParts
+                                  .filter((m) => m.layer === l)
+                                  .map((m) => m.system),
+                              ]),
+                            ]);
+                        }}
+                      />
+                    </label>
+                  ))}
+                <small>
+                  0% hides a layer. Lower opacity reveals structures beneath it.
+                </small>
+              </div>
+            )}
+          </div>
+          <div className="pro-selection-strip">
+            <label>
+              <MousePointer2 size={13} />
+              <select
+                aria-label="Anatomy selection mode"
+                value={selectionMode}
+                onChange={(e) => {
+                  const v = e.target.value as typeof selectionMode;
+                  setSelectionMode(v);
+                  if (v === "landmark") setInfoTab("Landmarks");
+                }}
+              >
+                <option value="structure">Whole structures</option>
+                <option value="tissue">Tissue regions</option>
+                <option value="landmark">Landmarks</option>
+              </select>
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                checked={labels}
+                onChange={(e) => setLabels(e.target.checked)}
+              />
+              Labels
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                checked={quality}
+                onChange={(e) => setQuality(e.target.checked)}
+              />
+              Close-up shading
+            </label>
+            <span>Drag to rotate · scroll to zoom</span>
+          </div>
+        </section>
+        <aside className="pro-inspector">
+          {compare ? (
+            <>
+              <span className="pro-eyebrow">COMPARE ANATOMY</span>
+              <h2>Same scale. Different structure.</h2>
+              <p>
+                Compare the ring of C1, the dens of C2, cervical transverse
+                foramina, thoracic rib facets, and larger lumbar bodies.
+              </p>
+              <div className="pro-compare-quick">
+                {["Vertebra C4", "Vertebra T8", "Vertebra L3"].map((n) => (
+                  <button
+                    key={n}
+                    onClick={() => setCompareIds([sourceId(n), compareIds[1]])}
+                  >
+                    {n.replace("Vertebra ", "")}
                   </button>
                 ))}
-                {muscleFamily(model) === "pectoralis major" && (
-                  <p>
-                    Clavicular and sternocostal are the main heads. This model
-                    also separates the inferior abdominal fibers as a third
-                    region.
-                  </p>
-                )}
               </div>
-            )}
-            <div className="inspection-tabs">
-              {[
-                "Overview",
-                study.kind === "Bone" ? "Landmarks" : "Attachments",
-              ].map((tab) => (
-                <button
-                  className={infoTab === tab ? "active" : ""}
-                  key={tab}
-                  onClick={() => setInfoTab(tab)}
-                >
-                  {tab}
-                </button>
-              ))}
-            </div>
-            {infoTab === "Overview" ? (
-              <div className="inspection-notes">
-                <span className={`coverage-label ${study.detailLevel}`}>
-                  {study.detailLevel === "detailed"
-                    ? "Detailed study entry"
-                    : study.detailLevel === "overview"
-                      ? "Functional overview"
-                      : "Identification + general role"}
+              <button
+                className="pro-study-button"
+                onClick={() => onQuiz("3d:spine")}
+              >
+                <GraduationCap size={15} />
+                Practice spine anatomy
+              </button>
+            </>
+          ) : study && model ? (
+            <>
+              <div className="pro-inspector-heading">
+                <span className="pro-eyebrow">
+                  {model.layer === "attachment"
+                    ? "ILLUSTRATED ATTACHMENT"
+                    : study.kind}
                 </span>
-                {scope === "part" &&
-                  study.family.toLowerCase() !== study.name.toLowerCase() &&
-                  study.detailLevel !== "identification" && (
-                    <p className="parent-note">
-                      Study notes describe {study.family.toLowerCase()}; this
-                      mesh is the named side or component.
+                <button
+                  aria-label={
+                    bookmarks.includes(study.id)
+                      ? "Remove structure bookmark"
+                      : "Bookmark structure"
+                  }
+                  onClick={() => onBookmark(study.id)}
+                >
+                  <Bookmark size={17} />
+                </button>
+              </div>
+              <h2>{title}</h2>
+              <p className="pro-structure-meta">
+                {systems.find((s) => s.id === study.system)?.name} ·{" "}
+                {getRegion(model)}
+              </p>
+              {model.surfaceRegion && (
+                <p className="pro-source-note">
+                  Source-classified {model.layer} surface region of {base?.name}
+                  . It is not a separately segmented tissue volume.
+                </p>
+              )}
+              {spineModels.some((m) => m.id === base?.id) && (
+                <div className="pro-spine-picker">
+                  <select
+                    aria-label="Choose a vertebra"
+                    value={base!.id}
+                    onChange={(e) => pick(e.target.value, true)}
+                  >
+                    {spineModels.map((b) => (
+                      <option key={b.id} value={b.id}>
+                        {spineCode(b.name)} · {spineRegion(b.name)}
+                      </option>
+                    ))}
+                  </select>
+                  <p>{spineRegionNotes[spineRegion(base!.name)]}</p>
+                </div>
+              )}
+              {primaryGroup.length > 1 && (
+                <details className="pro-components">
+                  <summary>
+                    Muscle regions <span>{primaryGroup.length}</span>
+                  </summary>
+                  {primaryGroup.map((m) => (
+                    <button
+                      key={m.id}
+                      onClick={() => {
+                        setSelected(m.id);
+                        setScope("component");
+                      }}
+                    >
+                      {componentName(m)}
+                    </button>
+                  ))}
+                  {scope !== "whole" && (
+                    <button onClick={() => setScope("whole")}>
+                      Select whole muscle
+                    </button>
+                  )}
+                </details>
+              )}
+              <div className="pro-info-tabs">
+                {["Overview", "Landmarks", "Attachments"].map((t) => (
+                  <button
+                    key={t}
+                    className={infoTab === t ? "active" : ""}
+                    onClick={() => {
+                      setInfoTab(t);
+                      if (t === "Landmarks") setSelectionMode("landmark");
+                    }}
+                  >
+                    {t}
+                  </button>
+                ))}
+              </div>
+              {infoTab === "Overview" ? (
+                <div className="pro-notes">
+                  <h4>Function</h4>
+                  <p>{study.function}</p>
+                  <h4>Location & relationships</h4>
+                  <p>{study.location}</p>
+                  {study.actions && (
+                    <>
+                      <h4>Actions</h4>
+                      <p>{study.actions}</p>
+                    </>
+                  )}
+                  <p className="pro-coverage">
+                    {study.detailLevel === "detailed"
+                      ? "Detailed parent study notes"
+                      : study.detailLevel === "overview"
+                        ? "Functional overview"
+                        : "Identification and general role"}
+                  </p>
+                </div>
+              ) : infoTab === "Landmarks" ? (
+                <div className="pro-landmarks">
+                  {landmark ? (
+                    <div className="pro-landmark-detail">
+                      <button
+                        className="pro-text-button"
+                        onClick={() => setLandmark(null)}
+                      >
+                        <ArrowLeft size={12} />
+                        All landmarks
+                      </button>
+                      <h3>{landmark.name}</h3>
+                      <h4>Location</h4>
+                      <p>{landmark.location}</p>
+                      <h4>Function</h4>
+                      <p>{landmark.function}</p>
+                      <h4>Distinguishing features</h4>
+                      <p>{landmark.features}</p>
+                      {landmark.contents && (
+                        <>
+                          <h4>What passes through</h4>
+                          <p>{landmark.contents}</p>
+                        </>
+                      )}
+                      <button
+                        className="pro-study-button"
+                        onClick={() => focusLandmark(landmark)}
+                      >
+                        <Focus size={14} />
+                        View in context
+                      </button>
+                      <small>
+                        Source-anchored annotation ·{" "}
+                        {landmark.contextIds.length > 1
+                          ? "articulated bones and disc"
+                          : "not a separately segmented landmark volume"}
+                      </small>
+                    </div>
+                  ) : localLandmarks.length ? (
+                    <>
+                      <p>
+                        Select a source-anchored landmark. Labels follow the
+                        anatomy as you rotate.
+                      </p>
+                      {localLandmarks.map((l) => (
+                        <button key={l.id} onClick={() => focusLandmark(l)}>
+                          <span>{l.name}</span>
+                          <MapPin size={13} />
+                        </button>
+                      ))}
+                    </>
+                  ) : (
+                    <>
+                      <p>
+                        No reviewed source-anchor map is available for this
+                        structure yet. Detailed points are available on
+                        representative C1, C2, C4, T8, and L3 vertebrae and
+                        selected limb/pelvic bones.
+                      </p>
+                      {[
+                        "Atlas (C1)",
+                        "Axis (C2)",
+                        "Vertebra C4",
+                        "Vertebra T8",
+                        "Vertebra L3",
+                      ].map((n) => (
+                        <button key={n} onClick={() => pick(sourceId(n), true)}>
+                          {n}
+                        </button>
+                      ))}
+                    </>
+                  )}
+                </div>
+              ) : (
+                <div className="pro-notes">
+                  {base?.layer === "muscles" && /head|part of|belly of/i.test(base.name) && <p>Study notes may describe the parent muscle; individual head attachments can differ. Source patches apply only to the selected component where available.</p>}
+                  {base?.layer === "muscles" && <div className="pro-attachment-buttons">
+                    {(["origin", "insertion"] as const).map((k) => (
+                      <button
+                        key={k}
+                        disabled={
+                          !attachmentCandidates.some(
+                            (m) => m.attachmentKind === k,
+                          )
+                        }
+                        onClick={() => attachments(k)}
+                      >
+                        <span className={k} />
+                        {k === "origin" ? "Show origin" : "Show insertion"}
+                      </button>
+                    ))}
+                  </div>}
+                  {overlays.length > 0 && (
+                    <div className="pro-attachment-key">
+                      <strong>Illustrated {attachmentKind} region</strong>
+                      <p>
+                        These source-authored patches mark bone attachment
+                        areas. Actual tendon surfaces are controlled separately
+                        under Connective.
+                      </p>
+                    </div>
+                  )}
+                  {(
+                    ["origin", "insertion", "actions", "innervation"] as const
+                  ).map((k) =>
+                    study[k] ? (
+                      <div key={k}>
+                        <h4>{base?.layer === "ligaments" && (k === "origin" || k === "insertion") ? (k === "origin" ? "Attachment 1" : "Attachment 2") : k[0].toUpperCase() + k.slice(1)}</h4>
+                        <p>{study[k]}</p>
+                      </div>
+                    ) : null,
+                  )}
+                  {!study.origin && (
+                    <p>
+                      Detailed attachment/innervation notes are not yet reviewed
+                      for this structure. Source overlays are available only
+                      where the atlas provides them.
                     </p>
                   )}
-                <h4>WHAT IT DOES</h4>
-                <p>{study.function}</p>
-                <h4>LOCATION & RELATIONSHIPS</h4>
-                <p>{study.location}</p>
-                {study.tip && (
-                  <div className="inspector-tip">
-                    <strong>Make the connection</strong>
-                    <p>{study.tip}</p>
-                  </div>
-                )}
-                <details>
-                  <summary>
-                    Identifying features <ChevronDown size={14} />
-                  </summary>
-                  <p>{study.features}</p>
-                  <p>{study.description}</p>
-                </details>
-              </div>
-            ) : study.kind === "Bone" ? (
-              <div className="landmark-guide">
+                </div>
+              )}
+              <button
+                className="pro-study-button"
+                onClick={() => onQuiz("model:" + (base?.id || model.id))}
+              >
+                <GraduationCap size={15} />
+                Study this anatomy
+              </button>
+              <details className="pro-source-details">
+                <summary>Sources & coverage</summary>
+                <p>{study.source}</p>
                 <p>
-                  Rotate the actual bone surface to find these features. View
-                  buttons change orientation; they do not place unverified
-                  landmark markers.
+                  Geometry and annotation anchors: Z-Anatomy. Source surface
+                  regions and attachment illustrations are labeled separately
+                  from tissue volumes.
                 </p>
-                {study.landmarkGuide.length ? (
-                  study.landmarkGuide.map((l) => (
-                    <div key={l.name}>
-                      <strong>{l.name}</strong>
-                      <p>{l.description}</p>
-                      <button
-                        className="text-button"
-                        onClick={() => cameraView(l.view)}
-                      >
-                        View from{" "}
-                        {l.view === "back"
-                          ? "posterior"
-                          : l.view === "front"
-                            ? "anterior"
-                            : l.view}
-                        <RotateCcw size={12} />
-                      </button>
-                    </div>
-                  ))
-                ) : (
-                  <>
-                    <h4>Major landmarks</h4>
-                    <p>
-                      {study.landmarks ||
-                        "A detailed landmark guide for this model part has not yet been curated. Use rotation to examine its surface and compare it with a labeled course reference."}
-                    </p>
-                    {study.articulations && (
-                      <>
-                        <h4>Articulations</h4>
-                        <p>{study.articulations}</p>
-                      </>
-                    )}
-                  </>
-                )}
+              </details>
+            </>
+          ) : (
+            <>
+              <span className="pro-eyebrow">ANATOMY AT YOUR FINGERTIPS</span>
+              <h2>Select. Explore. Understand.</h2>
+              <p>
+                Click a structure on the body to highlight it in place. Use
+                Focus for a slow close-up, or Isolate to study it on its own.
+              </p>
+              <div className="pro-start-actions">
+                <button onClick={() => pick(sourceId("Vertebra L3"), true)}>
+                  Explore a lumbar vertebra <Focus size={14} />
+                </button>
+                <button onClick={() => pick(sourceId("Atlas (C1)"), true)}>
+                  Atlas & axis <Focus size={14} />
+                </button>
+                <button onClick={() => preset("Shoulder")}>
+                  Shoulder relationships <Focus size={14} />
+                </button>
               </div>
-            ) : (
-              <div className="attachment-guide">
-                {[
-                  ["Origin", study.origin],
-                  ["Insertion", study.insertion],
-                  ["Actions", study.actions],
-                  ["Innervation", study.innervation],
-                ]
-                  .filter(([, value]) => value)
-                  .map(([title, value]) => (
-                    <div key={title}>
-                      <h4>{title}</h4>
-                      <p>{value}</p>
-                    </div>
-                  ))}
-                {!study.origin && (
-                  <p>
-                    Attachment and innervation details have not yet been curated
-                    for this part. Its verified model name remains available for
-                    spatial study.
-                  </p>
-                )}
+              <div className="pro-display-options">
+                <h4>Display</h4>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={autoFocus}
+                    onChange={(e) => setAutoFocus(e.target.checked)}
+                  />
+                  Focus after selecting
+                </label>
+                <p>
+                  Focus moves the camera smoothly; anatomy stays in its
+                  registered position.
+                </p>
               </div>
-            )}
-            <details className="selection-display-options">
-              <summary>
-                Display settings <ChevronDown size={14} />
-              </summary>
-              {displayControls}
-            </details>
-            <div className="inspection-source">
-              <Info size={13} />
-              <p>{study.source}</p>
-            </div>
-          </>
-        ) : (
-          <div className="inspection-empty clean-inspector">
-            <span className="eyebrow">ONE BODY · YOUR VIEW</span>
-            <h2>Explore at your pace.</h2>
-            <p>
-              Click a muscle or bone to highlight it, then watch it lift
-              forward. Click it again to clear the selection.
-            </p>
-            {displayControls}
-            <div className="quick-structures">
-              <span>Try a structure</span>
-              <button
-                onClick={() =>
-                  pick(
-                    modelParts.find(
-                      (m) =>
-                        m.name ===
-                        "Sternocostal part of right pectoralis major",
-                    )!.id,
-                  )
-                }
-              >
-                Pectoralis major <Focus size={14} />
-              </button>
-              <button
-                onClick={() =>
-                  pick(modelParts.find((m) => m.name === "Right humerus")!.id)
-                }
-              >
-                Humerus <Focus size={14} />
-              </button>
-            </div>
-            <p className="color-key-note">
-              Colors separate neighboring muscles and regions; they are a study
-              aid.
-            </p>
-          </div>
-        )}
-      </aside>
+              <div className="pro-atlas-source">
+                <strong>Z-Anatomy atlas</strong>
+                <p>
+                  {modelParts
+                    .filter((m) => m.layer !== "attachment")
+                    .length.toLocaleString()}{" "}
+                  tissue/structure parts ·{" "}
+                  {
+                    modelParts.filter((m) => m.layer === "attachment").length
+                  }{" "}
+                  illustrated attachment regions
+                </p>
+                <p>
+                  Open atlas geometry. Skin retains regional seams. Fine fiber textures and photoreal skin
+                  are not included.
+                </p>
+              </div>
+            </>
+          )}
+        </aside>
+      </div>
     </div>
   );
 }

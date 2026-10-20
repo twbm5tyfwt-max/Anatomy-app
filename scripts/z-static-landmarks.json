@@ -1,0 +1,18 @@
+{
+  "sourceTarget": "Femur.r",
+  "names": [
+    "Head of femur",
+    "Neck of femur",
+    "Greater trochanter",
+    "Lesser trochanter",
+    "Linea aspera",
+    "Intercondylar fossa",
+    "Medial condyle of femur",
+    "Lateral condyle of femur",
+    "Medial epicondyle of femur",
+    "Lateral epicondyle of femur",
+    "Patellar surface of femur",
+    "Fovea for ligament of head of femur"
+  ],
+  "validation": "Original static source-line endpoints, verified within 3 mm of the source femur surface. Coordinates have not been relocated."
+}

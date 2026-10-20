@@ -44,30 +44,29 @@ Course uploads are supplied by the user and retain their original ownership. The
 
 Fonts: DM Sans and Manrope, bundled from @fontsource; font packages include their SIL Open Font License. Icons: Lucide, ISC license, supplied by lucide-react.
 
-## BodyParts3D 3D model geometry
+## Z-Anatomy 3D atlas
 
-**BodyParts3D, © The Database Center for Life Science, licensed under Creative Commons Attribution-ShareAlike 2.1 Japan.**
+- Source: https://github.com/Z-Anatomy/Models-of-human-anatomy
+- Revision: `0189e82e4dc5c6a4ebc1d2558b78580665e9b0ef`, archive `Z-Anatomy.zip`, Git blob SHA-1 `f43cabc6f366b2a6058dd2ed4a2b3c7b9b2492cb` (86,734,957 bytes). Retrieved October 20, 2026.
+- **Z-Anatomy — The libre 3D atlas of anatomy — CC BY-SA 4.0.** Authors: Gauthier Kervyn (design/3D/anatomy), Marcin Zielinski (Blender add-on), Kousaku Okubo (original BodyParts3D).
+- **BodyParts3D — The Database Center for Life Science — CC BY-SA 2.1 Japan.** Original license retained in `public/models/LICENSE-bodyparts.txt`. Citation: Mitsuhashi et al., Nucleic Acids Research (2009), https://doi.org/10.1093/nar/gkn613.
+- Upstream asset-specific credits/conditions: Brainder and White matter, University of Washington; Cranial Nerves and Foramina, University of Dundee CAHID, CC BY 4.0; Anatomy of the Inner Ear, University of Dundee School of Medicine, CC BY-NC-SA 4.0; Kidney, Lissie Cowley, CC BY-NC 4.0. The full original statement is in `public/models/LICENSE-z-anatomy.txt` and the ZIP. These exceptions are retained, not blanket relicensed. This educational app is distributed for noncommercial use.
+- The upstream Wikipedia definitions and application/add-on code were not imported or executed. Study notes are separately authored/paraphrased from the OpenStax references above, not copied source definitions.
 
-- Dataset: BodyParts3D release 3.0 / 20110915; one adult male reference.
-- Original archive: https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html
-- Source mirror and conversion to STL: Kevin-Mattheus-Moerman/BodyParts3D, https://github.com/Kevin-Mattheus-Moerman/BodyParts3D
-- Exact source revision: `f0eeb6e843380cfe6b83797cf8c3e1af74de5e61`.
-- Original mesh paths: `assets/BodyParts3D_data/stl/<model ID>.stl`.
-- Model names / ontology: source `parts_list_e.txt` and FMA.csv; source names, classifications, and individual Git blob hashes are recorded in `scripts/bodyparts-source.json`.
-- Attribution license: https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en
-- Source license statement is bundled as `public/models/LICENSE-bodyparts.txt` and in the preview ZIP.
-- Citation: Mitsuhashi N, Fujieda K, Tamura T, Kawamoto S, Takagi T, Okubo K. BodyParts3D: 3D structure database for anatomical concepts. Nucleic Acids Res. 2009;37(Database issue):D782–D785. DOI: https://doi.org/10.1093/nar/gkn613. Dataset DOI: https://doi.org/10.18908/lsdba.nbdc00837-000.
+### Geometry adaptation
 
-### Adaptation
+`Startup.blend` was opened in Blender with `--disable-autoexec`. Meshes and anatomical curves were evaluated with source transforms and modifiers, with one shared coordinate conversion (x, y, z) to (x, z, −y), in meters. Source vertex normals and tissue materials are retained; mirrored winding is corrected. No new anatomical geometry, smoothing, remeshing, or muscle fiber maps were invented. Large vascular/neural objects receive bounded-error simplification; bone and joint surfaces retain their source tessellation. Meshopt compression produces `public/models/anatomy.glb`: **4,291 parts, 9,156,078 triangles, 42.7 MB**. Parts include material regions of the same structure, not 4,291 independent organs. Derived cartilage/tendon regions remain associated with their parent and original coordinates.
 
-924 named source meshes are bundled. Alternate `nsn` mesh variants are omitted. Raw STLs were checked against the Git blob hashes at the recorded source revision. Coordinates were converted from millimeters (x = subject left, y = posterior, z = superior) to browser meters (x = subject left, y = superior, z = anterior). This is a shared rigid coordinate conversion, preserving original spatial registration.
+GLB SHA-256: `4ec89d3374ad9e4fb057133e1970db073bccce4d8c062f1087365b2cea77ed43`.
 
-The pipeline merges coincident vertices, performs bounded-error mesh simplification with protected boundaries, recomputes smooth normals, and uses quantized meshopt-compressed glTF. Important long bones receive higher triangle budgets. The single-body update increases muscle budgets to 6,000 triangles and the skin budget to 40,000, subject to bounded-error simplification. Two mild Taubin smoothing pairs are applied to muscle surfaces and three to skin; bone geometry is not smoothed. The resulting model has 4,102,964 triangles and is about 18.7 MB. Surface details can be reduced; users should compare fine landmarks to their course references. Models are rendered with illustrative, customizable colors. The introductory view filters deep muscles and optionally displays the source head skin as context; all source parts remain available in All layers and search. Muscle heads/regions are grouped by family and side without merging their source geometry. The pectoralis retains all three source regions (clavicular, sternocostal, and abdominal); labels distinguish the two main heads from the inferior abdominal fibers. Selection transforms animate wrappers around the unchanged glTF coordinate transforms. The test picking fixture in tests/fixtures/3d-picks.json is a source-mesh triangle centroid used to validate selection, not an anatomical landmark. These derived geometry assets retain CC BY-SA 2.1 Japan.
+549 skeletal annotation endpoints are retained: 537 target-linked source Hook annotations and 12 original static femur annotation endpoints independently checked against source triangles (distance under 0.05 mm). Only the manually curated subset in `src/landmarkCatalog.ts` is shown with specific explanations or eligible for quizzes. Anchors are never transplanted to another bone. Source-authored origin/insertion patches are illustrations, not modeled tendons; only verified muscle-family associations are selectable as attachment overlays. An illustrated patch does not establish a complete origin/insertion map.
 
-Bundled model SHA-256: `3d0ab800ac6fa9dd80523b9e0dc3047aea8147d801b0fa7cc8da9fb90a9103b7`.
+Selected structures stay registered; camera focus animates instead of moving anatomy apart. Transparency uses depth-tested multisample coverage (hashed coverage fallback). Colors are customizable illustrations. This source has no photorealistic skin or fiber textures. Source anatomy and tissue coverage can contain imperfections and are not a surgical model.
 
-### Additional study notes
+### Educational notes and software
 
-39 parsed muscle table rows originate from the official OpenStax chapter 11 CNXML tables. Included notes retain source module references in `src/generated/muscle-notes.json`. Additional introductory functional summaries distinguish muscle actions, skeletal roles, and noncontractile support tissues; these are overviews, not exhaustive origin/insertion/innervation entries. Detailed notes for a parent muscle or bone are explicitly labeled when shown with an individual side, head, or part. Neural and vascular entries without reviewed specific details are marked as identification/general-role coverage.
+39 muscle-table rows originate from official OpenStax chapter 11 CNXML tables, with module references in `src/generated/muscle-notes.json`. Parent muscle notes can be shared by heads/regions and are labeled accordingly. General-role and identification entries are distinct from detailed reviewed entries; full landmark/attachment/innervation coverage is not claimed.
 
-Three.js (MIT) renders the geometry; meshoptimizer (MIT) handles compression; glTF Transform (MIT) is used in the build pipeline. Package license notices are collected in the preview ZIP.
+Three.js (MIT) renders geometry; meshoptimizer (MIT) handles compression; glTF Transform (MIT) is used in the build pipeline. Other package notices are collected in the ZIP.
+
+Skin limitation: the bundled skin is divided into source anatomical regions with visible seams. It is not a continuous photorealistic skin surface; no invented replacement or cosmetic smoothing is presented as anatomical realism.

@@ -97,7 +97,7 @@ const systemIcons = [
 export default function App() {
   const [tab, setTab] = useState<Tab>("explorer");
   const [system, setSystem] = useState("muscular");
-  const [visible, setVisible] = useState(["muscular", "skeletal"]);
+  const [visible, setVisible] = useState(["skeletal"]);
   const [highlightedSystems, setHighlightedSystems] = useState<string[]>([]);
   const [explorerMode, setExplorerMode] = useStored<"3d" | "2d">(
     "forma-explorer-view",
@@ -492,7 +492,8 @@ export default function App() {
             </button>
             <p className="local-note">
               <span />
-              924 model parts · {tissues.length} tissues
+              {modelParts.length.toLocaleString()} source parts ·{" "}
+              {tissues.length} tissues
             </p>
           </div>
         </aside>
@@ -582,6 +583,9 @@ export default function App() {
               {explorerMode === "3d" ? (
                 <Explorer3D
                   visible={visible}
+                  onVisibleChange={setVisible}
+                  onRegionChange={setRegion}
+                  onReference={() => setExplorerMode("2d")}
                   highlightedSystems={highlightedSystems}
                   onClearHighlights={() => setHighlightedSystems([])}
                   region={region}
@@ -601,7 +605,16 @@ export default function App() {
                     );
                   }}
                   bookmarks={bookmarks}
-                  onQuiz={(id) => openQuiz({ structure: id })}
+                  onQuiz={(id) =>
+                    openQuiz({
+                      anatomy: true,
+                      system: id.startsWith("model:")
+                        ? resolveStructure(id)?.system || "skeletal"
+                        : "skeletal",
+                      anatomyTopic: id === "3d:spine" ? "spine" : "",
+                      structure: id.startsWith("3d:") ? "" : id,
+                    })
+                  }
                 />
               ) : (
                 <div className="explorer-grid">
@@ -1343,30 +1356,21 @@ export default function App() {
                 </p>
                 <h3>3D model sources</h3>
                 <p>
-                  BodyParts3D, © The Database Center for Life Science, licensed
-                  under{" "}
-                  <a
-                    href="https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    CC Attribution-ShareAlike 2.1 Japan
-                  </a>
-                  . Geometry obtained from{" "}
-                  <a
-                    href="https://github.com/Kevin-Mattheus-Moerman/BodyParts3D"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Kevin-Mattheus-Moerman/BodyParts3D
-                  </a>
-                  , revision f0eeb6e843380cfe6b83797cf8c3e1af74de5e61. Models
-                  were optimized, converted into browser-ready glTF, and retain
-                  their source coordinate relationships. Tiny surface details
-                  may be reduced. Model colors are display choices. These models
-                  are for educational exploration, not surgical or diagnostic
-                  use. Reference: Mitsuhashi et al., BodyParts3D, Nucleic Acids
-                  Research, DOI: 10.1093/nar/gkn613.
+                  Z-Anatomy — The libre 3D atlas of anatomy — CC BY-SA 4.0.
+                  Authors include Gauthier Kervyn, Marcin Zielinski, and Kousaku Okubo.
+                  Based on BodyParts3D — The Database Center for Life Science — CC BY-SA 2.1 Japan.
+                  Geometry and source annotation endpoints come from the
+                  <a href="https://github.com/Z-Anatomy/Models-of-human-anatomy" target="_blank" rel="noreferrer"> Z-Anatomy source repository</a>,
+                  revision 0189e82e4dc5c6a4ebc1d2558b78580665e9b0ef.
+                  Source normals, shared coordinates, and bone/joint surfaces are preserved;
+                  large neural and vascular meshes are optimized. Colors are illustrative.
+                </p>
+                <p>
+                  Upstream credits also include University of Washington (Brainder/white matter),
+                  University of Dundee CAHID (cranial nerves/foramina, CC BY 4.0), Dundee School
+                  of Medicine (inner ear, CC BY-NC-SA 4.0), and Lissie Cowley (kidney, CC BY-NC 4.0).
+                  These asset-specific conditions remain in the included source license;
+                  they are not replaced by the atlas-wide license. Source definitions and application code were not imported.
                 </p>
                 <h3>2D reference plates</h3>
                 <p>
@@ -1377,14 +1381,13 @@ export default function App() {
                   sides. Bone labels are embedded in the source artwork.
                 </p>
                 <p>
-                  The 3D explorer now includes 924 named model parts from
-                  BodyParts3D (adult male reference), including bones, muscles,
-                  and other systems. Select a part to bring it forward, rotate
-                  it, hide it, or return to its original context. Model names
-                  and detailed study entries are separate: some parts have
-                  identification or general-role information rather than a
-                  complete reviewed description. Female-specific 3D organs are
-                  not included in this source model.
+                  The 3D workspace includes {modelParts.length.toLocaleString()} source-derived parts,
+                  including material surface regions and attachment illustrations. It provides
+                  registered bone, muscle, joint, and organ geometry, not photorealistic fiber textures.
+                  Selection highlights in place; Focus smoothly moves the camera, and Isolate hides context.
+                  Source landmarks are reviewed for a subset of bones. Visual quizzes use only
+                  explicitly curated entries. Many catalog parts have identification or general-role
+                  notes rather than complete reviewed attachments, innervation, and landmarks.
                 </p>
                 <h3>Tissues & quizzes</h3>
                 <p>

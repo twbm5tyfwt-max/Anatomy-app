@@ -1,8 +1,40 @@
+import { connectiveNotes } from "./connectiveNotes";
 import manifest from "./model-manifest.json";
 import muscleTables from "./generated/muscle-notes.json";
 import { structures, type Structure, type Region } from "./content";
-export type ModelPart = (typeof manifest.models)[number];
-export const modelParts: ModelPart[] = manifest.models;
+export type AnatomyLayer =
+  | "skin"
+  | "muscles"
+  | "bones"
+  | "tendons"
+  | "ligaments"
+  | "cartilage"
+  | "fascia"
+  | "capsules"
+  | "bursae"
+  | "organs"
+  | "attachment";
+export type ModelPart = {
+  id: string;
+  name: string;
+  system: string;
+  ancestry: string[];
+  sha1: string;
+  bounds: number[][];
+  triangles: number;
+  layer?: AnatomyLayer;
+  sourceName?: string;
+  sourceMaterial?: string;
+  source?: string;
+  region?: string;
+  parentId?: string;
+  surfaceRegion?: boolean;
+  attachmentFor?: string;
+  attachmentSource?: string;
+  attachmentKind?: "origin" | "insertion";
+  sharedAttachment?: boolean;
+};
+export const modelParts = manifest.models as ModelPart[];
 export type Landmark = {
   name: string;
   description: string;
@@ -413,6 +445,7 @@ const boneFunctions: Record<string, string> = {
   tooth: "Mechanically breaks down food during chewing.",
 };
 export function getRegion(m: ModelPart): Region {
+  if (m.region) return m.region as Region;
   const names = [m.name, ...m.ancestry].join(" ").toLowerCase();
   if (
     /upper limb|forearm|\bhand\b|\barm\b|humerus|radius|\bulna\b|carpal|pollicis/.test(
@@ -475,7 +508,8 @@ export function getModelStudy(m: ModelPart): ModelStudy {
     .find(([key]) => name.includes(key));
   const isBone =
     m.system === "skeletal" &&
-    (m.ancestry.includes("Bone organ") ||
+    (m.layer === "bones" ||
+      m.ancestry.includes("Bone organ") ||
       /sacrum|sternum|manubrium|xiphoid/.test(name));
   let kind = isBone
     ? "Bone"
@@ -505,7 +539,7 @@ export function getModelStudy(m: ModelPart): ModelStudy {
     level = row ? "overview" : "identification";
   }
   if (
-    /tendon|ligament|linea alba|aponeurosis|retinaculum|iliotibial tract|tendinous arch/.test(
+    /tendon|ligament|linea alba|aponeurosis|retinaculum|iliotibial tract|tendinous arch|fascia/.test(
       name,
     )
   ) {
@@ -534,16 +568,43 @@ export function getModelStudy(m: ModelPart): ModelStudy {
     fn =
       "Carries neural signals. The specific motor, sensory, and autonomic territories of this branch still need a reviewed study entry.";
   }
-  if (!fn && /cartilage|disk/.test(name)) {
+  if (
+    m.layer === "cartilage" ||
+    (!fn && /cartilage|disk|disc|meniscus/.test(name))
+  ) {
     kind = "Supporting tissue";
-    fn =
-      "Supports adjacent structures and helps distribute mechanical loads; its exact role depends on the anatomical location.";
+    fn = /intervertebral/.test(name)
+      ? "Fibrocartilaginous joint between adjacent vertebral bodies. The annulus fibrosus contains the nucleus pulposus; the disc distributes compression and permits limited movement. No intervertebral disc lies between C1 and C2."
+      : "Supports joint surfaces and distributes mechanical loads. Articular cartilage reduces friction; menisci and labra are distinct fibrocartilaginous structures.";
   }
   if (!fn) {
     fn =
       "This part has a verified model name and system classification. A structure-specific function and detailed relationships have not yet been curated.";
     note =
       "Identification coverage only. Do not infer a specific function from shape alone.";
+  }
+  if (m.layer === "bursae") {
+    kind = "Synovial bursa";
+    fn =
+      "A small fluid-containing sac that reduces friction between adjacent moving tissues. It is not a contracting muscle or a ligament.";
+    level = "overview";
+  }
+  if (m.layer === "capsules") {
+    kind = "Articular capsule";
+    fn =
+      "Encloses a synovial joint, supports stability, and contains the synovial environment. A capsule is distinct from the ligaments reinforcing it.";
+    level = "overview";
+  }
+  if (m.layer === "attachment") {
+    kind = "Attachment overlay";
+    fn = `Source-authored ${m.attachmentKind || "attachment"} surface illustration. This overlay marks an attachment region; it is not a separately modeled tendon.`;
+    level = "overview";
+  }
+  const connective = connectiveNotes.find((n) => n.match.test(m.name));
+  if (connective) {
+    kind = "Ligament";
+    fn = connective.function;
+    level = "detailed";
   }
   const family = known?.name || table?.name || action?.[0] || m.name;
   const guideKey = Object.keys(boneGuides).find((k) => name.includes(k));
@@ -555,27 +616,29 @@ export function getModelStudy(m: ModelPart): ModelStudy {
     system: m.system,
     region: getRegion(m),
     location:
+      connective?.location ||
       known?.location ||
       getRegion(m) +
         ". See this structure in its original registered position using “Back to body”.",
     function: fn,
     features:
+      connective?.features ||
       known?.features ||
       note ||
-      "A separately selectable surface mesh from BodyParts3D; display colors are illustrative.",
+      "A separately selectable Z-Anatomy surface; display colors are illustrative. Source-authored tissue regions are distinguished from separately modeled structures.",
     description:
       known?.description ||
       note ||
       "This model represents anatomy from one adult male reference. It is optimized for interactive study and is not a diagnostic or surgical model.",
-    origin: known?.origin || table?.origin,
-    insertion: known?.insertion || table?.insertion,
+    origin: connective?.origin || known?.origin || table?.origin,
+    insertion: connective?.insertion || known?.insertion || table?.insertion,
     actions: known?.actions || table?.actions,
     source:
       known?.source ||
       table?.source ||
       (level === "overview"
-        ? "Introductory anatomy summary; OpenStax Anatomy and Physiology 2e, chapters 7–11. Model identification: BodyParts3D."
-        : "BodyParts3D / Foundational Model of Anatomy; identification and general-role coverage."),
+        ? "Introductory anatomy summary: OpenStax Anatomy and Physiology 2e, chapters 7–11. Geometry: Z-Anatomy, derived in part from BodyParts3D."
+        : "Z-Anatomy / BodyParts3D; source identification and general-role coverage."),
     kind,
     family,
     detailLevel: level,
@@ -588,11 +651,19 @@ export function resolveStructure(id: string) {
   return (
     structures.find((s) => s.id === id) ||
     (id.startsWith("model:")
-      ? getModelStudy(modelParts.find((m) => m.id === id.slice(6))!)
+      ? (() => {
+          const m = modelParts.find((m) => m.id === id.slice(6));
+          return m ? getModelStudy(m) : undefined;
+        })()
       : undefined)
   );
 }
 export function modelMatchesStudy(m: ModelPart, studyId: string) {
   const s = structures.find((s) => s.id === studyId);
-  return !!s && getModelStudy(m).family === s.name;
+  return (
+    m.layer !== "attachment" &&
+    !m.parentId &&
+    !!s &&
+    getModelStudy(m).family === s.name
+  );
 }

@@ -1,9 +1,11 @@
 # Open Forma 3D
 
-Download `forma-preview.zip` using GitHub's download-file button, extract it, and open `forma-preview.html` in a desktop browser with WebGL. No Node installation or server is needed for this bundled copy. Use the 2D reference tab if 3D is unavailable.
+Download `forma-preview.zip`, extract it, and open `forma-preview.html` in a browser with WebGL. No installation or server is needed. Use 2D reference if WebGL is unavailable.
 
-Start with the simpler Superficial muscle view. Eye controls show/hide systems on one body; target controls highlight them. Click a muscle or bone to highlight it in place, then watch it slowly lift and enlarge while the body stays visible. Click again to clear, or Return to body to animate it back. Switch off Lift selection slowly to highlight in place. All layers reveals deeper anatomy. Pectoralis major has separate clavicular, sternocostal, and abdominal region controls. Customize changes light/dark mode, accent, and bone/muscle colors.
+Body starts with the skeleton. Click a structure to highlight it; Focus slowly moves closer, and Isolate hides surrounding anatomy. Enable Focus after selecting for automatic focus. Drag to rotate, scroll/pinch to zoom, and use six anatomical views. Layers control visibility and transparency. Explore offers spine, shoulder, pelvis, knee, and matched-scale vertebra comparisons. Search finds individual structures; Landmarks mode shows reviewed source anchors. Customize changes the app, bone, and muscle colors.
 
-The app includes 924 named 3D model parts from one adult male source, 51 original detailed study structures, additional functional notes, and 25 tissue schematics. Detailed functions and landmarks do not yet cover every part; coverage is labeled per entry. Female-specific 3D anatomy is not bundled.
+The source-derived Z-Anatomy atlas has 4,291 parts, including tissue surfaces and attachment illustrations. Specific landmark notes, detailed functions, and visual quizzes cover a reviewed subset. This is not Complete Anatomy's proprietary model and does not have photorealistic muscle fiber textures.
 
-See the included credits and licenses: BodyParts3D geometry is CC BY-SA 2.1 Japan; OpenStax educational material is CC BY-NC-SA 4.0.
+See the included credits and original licenses for Z-Anatomy, BodyParts3D, upstream third-party models, and OpenStax. Asset-specific licenses remain distinct; this educational distribution is for noncommercial use.
+
+Skin limitation: the bundled skin is divided into source anatomical regions with visible seams. It is not a continuous photorealistic skin surface; no invented replacement or cosmetic smoothing is presented as anatomical realism.
