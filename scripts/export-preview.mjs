@@ -28,11 +28,6 @@ const hraModelData =
   (await readFile(join(root, "public/models/hra-female.glb"))).toString(
     "base64",
   );
-const extrasData =
-  "data:model/gltf-binary;base64," +
-  (await readFile(join(root, "public/models/female-extras.glb"))).toString(
-    "base64",
-  );
 const modelData =
   "data:model/gltf-binary;base64," +
   (await readFile(join(root, "public/models/anatomy.glb"))).toString("base64");
@@ -51,8 +46,7 @@ try {
           if (id.endsWith("/assetPaths.ts")) {
             source = source
               .replaceAll("/models/anatomy.glb", modelData)
-              .replaceAll("/models/hra-female.glb", hraModelData)
-              .replaceAll("/models/female-extras.glb", extrasData);
+              .replaceAll("/models/hra-female.glb", hraModelData);
             for (const [name, data] of Object.entries(plates))
               source = source.replaceAll("/anatomy/" + name, data);
           }

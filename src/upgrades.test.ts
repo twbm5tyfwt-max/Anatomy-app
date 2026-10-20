@@ -99,11 +99,12 @@ describe("source expansion and requested anatomy coverage", () => {
         ),
       ).toBe(false);
     }
-    expect(landmarks).toHaveLength(
-      validation.results.filter((r) => r.valid).length,
-    );
+    // validated source points plus their mirrored left-side twins
+    const source = landmarks.filter((l) => !l.id.endsWith("-L"));
+    expect(source).toHaveLength(validation.results.filter((r) => r.valid).length);
+    expect(landmarks.length).toBeGreaterThan(source.length);
     expect(landmarks.length).toBeGreaterThan(300);
-    expect(landmarks.filter((l) => l.quiz).length).toBeLessThan(549);
+    expect(landmarks.filter((l) => l.quiz).length).toBeLessThan(900);
   });
   it("includes modeled quadriceps tendon regions in the knee exploration scope", () => {
     const tendons = regionParts("Knee").filter((m) => m.layer === "tendons");

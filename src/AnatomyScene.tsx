@@ -14,7 +14,6 @@ import {
   modelParts as defaultModelParts,
   type ModelPart,
   type AnatomyLayer,
-  bodyModel,
 } from "./modelCatalog";
 import { orderPicks } from "./interaction";
 import { muscleColor } from "./modelDisplay";
@@ -544,15 +543,7 @@ export function AnatomyScene(props: SceneProps) {
     renderer.domElement.addEventListener("pointerup", pointerUp);
     renderer.domElement.addEventListener("pointermove", hover);
     renderer.domElement.addEventListener("pointerleave", leave);
-    (async () => {
-      const asset = await anatomyAsset(props.assetUrl);
-      if (props.assetUrl || bodyModel !== "female") return asset;
-      // Female body: add the fitted female-specific structures to the shared atlas.
-      const extras = await anatomyAsset(anatomyModels.femaleExtras);
-      const merged = asset.clone(true);
-      merged.add(...extras.clone(true).children);
-      return merged;
-    })()
+    anatomyAsset(props.assetUrl)
       .then((asset) => {
         if (cancelled) return;
         const copy = asset.clone(true),

@@ -1,5 +1,4 @@
 import { Notebook } from "./Notebook";
-import { bodyModel } from "./modelCatalog";
 import { tissueColor } from "./tissueColors";
 import { AnatomyReading } from "./AnatomyReading";
 import { ReferenceDefinition } from "./ReferenceDefinition";
@@ -950,32 +949,6 @@ export function Explorer3D({
             </button>
           )}
         </div>
-        {!allowedIds && (
-          <div className="pro-model-switch" role="group" aria-label="Body model">
-            {(["male", "female"] as const).map((b) => (
-              <button
-                key={b}
-                aria-pressed={bodyModel === b}
-                title={
-                  b === "male"
-                    ? "The full atlas as published"
-                    : "The same full atlas with female reproductive anatomy fitted in and male-only structures removed"
-                }
-                onClick={() => {
-                  if (bodyModel === b) return;
-                  try {
-                    localStorage.setItem("forma-body-model", b);
-                  } catch {
-                    /* storage unavailable: nothing to switch */
-                  }
-                  location.reload();
-                }}
-              >
-                {b === "male" ? "Male" : "Female"}
-              </button>
-            ))}
-          </div>
-        )}
         <div className="pro-search">
           <Search size={15} />
           <input
@@ -1013,16 +986,6 @@ export function Explorer3D({
           <Maximize size={17} />
         </button>
       </header>
-      {bodyModel === "female" && !allowedIds && (
-        <p className="pro-female-note" role="note">
-          <strong>Female model.</strong> The same full atlas (skeleton, muscles, vessels,
-          nerves, organs), with the 38 female reproductive structures from the Human
-          Reference Atlas fitted into the pelvis and the male-only structures removed.
-          Bone and surface proportions are shared, not female-specific, and organ positions
-          are approximate.{" "}
-          <button onClick={() => setVariant("female")}>Open the full HRA organ reference</button>
-        </p>
-      )}
       {workspace === "explore" && (
         <div className="pro-presets">
           <span>Explore a region</span>

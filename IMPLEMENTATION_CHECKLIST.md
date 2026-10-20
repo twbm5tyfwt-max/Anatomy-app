@@ -84,6 +84,6 @@ Fixes found on the way: the 3D viewer ignored later changes to which structures 
 | One persistent 3D stage per session (no reload per question), light graphics, colour-blind palette | Done | `GameRunner.tsx`, `tissueColors.ts` |
 | Mastery stars, personal bests, daily record, misses sent to Review today | Done | `gameStats.ts` |
 | Results: every answer with your reply, points, best streak, practice mistakes | Done (no per-item pictures) | `StudyGames.tsx` |
-| Female model uses the full atlas plus 38 HRA reproductive structures | Done | `modelCatalog.ts`, `scripts/build-female-extras.mjs` |
-| Landmarks: larger pins, list always shown, similar-bone suggestions for unmapped bones | Done (only 52 of 142 bones have mapped points) | `Explorer3D.tsx` |
+| Female body model | Removed at the owner's request; the HRA female organ reference remains | n/a |
+| Landmarks: larger pins, list always shown, left bones get mirrored points, suggestions for unmapped bones | Done (about 100 of 142 bones have points; ribs 2-12 and most vertebrae have none) | `Explorer3D.tsx`, `landmarkCatalog.ts` |
 | Layer peel game | Skipped: would require layer ordering that is not anatomically reliable | n/a |

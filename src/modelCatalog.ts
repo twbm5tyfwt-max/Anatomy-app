@@ -3,7 +3,6 @@ import { definitionFor } from "./ReferenceDefinition";
 import { boneNoteFor } from "./boneNotes";
 import { connectiveNotes } from "./connectiveNotes";
 import manifest from "./model-manifest.json";
-import femaleExtras from "./generated/female-extras.json";
 import { hraNote, type HraPart } from "./hraCatalog";
 import muscleTables from "./generated/muscle-notes.json";
 import { structures, type Structure, type Region } from "./content";
@@ -41,24 +40,8 @@ export type ModelPart = {
 };
 /** Which body the whole app uses. Switching reloads the page so every list, quiz and game agrees. */
 export type BodyModel = "male" | "female";
-export const bodyModel: BodyModel =
-  typeof localStorage !== "undefined" && localStorage.getItem("forma-body-model") === "female"
-    ? "female"
-    : "male";
-const maleOnly = new Set(femaleExtras.maleOnly);
-/**
- * Female: the same full atlas without its male-only structures, plus the 38 female
- * reproductive structures from the Human Reference Atlas fitted into the same body.
- */
-export const modelParts: ModelPart[] =
-  bodyModel === "female"
-    ? [
-        ...(manifest.models as ModelPart[]).filter((m) => !maleOnly.has(m.id)),
-        ...(femaleExtras.models as unknown as ModelPart[]),
-      ]
-    : (manifest.models as ModelPart[]);
-export const maleOnlyIds = maleOnly;
-export const femaleExtraIds = new Set(femaleExtras.models.map((m) => m.id));
+export const bodyModel: BodyModel = "male";
+export const modelParts: ModelPart[] = manifest.models as ModelPart[];
 export type Landmark = {
   name: string;
   description: string;
