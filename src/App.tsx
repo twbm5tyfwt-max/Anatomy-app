@@ -85,8 +85,6 @@ const systemIcons = [
   Leaf,
   Bone,
   Activity,
-  Palette,
-  Box,
   Brain,
   FlaskConical,
   Heart,
@@ -100,6 +98,7 @@ export default function App() {
   const [tab, setTab] = useState<Tab>("explorer");
   const [system, setSystem] = useState("muscular");
   const [visible, setVisible] = useState(["muscular", "skeletal"]);
+  const [highlightedSystems, setHighlightedSystems] = useState<string[]>([]);
   const [explorerMode, setExplorerMode] = useStored<"3d" | "2d">(
     "forma-explorer-view",
     "3d",
@@ -248,6 +247,8 @@ export default function App() {
     setMenu(false);
   }
   function toggleVisible(id: string) {
+    if (visible.includes(id))
+      setHighlightedSystems((h) => h.filter((x) => x !== id));
     setVisible((v) =>
       v.includes(id) ? v.filter((x) => x !== id) : [...v, id],
     );
@@ -268,7 +269,9 @@ export default function App() {
     ? Math.round(results.reduce((n, r) => n + r.score, 0) / results.length)
     : 0;
   return (
-    <div className="app-shell">
+    <div
+      className={`app-shell ${tab === "explorer" && explorerMode === "3d" ? "anatomy-workspace" : ""}`}
+    >
       <header className="topbar">
         <button
           className="mobile-menu icon-button"
@@ -327,7 +330,7 @@ export default function App() {
           <div className="sidebar-title">
             <span className="eyebrow">YOUR ANATOMY ATLAS</span>
             <h2>Explore the body</h2>
-            <p>Everything is connected.</p>
+            <p>Show layers. Highlight systems.</p>
           </div>
           <div className="segmented nav-mode">
             {["Systems", "Regions"].map((v) => (
@@ -349,13 +352,27 @@ export default function App() {
                 const Icon = systemIcons[i];
                 return (
                   <div
-                    className={`system-row ${x.id === system && tab === "explorer" ? "active" : ""}`}
+                    className={`system-row ${tab === "explorer" && (explorerMode === "3d" ? visible.includes(x.id) : x.id === system) ? "active" : ""} ${highlightedSystems.includes(x.id) && explorerMode === "3d" ? "system-highlighted" : ""}`}
                     key={x.id}
                   >
                     <button
                       className="system-name"
+                      aria-label={
+                        explorerMode === "3d"
+                          ? `${visible.includes(x.id) ? "Hide" : "Show"} ${x.name} system`
+                          : undefined
+                      }
+                      aria-pressed={
+                        explorerMode === "3d"
+                          ? visible.includes(x.id)
+                          : undefined
+                      }
                       onClick={() => {
-                        selectSystem(x.id);
+                        if (explorerMode === "3d") {
+                          toggleVisible(x.id);
+                          setSystem(x.id);
+                          setMenu(false);
+                        } else selectSystem(x.id);
                         setTab("explorer");
                       }}
                     >
@@ -366,21 +383,55 @@ export default function App() {
                         <Icon size={18} />
                       </span>
                       <span>{x.name}</span>
-                    </button>
-                    <button
-                      className="visibility-button"
-                      aria-label={`${visible.includes(x.id) ? "Hide" : "Show"} ${x.name} system`}
-                      onClick={() => toggleVisible(x.id)}
-                    >
-                      {visible.includes(x.id) ? (
-                        <Eye size={14} />
-                      ) : (
-                        <Plus size={13} />
+                      {explorerMode === "3d" && (
+                        <span className="system-eye">
+                          {visible.includes(x.id) ? (
+                            <Eye size={13} />
+                          ) : (
+                            <EyeOff size={13} />
+                          )}
+                        </span>
                       )}
                     </button>
+                    {explorerMode === "3d" ? (
+                      <button
+                        className={`system-highlight-button ${highlightedSystems.includes(x.id) ? "active" : ""}`}
+                        aria-pressed={highlightedSystems.includes(x.id)}
+                        aria-label={`${highlightedSystems.includes(x.id) ? "Unhighlight" : "Highlight"} ${x.name} system`}
+                        title="Highlight this system without removing the body"
+                        onClick={() => {
+                          setHighlightedSystems((h) =>
+                            h.includes(x.id)
+                              ? h.filter((id) => id !== x.id)
+                              : [...h, x.id],
+                          );
+                          if (!visible.includes(x.id))
+                            setVisible((v) => [...v, x.id]);
+                        }}
+                      >
+                        <Target size={14} />
+                      </button>
+                    ) : (
+                      <button
+                        className="visibility-button"
+                        aria-label={`${visible.includes(x.id) ? "Hide" : "Show"} ${x.name} system`}
+                        onClick={() => toggleVisible(x.id)}
+                      >
+                        {visible.includes(x.id) ? (
+                          <Eye size={14} />
+                        ) : (
+                          <Plus size={13} />
+                        )}
+                      </button>
+                    )}
                   </div>
                 );
               })}
+              {explorerMode === "3d" && (
+                <p className="system-help">
+                  <Eye size={12} /> Show / hide <Target size={12} /> Highlight
+                </p>
+              )}
             </div>
           ) : (
             <div className="region-list">
@@ -473,8 +524,8 @@ export default function App() {
                   <span className="eyebrow">
                     LOOK CLOSER. CONNECT THE DOTS.
                   </span>
-                  <h1>A closer look at you.</h1>
-                  <p>Explore the structures. Understand the connections.</p>
+                  <h1>Explore anatomy.</h1>
+                  <p>One body. Choose the layers you want to study.</p>
                 </div>
                 <div className="search-container">
                   <Search size={17} />
@@ -526,12 +577,13 @@ export default function App() {
                     2D reference
                   </button>
                 </div>
-                <span>924 model parts · one connected body</span>
+                <span>Click to select · click again to clear</span>
               </div>
               {explorerMode === "3d" ? (
                 <Explorer3D
-                  activeSystem={system}
                   visible={visible}
+                  highlightedSystems={highlightedSystems}
+                  onClearHighlights={() => setHighlightedSystems([])}
                   region={region}
                   request={{ id: selected, version: focusVersion }}
                   appearance={appearance}
@@ -1009,98 +1061,109 @@ export default function App() {
                   </aside>
                 </div>
               )}
-              <div className="explorer-bottom">
-                <button
-                  className="feature-card quiz-feature"
-                  onClick={() => openQuiz({ system })}
-                >
-                  <span className="feature-icon">
-                    <GraduationCap size={23} />
-                  </span>
-                  <div>
-                    <span className="eyebrow">
-                      FROM EXPLORING TO REMEMBERING
+              {explorerMode === "2d" && (
+                <div className="explorer-bottom">
+                  <button
+                    className="feature-card quiz-feature"
+                    onClick={() => openQuiz({ system })}
+                  >
+                    <span className="feature-icon">
+                      <GraduationCap size={23} />
                     </span>
-                    <h3>Put your knowledge to work.</h3>
-                    <p>Build a quiz on what you’re studying.</p>
-                  </div>
-                  <ArrowUpRight size={21} />
-                </button>
-                <button
-                  className="feature-card tissue-feature"
-                  onClick={() => setTab("tissues")}
-                >
-                  <span className="feature-icon">
-                    <Microscope size={22} />
-                  </span>
-                  <div>
-                    <span className="eyebrow">
-                      THE BIG PICTURE STARTS SMALL
+                    <div>
+                      <span className="eyebrow">
+                        FROM EXPLORING TO REMEMBERING
+                      </span>
+                      <h3>Put your knowledge to work.</h3>
+                      <p>Build a quiz on what you’re studying.</p>
+                    </div>
+                    <ArrowUpRight size={21} />
+                  </button>
+                  <button
+                    className="feature-card tissue-feature"
+                    onClick={() => setTab("tissues")}
+                  >
+                    <span className="feature-icon">
+                      <Microscope size={22} />
                     </span>
-                    <h3>Go beneath the surface.</h3>
-                    <p>Get to know the tissues that make us.</p>
+                    <div>
+                      <span className="eyebrow">
+                        THE BIG PICTURE STARTS SMALL
+                      </span>
+                      <h3>Go beneath the surface.</h3>
+                      <p>Get to know the tissues that make us.</p>
+                    </div>
+                    <ArrowUpRight size={21} />
+                  </button>
+                </div>
+              )}
+              <details
+                className="study-collection"
+                open={explorerMode === "2d"}
+              >
+                <summary>
+                  Study notes & quick selection <ChevronDown size={15} />
+                </summary>
+                <section className="browse-section">
+                  <div className="section-heading">
+                    <h3>{region || sys.name} study collection</h3>
+                    <span>
+                      {
+                        structures.filter((x) =>
+                          !region ? x.system === system : x.region === region,
+                        ).length
+                      }{" "}
+                      structures
+                    </span>
                   </div>
-                  <ArrowUpRight size={21} />
-                </button>
-              </div>
-              <section className="browse-section">
-                <div className="section-heading">
-                  <h3>{region || sys.name} study collection</h3>
-                  <span>
-                    {
-                      structures.filter((x) =>
+                  <p className="small muted">{sys.overview}</p>
+                  <div className="structure-chips">
+                    {structures
+                      .filter((x) =>
                         !region ? x.system === system : x.region === region,
-                      ).length
-                    }{" "}
-                    structures
-                  </span>
-                </div>
-                <p className="small muted">{sys.overview}</p>
-                <div className="structure-chips">
-                  {structures
-                    .filter((x) =>
-                      !region ? x.system === system : x.region === region,
+                      )
+                      .map((x) => (
+                        <button
+                          key={x.id}
+                          className={selected === x.id ? "active" : ""}
+                          onClick={() => select(x.id)}
+                        >
+                          {x.name}
+                          <ArrowUpRight size={12} />
+                        </button>
+                      ))}
+                  </div>
+                  {visible
+                    .filter(
+                      (v) =>
+                        v !== system && v !== "muscular" && v !== "skeletal",
                     )
-                    .map((x) => (
-                      <button
-                        key={x.id}
-                        className={selected === x.id ? "active" : ""}
-                        onClick={() => select(x.id)}
-                      >
-                        {x.name}
-                        <ArrowUpRight size={12} />
-                      </button>
-                    ))}
-                </div>
-                {visible
-                  .filter(
-                    (v) => v !== system && v !== "muscular" && v !== "skeletal",
-                  )
-                  .map((v) => {
-                    const x = systems.find((s) => s.id === v)!;
-                    return (
-                      <div className="additional-system" key={v}>
-                        <h4>
-                          <span
-                            className="system-color"
-                            style={{ background: x.color }}
-                          />
-                          {x.name} system
-                        </h4>
-                        <p>{x.overview}</p>
-                        <div className="structure-chips">
-                          {structures
-                            .filter((s) => s.system === v)
-                            .map((s) => (
-                              <button key={s.id} onClick={() => select(s.id)}>
-                                {s.name}
-                              </button>
-                            ))}
+                    .map((v) => {
+                      const x = systems.find((s) => s.id === v)!;
+                      return (
+                        <div className="additional-system" key={v}>
+                          <h4>
+                            <span
+                              className="system-color"
+                              style={{ background: x.color }}
+                            />
+                            {x.name} system
+                          </h4>
+                          <p>{x.overview}</p>
+                          <div className="structure-chips">
+                            {structures
+                              .filter((s) => s.system === v)
+                              .map((s) => (
+                                <button key={s.id} onClick={() => select(s.id)}>
+                                  {s.name}
+                                </button>
+                              ))}
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
-              </section>
+                      );
+                    })}
+                </section>
+              </details>
             </>
           )}
           {tab === "tissues" && (

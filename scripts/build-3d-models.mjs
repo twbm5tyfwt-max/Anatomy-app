@@ -74,13 +74,13 @@ for (let i = 0; i < source.models.length; i++) {
     );
   const cap =
     m.id === "FMA7163"
-      ? 18000
+      ? 40000
       : m.system === "nervous" && indices.length > 150000
         ? 10000
         : largeBone
           ? 9500
           : m.system === "muscular"
-            ? 2500
+            ? 6000
             : 4000;
   if (indices.length > cap * 3) {
     [indices] = MeshoptSimplifier.simplify(
@@ -88,7 +88,7 @@ for (let i = 0; i < source.models.length; i++) {
       positions,
       3,
       cap * 3,
-      largeBone ? 0.0015 : 0.004,
+      largeBone ? 0.0015 : m.system === "muscular" ? 0.002 : 0.004,
       ["LockBorder"],
     );
   }
@@ -110,6 +110,31 @@ for (let i = 0; i < source.models.length; i++) {
     finalIndices.push(mapped);
   }
   const p = new Float32Array(compact);
+  // Mild Taubin smoothing suppresses scan noise without the shrinkage of
+  // repeated Laplacian smoothing. Never smooth bone landmark geometry.
+  if (m.system === "muscular" || m.id === "FMA7163") {
+    const neighbors = Array.from({ length: p.length / 3 }, () => new Set());
+    for (let n = 0; n < finalIndices.length; n += 3) {
+      const tri = finalIndices.slice(n, n + 3);
+      for (const a of tri)
+        for (const b of tri) if (a !== b) neighbors[a].add(b);
+    }
+    const steps = m.id === "FMA7163" ? 3 : 2;
+    for (let pass = 0; pass < steps; pass++)
+      for (const factor of [0.45, -0.47]) {
+        const next = p.slice();
+        for (let v = 0; v < neighbors.length; v++) {
+          if (neighbors[v].size < 3) continue;
+          for (let axis = 0; axis < 3; axis++) {
+            let sum = 0;
+            for (const adj of neighbors[v]) sum += p[adj * 3 + axis];
+            next[v * 3 + axis] +=
+              factor * (sum / neighbors[v].size - p[v * 3 + axis]);
+          }
+        }
+        p.set(next);
+      }
+  }
   const norm = new Float32Array(p.length);
   for (let n = 0; n < finalIndices.length; n += 3) {
     const a = finalIndices[n] * 3,

@@ -30,10 +30,25 @@ import {
   type ModelPart,
 } from "./modelCatalog";
 import { systems } from "./content";
+import {
+  componentName,
+  displayGroup,
+  displayGroupKey,
+  displayName,
+  isSurfaceMuscle,
+  muscleColor,
+  muscleFamily,
+} from "./modelDisplay";
 import type { Appearance } from "./Appearance";
 export type CameraView = "front" | "back" | "left" | "right";
 type SceneProps = {
   selected: string | null;
+  selectedParts: string[];
+  highlightedSystems: string[];
+  depth: "surface" | "all";
+  distinct: boolean;
+  surfaceGuide: boolean;
+  onHover: (name: string | null) => void;
   inspect: boolean;
   visible: string[];
   hidden: string[];
@@ -92,11 +107,12 @@ function Scene(props: SceneProps) {
     renderer.setClearColor(0x000000, 0);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.3;
+    renderer.toneMappingExposure = 1;
+    renderer.localClippingEnabled = true;
     target.appendChild(renderer.domElement);
     renderer.domElement.setAttribute(
       "aria-label",
-      "Interactive 3D human anatomy. Drag to rotate, scroll to zoom, click a structure to inspect.",
+      "Interactive 3D human anatomy. Drag to rotate, scroll to zoom, click to highlight and enlarge; click again to clear.",
     );
     renderer.domElement.setAttribute("role", "img");
     const scene = new THREE.Scene();
@@ -107,28 +123,31 @@ function Scene(props: SceneProps) {
     controls.dampingFactor = 0.09;
     controls.minDistance = 0.7;
     controls.maxDistance = 7;
-    controls.enablePan = true;
-    controls.target.set(0, 0, 0);
-    scene.add(new THREE.HemisphereLight(0xe8f2ff, 0x41506d, 2.3));
-    const key = new THREE.DirectionalLight(0xfff3e4, 3.1);
+    scene.add(new THREE.HemisphereLight(0xfff5ec, 0x626b78, 2.0));
+    const key = new THREE.DirectionalLight(0xfff6ec, 2.4);
     key.position.set(-3, 4, 5);
     scene.add(key);
-    const rim = new THREE.DirectionalLight(0x94bbff, 2.4);
+    const rim = new THREE.DirectionalLight(0xd7e5ff, 1.3);
     rim.position.set(3, 1, -4);
     scene.add(rim);
-    const fill = new THREE.DirectionalLight(0xe6ebff, 0.8);
+    const fill = new THREE.DirectionalLight(0xffffff, 0.7);
     fill.position.set(3, -2, 4);
     scene.add(fill);
     const root = new THREE.Group();
     scene.add(root);
-    const records = new Map<
-      string,
-      {
-        mesh: THREE.Mesh;
-        model: ModelPart;
-        material: THREE.MeshStandardMaterial;
-      }
-    >();
+    type Record3D = {
+      mesh: THREE.Mesh;
+      pivot: THREE.Group;
+      model: ModelPart;
+      material: THREE.MeshStandardMaterial;
+      baseColor: THREE.Color;
+      from: THREE.Vector3;
+      to: THREE.Vector3;
+      fromScale: number;
+      toScale: number;
+      start: number;
+    };
+    const records = new Map<string, Record3D>();
     const modelsById = new Map(modelParts.map((m) => [m.id, m]));
     const bodyBox = new THREE.Box3();
     modelParts
@@ -138,12 +157,26 @@ function Scene(props: SceneProps) {
         bodyBox.expandByPoint(new THREE.Vector3(...m.bounds[1]));
       });
     const bodyCenter = bodyBox.getCenter(new THREE.Vector3());
-    const targetPosition = bodyCenter.clone().negate();
-    let targetScale = 1;
-    root.position.copy(targetPosition);
-    let lastSignature = "";
-    let lastColor = "";
-    let needsRender = true;
+    // Keep the complete source face: clip the guide below the lowest jaw point.
+    const headCut =
+      (modelParts.find((m) => m.name === "Mandible")?.bounds[0][1] ?? 1.435) -
+      0.015;
+    root.position.copy(bodyCenter).negate();
+    let headGuide: THREE.Mesh | null = null;
+    let headMaterial: THREE.MeshStandardMaterial | null = null;
+    let lastSignature = "",
+      lastColors = "",
+      lastMotion = "";
+    let needsRender = true,
+      focusBlend = 0,
+      blendFrom = 0,
+      blendStart = 0;
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    const duration = reducedMotion ? 0 : 1600;
+    const targetFrom = new THREE.Vector3(),
+      targetTo = new THREE.Vector3();
     controls.addEventListener("change", () => {
       needsRender = true;
     });
@@ -158,16 +191,13 @@ function Scene(props: SceneProps) {
       }
     });
     resize.observe(target);
-    let down: [number, number] = [0, 0];
-    const pointerDown = (e: PointerEvent) => {
-      down = [e.clientX, e.clientY];
-    };
-    const pointerUp = (e: PointerEvent) => {
-      if (Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 6) return;
+    let down: [number, number] = [0, 0],
+      lastHover = 0;
+    const hitAt = (e: PointerEvent) => {
       const rect = renderer.domElement.getBoundingClientRect();
       const pointer = new THREE.Vector2(
         ((e.clientX - rect.left) / rect.width) * 2 - 1,
-        (-(e.clientY - rect.top) / rect.height) * 2 + 1,
+        -((e.clientY - rect.top) / rect.height) * 2 + 1,
       );
       const ray = new THREE.Raycaster();
       ray.setFromCamera(pointer, camera);
@@ -175,16 +205,37 @@ function Scene(props: SceneProps) {
         [...records.values()].filter((r) => r.mesh.visible).map((r) => r.mesh),
         false,
       );
-      const hit =
+      return (
         hits.find(
           (h) =>
             (records.get(h.object.userData.modelId)?.material.opacity ?? 1) >
             0.5,
-        ) || hits[0];
-      if (hit) live.current.onSelect(hit.object.userData.modelId);
+        ) || hits[0]
+      );
     };
+    const pointerDown = (e: PointerEvent) => {
+      down = [e.clientX, e.clientY];
+      live.current.onHover(null);
+    };
+    const pointerUp = (e: PointerEvent) => {
+      if (Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 6) return;
+      const hit = hitAt(e);
+      if (hit) live.current.onSelect(hit.object.userData.modelId);
+      else live.current.onSelect("");
+    };
+    const pointerMove = (e: PointerEvent) => {
+      if (e.buttons || performance.now() - lastHover < 90) return;
+      lastHover = performance.now();
+      const hit = hitAt(e);
+      const m = hit && modelsById.get(hit.object.userData.modelId);
+      live.current.onHover(m ? displayName(m) : null);
+      renderer.domElement.style.cursor = m ? "pointer" : "grab";
+    };
+    const pointerLeave = () => live.current.onHover(null);
     renderer.domElement.addEventListener("pointerdown", pointerDown);
     renderer.domElement.addEventListener("pointerup", pointerUp);
+    renderer.domElement.addEventListener("pointermove", pointerMove);
+    renderer.domElement.addEventListener("pointerleave", pointerLeave);
     const api: SceneApi = {
       view(v) {
         const distance = camera.position.distanceTo(controls.target);
@@ -218,22 +269,63 @@ function Scene(props: SceneProps) {
       .then((asset) => {
         if (disposed) return;
         const copy = asset.clone(true);
+        copy.updateMatrixWorld(true);
+        const meshes: THREE.Mesh[] = [];
         copy.traverse((obj) => {
+          if (obj instanceof THREE.Mesh) meshes.push(obj);
+        });
+        meshes.forEach((obj) => {
           if (!(obj instanceof THREE.Mesh)) return;
           const id = obj.name.replace(/_\d+$/, "");
           const model =
             modelsById.get(id) || modelsById.get(obj.parent?.name || "");
           if (!model) return;
           const material = (obj.material as THREE.MeshStandardMaterial).clone();
-          material.roughness = 0.55;
-          material.metalness = 0.06;
+          material.roughness = 0.85;
+          material.metalness = 0;
           obj.material = material;
           obj.userData.modelId = model.id;
-          records.set(model.id, { mesh: obj, material, model });
+          // Animate a wrapper, preserving glTF's per-mesh dequantization transform.
+          const pivot = new THREE.Group();
+          copy.add(pivot);
+          pivot.attach(obj);
+          material.forceSinglePass = true;
+          records.set(model.id, {
+            mesh: obj,
+            pivot,
+            material,
+            baseColor: material.color.clone(),
+            model,
+            from: new THREE.Vector3(),
+            to: new THREE.Vector3(),
+            fromScale: 1,
+            toScale: 1,
+            start: 0,
+          });
+          if (model.id === "FMA7163") {
+            headMaterial = new THREE.MeshStandardMaterial({
+              color: "#c8b6a7",
+              roughness: 0.93,
+              metalness: 0,
+              side: THREE.DoubleSide,
+            });
+            headMaterial.clippingPlanes = [
+              new THREE.Plane(
+                new THREE.Vector3(0, 1, 0),
+                bodyCenter.y - headCut,
+              ),
+            ];
+            headGuide = new THREE.Mesh(obj.geometry, headMaterial);
+            headGuide.applyMatrix4(obj.matrixWorld);
+            headMaterial.forceSinglePass = true;
+            headGuide.name = "Natural head surface guide";
+          }
         });
         root.add(copy);
+        if (headGuide) root.add(headGuide);
         lastSignature = "";
-        lastColor = "";
+        lastColors = "";
+        lastMotion = "";
         needsRender = true;
         target.dataset.modelCount = String(records.size);
         live.current.onProgress(100);
@@ -245,92 +337,213 @@ function Scene(props: SceneProps) {
             error instanceof Error ? error.message : "3D loading failed.",
           );
       });
-    let lastTime = 0;
+    const ease = (t: number) => {
+      const x = Math.max(0, Math.min(1, t));
+      return x * x * (3 - 2 * x);
+    };
     const animate = (time: number) => {
       if (disposed) return;
       const p = live.current;
+      const chosen = new Set(p.selectedParts);
       const signature = [
-        p.selected,
+        p.selectedParts.join(","),
         p.inspect,
         p.visible.join(","),
+        p.highlightedSystems.join(","),
         p.hidden.join(","),
         p.region,
         p.fade,
+        p.depth,
+        p.surfaceGuide,
       ].join("|");
-      if (signature !== lastSignature) {
-        needsRender = true;
-        lastSignature = signature;
-        for (const [id, r] of records) {
-          r.mesh.visible = p.inspect
-            ? id === p.selected
-            : !p.hidden.includes(id) &&
-              p.visible.includes(r.model.system) &&
-              (!p.region || getRegion(r.model) === p.region);
-          r.material.transparent =
-            !p.inspect && p.fade && r.model.system === "muscular";
-          r.material.opacity = r.material.transparent ? 0.18 : 1;
-          r.material.depthWrite = !r.material.transparent;
-          r.material.emissive.set(
-            id === p.selected ? p.appearance.accent : "#000000",
-          );
-          r.material.emissiveIntensity = id === p.selected ? 0.18 : 0;
+      const motionKey = [p.inspect, p.selectedParts.join(",")].join("|");
+      if (motionKey !== lastMotion) {
+        lastMotion = motionKey;
+        const box = new THREE.Box3();
+        for (const id of chosen) {
+          const m = modelsById.get(id);
+          if (m) {
+            box.expandByPoint(new THREE.Vector3(...m.bounds[0]));
+            box.expandByPoint(new THREE.Vector3(...m.bounds[1]));
+          }
         }
-        const model = p.inspect ? modelsById.get(p.selected || "") : undefined;
-        if (model) {
-          const box = new THREE.Box3(
-            new THREE.Vector3(...model.bounds[0]),
-            new THREE.Vector3(...model.bounds[1]),
+        const center = box.isEmpty()
+          ? bodyCenter.clone()
+          : box.getCenter(new THREE.Vector3());
+        const scale = box.isEmpty()
+          ? 1
+          : Math.min(
+              25,
+              1.05 / Math.max(...box.getSize(new THREE.Vector3()).toArray()),
+            );
+        for (const [id, r] of records) {
+          const lifting = p.inspect && chosen.has(id);
+          r.from.copy(r.pivot.position);
+          r.fromScale = r.pivot.scale.x;
+          r.toScale = lifting ? scale : 1;
+          r.to.set(0, 0, 0);
+          if (lifting)
+            r.to
+              .copy(center)
+              .multiplyScalar(1 - scale)
+              .add(
+                bodyCenter
+                  .clone()
+                  .add(new THREE.Vector3(0, 0.08, 0.55))
+                  .sub(center),
+              );
+          r.start =
+            time + (lifting && r.fromScale === 1 && !reducedMotion ? 320 : 0);
+        }
+        targetFrom.copy(controls.target);
+        targetTo.set(0, p.inspect ? 0.08 : 0, p.inspect ? 0.55 : 0);
+        blendFrom = focusBlend;
+        blendStart = time + (p.inspect && !reducedMotion ? 320 : 0);
+        needsRender = true;
+      }
+      const blendProgress = duration ? ease((time - blendStart) / duration) : 1;
+      const previousBlend = focusBlend;
+      focusBlend = THREE.MathUtils.lerp(
+        blendFrom,
+        p.inspect ? 1 : 0,
+        blendProgress,
+      );
+      let moving = blendProgress < 1;
+      if (moving || previousBlend !== focusBlend)
+        controls.target.lerpVectors(targetFrom, targetTo, blendProgress);
+      if (
+        signature !== lastSignature ||
+        moving ||
+        previousBlend !== focusBlend
+      ) {
+        lastSignature = signature;
+        needsRender = true;
+        const selectedHead = p.selectedParts.some(
+          (id) => (modelsById.get(id)?.bounds[0][1] ?? 0) > headCut,
+        );
+        const guideVisible =
+          p.surfaceGuide &&
+          p.depth === "surface" &&
+          p.visible.includes("muscular") &&
+          !p.visible.includes("integumentary") &&
+          !p.highlightedSystems.includes("skeletal") &&
+          !selectedHead &&
+          (!p.region || p.region === "Head & neck");
+        for (const [id, r] of records) {
+          const selected = chosen.has(id);
+          const normal =
+            !p.hidden.includes(id) &&
+            p.visible.includes(r.model.system) &&
+            (!p.region || getRegion(r.model) === p.region) &&
+            (p.depth === "all" || isSurfaceMuscle(r.model));
+          const returning =
+            r.mesh.visible &&
+            (r.fromScale !== 1 || r.from.lengthSq() > 0) &&
+            time < r.start + duration;
+          const coveredHead =
+            guideVisible &&
+            r.model.system === "skeletal" &&
+            r.model.bounds[1][1] > headCut;
+          r.mesh.visible = (normal && !coveredHead) || selected || returning;
+          // Darken the intact body instead of piling up translucent back faces.
+          r.material.color
+            .copy(r.baseColor)
+            .multiplyScalar(selected ? 1 : 1 - focusBlend * 0.78);
+          let opacity = chosen.size && !selected && !p.inspect ? 0.22 : 1;
+          if (
+            p.highlightedSystems.length &&
+            !p.highlightedSystems.includes(r.model.system) &&
+            !selected
+          )
+            opacity *= 0.22;
+          if (p.fade && r.model.system === "muscular" && !selected)
+            opacity *= 0.12;
+          r.material.transparent = opacity < 0.99;
+          r.material.opacity = opacity;
+          r.material.depthWrite = opacity >= 0.99;
+          r.mesh.renderOrder = selected ? 2 : 0;
+          r.material.emissive.set(
+            selected || p.highlightedSystems.includes(r.model.system)
+              ? p.appearance.accent
+              : "#000000",
           );
-          targetScale =
-            1.25 / Math.max(...box.getSize(new THREE.Vector3()).toArray());
-          targetPosition
-            .copy(box.getCenter(new THREE.Vector3()))
-            .multiplyScalar(-targetScale);
-        } else {
-          targetScale = 1;
-          targetPosition.copy(bodyCenter).negate();
+          r.material.emissiveIntensity = selected
+            ? 0.14
+            : p.highlightedSystems.includes(r.model.system)
+              ? 0.08
+              : 0;
+        }
+        if (headGuide && headMaterial) {
+          headGuide.visible = guideVisible;
+          headMaterial.color
+            .set("#c8b6a7")
+            .multiplyScalar(1 - focusBlend * 0.78);
         }
         target.dataset.inspecting = String(p.inspect);
         target.dataset.focusedModel = p.selected || "";
+        target.dataset.highlightedParts = String(chosen.size);
+        target.dataset.highlightedSystems = p.highlightedSystems.join(",");
         target.dataset.visibleMeshes = String(
           [...records.values()].filter((r) => r.mesh.visible).length,
         );
+        target.dataset.depth = p.depth;
       }
-      const colorSignature = [
+      const colors = [
         p.appearance.bone,
         p.appearance.muscle,
         p.appearance.accent,
+        p.distinct,
       ].join("|");
-      if (colorSignature !== lastColor) {
+      if (colors !== lastColors) {
+        lastColors = colors;
         needsRender = true;
-        lastColor = colorSignature;
         for (const [id, r] of records) {
-          if (r.model.system === "skeletal")
-            r.material.color.set(p.appearance.bone);
+          if (chosen.has(id) || p.highlightedSystems.includes(r.model.system))
+            r.material.emissive.set(p.appearance.accent);
+          if (r.model.system === "skeletal") r.baseColor.set(p.appearance.bone);
           if (r.model.system === "muscular")
-            r.material.color.set(p.appearance.muscle);
+            r.baseColor.copy(
+              muscleColor(r.model, p.appearance.muscle, p.distinct),
+            );
           if (r.model.system === "cardiovascular")
-            r.material.color.set(
+            r.baseColor.set(
               /vein|vena/.test(r.model.name.toLowerCase())
                 ? "#597cc1"
                 : "#be485a",
             );
-          if (id === p.selected) r.material.emissive.set(p.appearance.accent);
+          r.material.color
+            .copy(r.baseColor)
+            .multiplyScalar(chosen.has(id) ? 1 : 1 - focusBlend * 0.78);
         }
       }
-      const dt = Math.min(0.06, (time - lastTime) / 1000 || 0.016);
-      lastTime = time;
-      const lerp = 1 - Math.exp(-7 * dt);
-      const moving =
-        root.position.distanceToSquared(targetPosition) > 1e-8 ||
-        Math.abs(root.scale.x - targetScale) > 1e-5;
-      if (moving) {
-        root.position.lerp(targetPosition, lerp);
-        root.scale.lerp(
-          new THREE.Vector3(targetScale, targetScale, targetScale),
-          lerp,
-        );
+      let maxProgress = 1;
+      for (const r of records.values()) {
+        const progress = duration ? ease((time - r.start) / duration) : 1;
+        if (
+          r.pivot.position.distanceToSquared(r.to) > 1e-10 ||
+          Math.abs(r.pivot.scale.x - r.toScale) > 1e-6
+        ) {
+          r.pivot.position.lerpVectors(r.from, r.to, progress);
+          r.pivot.scale.setScalar(
+            THREE.MathUtils.lerp(r.fromScale, r.toScale, progress),
+          );
+          moving = true;
+        }
+        if (chosen.has(r.model.id))
+          maxProgress = Math.min(maxProgress, progress);
       }
+      target.dataset.motionProgress = maxProgress.toFixed(3);
+      target.dataset.focusScale = (
+        records.get(p.selected || "")?.pivot.scale.x ?? 1
+      ).toFixed(3);
+      target.dataset.animating = String(moving);
+      target.dataset.liftedParts = String(
+        [...records.values()].filter(
+          (r) =>
+            Math.abs(r.pivot.scale.x - 1) > 0.001 ||
+            r.pivot.position.lengthSq() > 1e-6,
+        ).length,
+      );
       const changed = controls.update();
       if (needsRender || moving || changed) {
         renderer.render(scene, camera);
@@ -346,7 +559,10 @@ function Scene(props: SceneProps) {
       controls.dispose();
       renderer.domElement.removeEventListener("pointerdown", pointerDown);
       renderer.domElement.removeEventListener("pointerup", pointerUp);
+      renderer.domElement.removeEventListener("pointermove", pointerMove);
+      renderer.domElement.removeEventListener("pointerleave", pointerLeave);
       for (const r of records.values()) r.material.dispose();
+      headMaterial?.dispose();
       renderer.dispose();
       renderer.domElement.remove();
     };
@@ -354,8 +570,9 @@ function Scene(props: SceneProps) {
   return <div className="three-canvas" ref={host} />;
 }
 export function Explorer3D({
-  activeSystem,
   visible,
+  highlightedSystems,
+  onClearHighlights,
   region,
   request,
   appearance,
@@ -364,8 +581,9 @@ export function Explorer3D({
   bookmarks,
   onQuiz,
 }: {
-  activeSystem: string;
   visible: string[];
+  highlightedSystems: string[];
+  onClearHighlights: () => void;
   region: string;
   request: { id: string; version: number };
   appearance: Appearance;
@@ -376,6 +594,7 @@ export function Explorer3D({
 }) {
   const [selected, setSelected] = useState<string | null>(null);
   const [inspect, setInspect] = useState(false);
+  const [scope, setScope] = useState<"group" | "part">("group");
   const [hidden, setHidden] = useState<string[]>([]);
   const [history, setHistory] = useState<string[][]>([]);
   const [progress, setProgress] = useState(0);
@@ -383,16 +602,52 @@ export function Explorer3D({
   const [search, setSearch] = useState("");
   const [browse, setBrowse] = useState(false);
   const [fade, setFade] = useState(false);
+  const [depth, setDepth] = useState<"surface" | "all">("surface");
+  const [distinct, setDistinct] = useState(true);
+  const [surfaceGuide, setSurfaceGuide] = useState(true);
+  const [lift, setLift] = useState(true);
+  const [hover, setHover] = useState<string | null>(null);
   const [infoTab, setInfoTab] = useState("Overview");
   const [view, setView] = useState<CameraView>("front");
   const api = useRef<SceneApi | null>(null);
-  const prevSystem = useRef(activeSystem);
   const model = modelParts.find((m) => m.id === selected);
+  const group = model ? displayGroup(model) : [];
+  const selectedParts = model
+    ? scope === "group"
+      ? group.map((m) => m.id)
+      : [model.id]
+    : [];
   const study = model ? getModelStudy(model) : null;
+  const title = model
+    ? scope === "group"
+      ? displayName(model)
+      : model.name
+    : "";
+  function clear() {
+    setInspect(false);
+    setSelected(null);
+    setHover(null);
+  }
   function pick(id: string) {
+    const next = modelParts.find((m) => m.id === id);
+    if (
+      !next ||
+      (model &&
+        (next.id === selected ||
+          (displayGroupKey(next) === displayGroupKey(model) &&
+            scope === "group")))
+    ) {
+      clear();
+      return;
+    }
     setSelected(id);
-    setInspect(true);
+    setScope("group");
+    setInspect(lift);
     setInfoTab("Overview");
+    setHover(null);
+    setHidden((h) =>
+      h.filter((part) => !displayGroup(next).some((m) => m.id === part)),
+    );
     onSelect("model:" + id);
   }
   useEffect(() => {
@@ -402,58 +657,132 @@ export function Explorer3D({
       : modelParts.find((m) => modelMatchesStudy(m, request.id));
     if (target) {
       setSelected(target.id);
-      setInspect(true);
+      setScope("group");
+      setInspect(lift);
       setInfoTab("Overview");
+      setHidden((h) =>
+        h.filter((part) => !displayGroup(target).some((m) => m.id === part)),
+      );
     }
   }, [request.version]);
   useEffect(() => {
-    if (prevSystem.current !== activeSystem) {
-      prevSystem.current = activeSystem;
-      setInspect(false);
-      setSelected(null);
-      setSearch("");
-      setView("front");
-      api.current?.reset();
-    }
-  }, [activeSystem]);
+    if (model && !visible.includes(model.system)) clear();
+  }, [visible.join(",")]);
   function cameraView(v: CameraView) {
     setView(v);
     api.current?.view(v);
   }
   function back() {
-    setView("front");
     setInspect(false);
-    api.current?.reset();
   }
   function hide() {
     if (!selected) return;
     setHistory([...history, hidden]);
-    setHidden([...hidden, selected]);
-    setInspect(false);
-    setSelected(null);
+    setHidden([...new Set([...hidden, ...selectedParts])]);
+    clear();
   }
-  const filtered = modelParts.filter(
+  const matches = modelParts.filter(
     (m) =>
       (search
         ? `${m.name} ${m.system}`.toLowerCase().includes(search.toLowerCase())
-        : m.system === activeSystem) &&
+        : visible.includes(m.system)) &&
       (!region || getRegion(m) === region),
+  );
+  const filtered = matches.filter(
+    (m, i) =>
+      matches.findIndex(
+        (other) => displayGroupKey(other) === displayGroupKey(m),
+      ) === i,
   );
   const sceneProps = {
     selected,
+    selectedParts,
     inspect,
     visible,
+    highlightedSystems,
     hidden,
     region,
     fade,
+    depth,
+    distinct,
+    surfaceGuide,
     appearance,
     onSelect: pick,
+    onHover: setHover,
     onReady: (value: SceneApi) => {
       api.current = value;
     },
     onError: setError,
     onProgress: setProgress,
   };
+  const displayControls = (
+    <div className="display-controls">
+      <div className="control-label">
+        <Layers size={14} />
+        <strong>Muscle layers</strong>
+      </div>
+      <div className="segmented depth-switch" aria-label="Muscle layer detail">
+        <button
+          aria-pressed={depth === "surface"}
+          className={depth === "surface" ? "active" : ""}
+          onClick={() => setDepth("surface")}
+        >
+          Superficial
+        </button>
+        <button
+          aria-pressed={depth === "all"}
+          className={depth === "all" ? "active" : ""}
+          onClick={() => setDepth("all")}
+        >
+          All layers
+        </button>
+      </div>
+      <p>
+        Start with the major surface muscles. Add deeper structures when you
+        need them.
+      </p>
+      <label className="display-toggle">
+        <span>Distinct muscle colors</span>
+        <input
+          type="checkbox"
+          checked={distinct}
+          onChange={(e) => setDistinct(e.target.checked)}
+        />
+      </label>
+      <label className="display-toggle">
+        <span>Lift selection slowly</span>
+        <input
+          type="checkbox"
+          checked={lift}
+          onChange={(e) => {
+            setLift(e.target.checked);
+            if (!e.target.checked) setInspect(false);
+          }}
+        />
+      </label>
+      <details className="display-advanced">
+        <summary>
+          More display options <ChevronDown size={13} />
+        </summary>
+        <label className="display-toggle">
+          <span>Natural head surface</span>
+          <input
+            type="checkbox"
+            checked={surfaceGuide}
+            onChange={(e) => setSurfaceGuide(e.target.checked)}
+          />
+        </label>
+        <label className="display-toggle">
+          <span>See through muscles</span>
+          <input
+            type="checkbox"
+            checked={fade}
+            onChange={(e) => setFade(e.target.checked)}
+          />
+        </label>
+      </details>
+    </div>
+  );
   return (
     <div className="explorer3d-grid">
       <section className="scene-card panel">
@@ -462,7 +791,7 @@ export function Explorer3D({
             <span className="scene-logo">
               <Box size={18} />
             </span>
-            <h2>{inspect ? "Structure studio" : "Human anatomy"}</h2>
+            <h2>Human anatomy</h2>
             <span className="live-3d">
               <span />
               LIVE 3D
@@ -484,9 +813,11 @@ export function Explorer3D({
             <span>
               {inspect
                 ? study?.kind.toUpperCase()
-                : "BODYParts3D · ADULT MALE REFERENCE"}
+                : depth === "surface"
+                  ? "SUPERFICIAL MUSCLE OVERVIEW"
+                  : "ALL ANATOMICAL LAYERS"}
             </span>
-            <strong>{inspect ? study?.name : region || "Whole body"}</strong>
+            <strong>{model ? title : region || "Whole body"}</strong>
           </div>
           {progress < 100 && !error && (
             <div className="scene-loading">
@@ -509,7 +840,7 @@ export function Explorer3D({
                 <Search size={16} />
                 <input
                   autoFocus
-                  placeholder="Search 924 model parts…"
+                  placeholder="Search muscles, bones, organs…"
                   aria-label="Search 3D model parts"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
@@ -523,7 +854,7 @@ export function Explorer3D({
                 </button>
               </div>
               <span>
-                {filtered.length} matching parts
+                {filtered.length} matching structures
                 {filtered.length > 60
                   ? " · showing first 60; narrow your search"
                   : ""}
@@ -538,7 +869,7 @@ export function Explorer3D({
                     }}
                   >
                     <span>
-                      {m.name}
+                      {displayName(m)}
                       <small>
                         {systems.find((s) => s.id === m.system)?.name}
                       </small>
@@ -576,10 +907,15 @@ export function Explorer3D({
               <Undo2 size={17} />
             </button>
           </div>
+          {hover && (
+            <div className="model-hover-label" role="status">
+              {hover}
+            </div>
+          )}
           {inspect && (
             <button className="back-body" onClick={back}>
               <ArrowLeft size={15} />
-              Back to body
+              Return to body
             </button>
           )}
           <div className="scene-bottom">
@@ -587,8 +923,8 @@ export function Explorer3D({
               <span className="gesture-dot" />
               <span>
                 {inspect
-                  ? "Drag to rotate this structure · scroll to zoom"
-                  : "Drag to orbit · scroll to zoom · click to inspect"}
+                  ? "Click again to clear · drag to rotate"
+                  : "Drag to rotate · scroll to zoom · click to select"}
               </span>
             </div>
             <div className="camera-presets">
@@ -607,21 +943,24 @@ export function Explorer3D({
         </div>
         <div className="scene-footer">
           <span>
-            <Layers size={15} />
-            {inspect
-              ? "1 isolated model part"
-              : `${
-                  visible
-                    .map((v) => systems.find((s) => s.id === v)?.name)
-                    .filter(Boolean)
-                    .join(" + ") || "All systems hidden"
-                }`}
+            <Layers size={14} />
+            {visible.length} {visible.length === 1 ? "system" : "systems"} shown
+            {highlightedSystems.length
+              ? ` · ${highlightedSystems.length} highlighted`
+              : ""}
           </span>
           <div>
-            <button aria-pressed={fade} onClick={() => setFade(!fade)}>
-              <Eye size={14} />
-              {fade ? "Solid muscles" : "Transparent muscles"}
-            </button>
+            {(model || highlightedSystems.length > 0) && (
+              <button
+                onClick={() => {
+                  clear();
+                  onClearHighlights();
+                }}
+              >
+                <X size={13} />
+                Clear highlights
+              </button>
+            )}
             {hidden.length > 0 && (
               <button
                 onClick={() => {
@@ -653,7 +992,16 @@ export function Explorer3D({
                 <Bookmark size={19} />
               </button>
             </div>
-            <h2>{study.name}</h2>
+            <div className="inspection-title-row">
+              <h2>{title}</h2>
+              <button
+                className="icon-button"
+                aria-label="Clear selected structure"
+                onClick={clear}
+              >
+                <X size={17} />
+              </button>
+            </div>
             <p className="inspection-system">
               {systems.find((s) => s.id === study.system)?.name} ·{" "}
               {study.region}
@@ -664,13 +1012,55 @@ export function Explorer3D({
                 onClick={() => (inspect ? back() : setInspect(true))}
               >
                 <Focus size={14} />
-                {inspect ? "Show context" : "Inspect alone"}
+                {inspect ? "Return to body" : "Lift & enlarge"}
               </button>
               <button className="secondary" onClick={hide}>
                 <EyeOff size={14} />
                 Hide
               </button>
             </div>
+            {group.length > 1 && (
+              <div className="muscle-components">
+                <span>Muscle regions</span>
+                <button
+                  aria-pressed={scope === "group"}
+                  onClick={() => setScope("group")}
+                >
+                  Whole muscle <small>{group.length} regions</small>
+                </button>
+                {group.map((part) => (
+                  <button
+                    key={part.id}
+                    aria-pressed={scope === "part" && selected === part.id}
+                    onClick={() => {
+                      setSelected(part.id);
+                      setScope("part");
+                    }}
+                  >
+                    <span
+                      className="part-swatch"
+                      style={{
+                        background:
+                          "#" +
+                          muscleColor(
+                            part,
+                            appearance.muscle,
+                            distinct,
+                          ).getHexString(),
+                      }}
+                    />
+                    {componentName(part)}
+                  </button>
+                ))}
+                {muscleFamily(model) === "pectoralis major" && (
+                  <p>
+                    Clavicular and sternocostal are the main heads. This model
+                    also separates the inferior abdominal fibers as a third
+                    region.
+                  </p>
+                )}
+              </div>
+            )}
             <div className="inspection-tabs">
               {[
                 "Overview",
@@ -694,7 +1084,8 @@ export function Explorer3D({
                       ? "Functional overview"
                       : "Identification + general role"}
                 </span>
-                {study.family.toLowerCase() !== study.name.toLowerCase() &&
+                {scope === "part" &&
+                  study.family.toLowerCase() !== study.name.toLowerCase() &&
                   study.detailLevel !== "identification" && (
                     <p className="parent-note">
                       Study notes describe {study.family.toLowerCase()}; this
@@ -785,56 +1176,53 @@ export function Explorer3D({
                 )}
               </div>
             )}
+            <details className="selection-display-options">
+              <summary>
+                Display settings <ChevronDown size={14} />
+              </summary>
+              {displayControls}
+            </details>
             <div className="inspection-source">
               <Info size={13} />
               <p>{study.source}</p>
             </div>
           </>
         ) : (
-          <div className="inspection-empty">
-            <span className="empty-orbit">
-              <Box size={36} />
-            </span>
-            <span className="eyebrow">GO FROM THE WHOLE TO THE DETAILS</span>
-            <h2>
-              Get closer to
-              <br />
-              what you’re learning.
-            </h2>
+          <div className="inspection-empty clean-inspector">
+            <span className="eyebrow">ONE BODY · YOUR VIEW</span>
+            <h2>Explore at your pace.</h2>
             <p>
-              Click a bone, muscle, or organ. It comes forward on its own, ready
-              to rotate and explore.
+              Click a muscle or bone to highlight it, then watch it lift
+              forward. Click it again to clear the selection.
             </p>
-            <div className="inspection-steps">
-              <span>
-                <span>1</span>Select any visible structure
-              </span>
-              <span>
-                <span>2</span>Rotate it in every direction
-              </span>
-              <span>
-                <span>3</span>Connect its shape and function
-              </span>
+            {displayControls}
+            <div className="quick-structures">
+              <span>Try a structure</span>
+              <button
+                onClick={() =>
+                  pick(
+                    modelParts.find(
+                      (m) =>
+                        m.name ===
+                        "Sternocostal part of right pectoralis major",
+                    )!.id,
+                  )
+                }
+              >
+                Pectoralis major <Focus size={14} />
+              </button>
+              <button
+                onClick={() =>
+                  pick(modelParts.find((m) => m.name === "Right humerus")!.id)
+                }
+              >
+                Humerus <Focus size={14} />
+              </button>
             </div>
-            <button
-              className="primary"
-              onClick={() => {
-                const sample = modelParts.find(
-                  (m) => m.name === "Right humerus",
-                )!;
-                pick(sample.id);
-              }}
-            >
-              Try the humerus <Focus size={15} />
-            </button>
-            <div className="coverage-box">
-              <strong>924 selectable model parts</strong>
-              <p>
-                Names are supplied by BodyParts3D. Detailed functions and
-                landmarks cover a growing subset; each entry shows its coverage
-                level.
-              </p>
-            </div>
+            <p className="color-key-note">
+              Colors separate neighboring muscles and regions; they are a study
+              aid.
+            </p>
           </div>
         )}
       </aside>

@@ -20,15 +20,14 @@ npm run dev -- --port 3000
 
 `npm run build` checks TypeScript and builds `dist/`. `npm run preview -- --port 3001` serves that bundle. `npm run export:preview` regenerates the standalone HTML and ZIP.
 
-## What changed in version 2
+## Single-body explorer update
 
-- **Real 3D anatomy:** 924 separately selectable named model parts from BodyParts3D, across all 11 systems. These include 437 muscle-related meshes and 249 skeletal structures. Mesh parts are not a count of distinct whole muscles or bones: a muscle may be split into heads, regions, or sides, and skeletal structures include supporting tissues.
-- **Bring a part forward:** clicking the actual 3D surface smoothly isolates and enlarges that model. Drag to rotate, scroll to zoom, inspect it from front/back/left/right, then return to its original context with Back to body. A searchable part browser makes deep and small structures accessible.
-- **Layers that share coordinates:** combine systems, make muscle meshes transparent, hide individual parts, undo removal, and restore hidden parts. This uses source-registered 3D geometry.
-- **Modern appearance:** an indigo default, light/dark modes, five accent presets, a custom accent picker, independent bone and muscle colors, and a choice of studio background. Preferences save automatically.
-- **Structure information:** exact model name, side or component, system, region, functional notes, and coverage level. Notes for heads or subparts explicitly identify when they describe the parent muscle or bone.
-- **Landmark study:** rotatable bone surfaces plus detailed directional guides for the humerus, femur, scapula, clavicle, radius, ulna, tibia, and fibula. Other curated bones retain their landmark, articulation, and attachment lists. Guide buttons orient the view; they do not claim to pinpoint a landmark on the mesh.
-- **Bookmarks:** 3D model parts can be saved and reopened from My Progress.
+- **One registered body:** show/hide systems with the eye controls; highlight/unhighlight them with the target controls. Adding a system preserves the other layers and the viewing angle. Click a structure again, or use Clear highlights, to unselect it.
+- **A simpler starting point:** Superficial starts with major surface muscles instead of every deep muscle. All layers and search retain access to all 924 source parts. This is an introductory overview, not a strict surgical dissection plane.
+- **Selection you can follow:** the selected muscle first highlights in place for 320 ms, then lifts and enlarges over 1.6 seconds. The intact body remains dimly visible for context. Returning reverses the motion. Lift selection slowly can be switched off for highlighting in place, and the system's reduced-motion preference removes the transition.
+- **Whole muscles before components:** related heads/regions on the same side select together. The pectoralis major retains its clavicular, sternocostal, and abdominal source regions, each with a distinct swatch and a region control. The notes distinguish the two main heads from the source's separately modeled abdominal fibers.
+- **Clearer surfaces:** higher muscle geometry budgets, mild smoothing of muscle/skin scan noise, matte lighting, distinct neighboring muscle colors, and an optional head surface from the source skin mesh. Bone landmark geometry is not smoothed. The surface guide is presentation context; All layers exposes the original head structures.
+- **A quieter interface:** smaller headings, fewer promotional panels, collapsed study notes, and optional display controls keep the body central. Light/dark modes, custom app/bone/muscle colors, bookmarks, functions, and bone landmark guides remain available.
 
 ## Study content and limits
 
@@ -57,12 +56,12 @@ npm run test:e2e
 FORMA_BASE_URL=http://127.0.0.1:3002/forma-preview.html npm run test:3d
 ```
 
-There are 21 unit tests for study scope, answer grading, source identities, model coordinate relationships, muscle-versus-connective roles, explicit content coverage, and landmarks. The browser suites exercise 10 original study workflows plus five new workflows for actual 3D picking, mesh isolation, rotation, hide/undo, system visibility, landmark guidance, bookmarks, mobile layout, and theme/color persistence. Tests use `/usr/bin/chromium` when present; otherwise install Playwright Chromium.
+There are 26 unit tests for study scope, answer grading, source identities, model coordinate relationships, muscle-versus-connective roles, explicit content coverage, and landmarks. The browser suites exercise 10 original study workflows plus six 3D workflows for actual surface picking, gradual lift/return, three pectoralis regions, rotation, hide/undo, system visibility/highlighting, landmark guidance, bookmarks, mobile layout, theme/color persistence, and reduced motion. Tests use `/usr/bin/chromium` when present; otherwise install Playwright Chromium.
 
 ## Sources, licenses, and geometry rebuilds
 
 See [ASSET_CREDITS.md](ASSET_CREDITS.md) for revisions, checksums, original asset paths, and adaptations. **3D geometry is CC BY-SA 2.1 Japan**, while OpenStax content/plates and their educational adaptations are **CC BY-NC-SA 4.0**. These licenses apply to their respective assets; the 3D model is not relicensed under the OpenStax license. Required notices are included in the downloadable ZIP.
 
-The bundled `public/models/bodyparts.glb` is ready to use; normal installation does not download raw anatomy geometry. For an optional rebuild, `python scripts/fetch-3d-source.py` downloads about 1.31 GB of STLs into `/tmp/forma-stl`, verifies every file against its recorded Git blob hash, and `npm run build:models` converts/optimizes them. This keeps original source coordinates, simplifies meshes with bounded error, and uses meshopt compression. Source metadata and resulting per-part bounds are committed.
+The bundled `public/models/bodyparts.glb` is ready to use; normal installation does not download raw anatomy geometry. For an optional rebuild, `python scripts/fetch-3d-source.py` downloads about 1.31 GB of STLs into `/tmp/forma-stl`, verifies every file against its recorded Git blob hash, and `npm run build:models` converts/optimizes them. This keeps original source coordinates, simplifies meshes with bounded error, and uses meshopt compression. Source metadata and resulting per-part bounds are committed. The rebuild also applies mild Taubin smoothing to muscle/skin surfaces, without smoothing bone landmark geometry.
 
 Use the existing checkout directly; cloud tasks are already isolated. No worktree or external service is required. The development server must restart in each new task.
