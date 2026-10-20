@@ -14,7 +14,7 @@ const steps = [
   },
   {
     title: "Layers and transparency",
-    text: "Show tissues with the layer buttons; the arrows open opacity sliders. Below 45% opacity, deeper opaque structures are picked first. Hidden tissues never receive pointer hits.",
+    text: "Show tissues with the layer buttons; the arrows open opacity sliders. The Ligaments row in the left rail shows every modeled ligament in teal; its target button fades bones so ligaments stand out. Hidden tissues never receive pointer hits.",
     selector: ".pro-layer-dock, .reference-systems",
     tab: "explorer",
   },
@@ -44,13 +44,13 @@ const steps = [
   },
   {
     title: "Games",
-    text: "Choose a region or collection, check the exact structures to study, then start. Untimed is the default; find-and-click pauses during loading, rotation and feedback.",
+    text: "Three steps: pick a region or collection, tick the bones, muscles, ligaments or other structures you want to be quizzed on, then choose a game. Untimed is the default; find-and-click pauses during loading, rotation and feedback.",
     selector: ".learning-toolbar",
     tab: "games",
   },
   {
     title: "PT / AT study",
-    text: "Connect anatomy to injury concepts, rehabilitation goals and exercise examples. These are educational resources, not individualized treatment plans; check source and review status.",
+    text: "Pick a region to see its structures in 3D, then study common injuries, healing stages, exercise examples with technique, mistakes and precautions, and the Sources tab. Educational only, not a treatment plan.",
     selector: ".learning-toolbar",
     tab: "pt",
   },

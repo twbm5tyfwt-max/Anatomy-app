@@ -115,11 +115,7 @@ try {
   await run(
     "dedicated ligament sidebar switch and visible knee cartilage controls",
     async () => {
-      await page
-        .getByRole("checkbox", {
-          name: "Ligaments Show / hide all modeled ligaments",
-        })
-        .check();
+      await page.getByRole("button", { name: "Show ligaments" }).click();
       await settled();
       await page.getByRole("tab", { name: "Explore", exact: true }).click();
       await page
@@ -348,6 +344,7 @@ try {
       await page.screenshot({ path: "delivery/forma-image-guide.png" });
       expect(external).toEqual([]);
       page.off("request", track);
+      await page.locator(".guide-structure").first().locator(":scope > summary").click();
       await page
         .locator(".guide-structure")
         .first()
@@ -385,6 +382,8 @@ try {
       await page
         .getByRole("button", { name: "2D reference", exact: true })
         .click();
+      await expect(page.locator(".a2d")).toBeVisible();
+      await page.getByRole("button", { name: "Published plates" }).click();
       await expect(page.locator(".plate-explorer")).toBeVisible();
       await page
         .getByRole("combobox", { name: "2D reference plate" })
@@ -396,10 +395,8 @@ try {
       await page.getByRole("button", { name: "Zoom reference in" }).click();
       await expect(page.locator(".plate-zoom")).toContainText("125%");
       await page.screenshot({ path: "delivery/forma-reference.png" });
-      await page
-        .getByRole("button", { name: "Interactive overview", exact: true })
-        .click();
-      await expect(page.locator(".explorer-grid")).toBeVisible();
+      await page.getByRole("button", { name: "Atlas plate" }).click();
+      await expect(page.locator(".a2d")).toBeVisible();
     },
   );
   await run(
@@ -438,19 +435,14 @@ try {
     "game checklist restricts every 3D target to checked structures",
     async () => {
       await page.getByRole("button", { name: "Games", exact: true }).click();
-      await page
-        .getByRole("combobox", { name: "Game region" })
-        .selectOption("Knee");
-      await page.getByRole("button", { name: "Clear checklist" }).click();
-      await page
-        .getByRole("checkbox", { name: "Right patella", exact: true })
-        .check();
-      await page
-        .getByRole("checkbox", { name: "Right medial meniscus", exact: true })
-        .check();
-      await page
-        .getByRole("button", { name: "Practice checked structures" })
-        .click();
+      await page.getByRole("button", { name: "Knee", exact: true }).click();
+      const search = page.getByRole("searchbox", { name: "Search study checklist" });
+      await search.fill("Right patella");
+      await page.getByRole("checkbox", { name: "Right patella", exact: true }).check();
+      await search.fill("Right medial meniscus");
+      await page.getByRole("checkbox", { name: "Right medial meniscus", exact: true }).check();
+      await expect(page.getByText("2 selected")).toBeVisible();
+      await page.getByRole("button", { name: "Start", exact: true }).click();
       const game = page.locator(".game-session .three-canvas");
       await settled(game);
       await expect(page.getByRole("timer")).toHaveText("Untimed");
@@ -468,39 +460,21 @@ try {
     async () => {
       await page.getByRole("button", { name: "PT / AT", exact: true }).click();
       await settled(page.locator(".pt-anatomy-preview .three-canvas"));
-      await page
-        .getByRole("button", { name: "Exercise examples", exact: true })
-        .click();
-      await expect(page.locator(".pt-exercise-grid")).toContainText(
-        "Supported heel slide",
-      );
-      await page
-        .locator(".pt-exercise-grid details")
-        .first()
-        .locator("summary")
-        .click();
-      await expect(page.locator(".pt-exercise-grid")).toContainText(
-        "Post-operative",
-      );
-      await expect(
-        page
-          .getByRole("link", {
-            name: "View clinical instructions & demonstrations ↗",
-          })
-          .first(),
-      ).toHaveAttribute("href", /^https:\/\/orthoinfo.aaos.org\//);
+      await page.getByRole("tab", { name: "Exercise examples" }).click();
+      await expect(page.locator(".pt-grid")).toContainText("Supported heel slide");
+      await page.locator(".pt-exercise").first().getByRole("button", { name: /Technique, mistakes/ }).click();
+      for (const heading of ["Basic technique", "Common mistakes", "Precautions", "Easier (regression)", "Harder (progression)"])
+        await expect(page.locator(".pt-exercise").first()).toContainText(heading);
+      await expect(page.locator('.pt-exercise a[href^="https://orthoinfo.aaos.org/"]').first()).toBeVisible();
+      await expect(page.locator(".pt-videos")).toContainText("does not embed exercise videos");
       await page.screenshot({ path: "delivery/forma-pt.png" });
-      await page
-        .getByRole("button", { name: "Anatomy & injuries", exact: true })
-        .click();
-      await page
-        .locator(".pt-structure-links")
-        .getByRole("button", { name: "Right medial meniscus", exact: true })
-        .click();
+      await page.getByRole("tab", { name: "Sources" }).click();
+      await expect(page.locator(".pt-page")).toContainText("unverified");
+      await page.getByRole("tab", { name: "Anatomy" }).click();
+      await page.locator(".pt-structure-list").getByRole("button", { name: /^Menisci/ }).click();
+      await page.getByRole("button", { name: "Open in the body viewer →" }).click();
       await settled();
-      await expect(page.locator(".pro-inspector h2")).toHaveText(
-        "Right medial meniscus",
-      );
+      await expect(page.locator(".pro-inspector h2")).toHaveText(/Right (medial|lateral) meniscus/);
       await page.getByRole("button", { name: "Help", exact: true }).click();
       await expect(
         page.getByRole("dialog", { name: "App tutorial" }),

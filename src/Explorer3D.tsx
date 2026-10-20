@@ -602,24 +602,56 @@ export function Explorer3D({
   }
   useEffect(() => {
     if (workspaceId !== "main") return;
+    // Joint ligaments live in the skeletal system. A few retinacula/fibrous sheaths are filed
+    // under muscular and organ ligaments elsewhere; turning ligaments on must not switch
+    // those whole systems (nerves, viscera, muscles) on with it.
+    let savedLayers: Record<string, number> | null = null;
     const toggle = (e: Event) => {
       const enabled = !!(e as CustomEvent).detail;
+      if (enabled) {
+        // Ligaments exist only in the male source atlas and must not be hidden by an isolation.
+        setVariant("male");
+        setIsolated(null);
+        onVisibleChange([...new Set([...visible, "skeletal"])]);
+      } else savedLayers = null;
+      setLayers((l) => ({ ...l, ligaments: enabled ? 1 : 0 }));
+    };
+    // "Ligament focus": ligaments at full strength, bones and cartilage faded as context,
+    // everything else hidden. Switching it off restores the previous layer settings.
+    const lens = (e: Event) => {
+      const on = !!(e as CustomEvent).detail;
       setVariant("male");
       setIsolated(null);
-      setLayers((l) => ({ ...l, ligaments: enabled ? 1 : 0 }));
-      if (enabled) {
-        onVisibleChange([
-          ...new Set([
-            ...visible,
-            ...modelParts
-              .filter((m) => m.layer === "ligaments")
-              .map((m) => m.system),
-          ]),
-        ]);
-      }
+      if (on) onVisibleChange([...new Set([...visible, "skeletal"])]);
+      setLayers((l) => {
+        if (on) {
+          savedLayers = savedLayers || l;
+          return {
+            ...l,
+            ligaments: 1,
+            bones: 0.28,
+            cartilage: 0.5,
+            muscles: 0,
+            skin: 0,
+            tendons: 0,
+            fascia: 0,
+            capsules: 0,
+            bursae: 0,
+            organs: 0,
+            attachment: 0,
+          };
+        }
+        const back = savedLayers || { ...l, bones: 1, cartilage: 1 };
+        savedLayers = null;
+        return { ...back, ligaments: 1 };
+      });
     };
+    window.addEventListener("forma-ligament-lens", lens);
     window.addEventListener("forma-ligaments", toggle);
-    return () => window.removeEventListener("forma-ligaments", toggle);
+    return () => {
+      window.removeEventListener("forma-ligaments", toggle);
+      window.removeEventListener("forma-ligament-lens", lens);
+    };
   }, [workspaceId, visible]);
   useEffect(() => {
     if (workspaceId === "main")

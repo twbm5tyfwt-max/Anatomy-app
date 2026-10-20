@@ -7,6 +7,7 @@ import { tissues } from "./content";
 import { TissueDiagram } from "./TissueDiagram";
 import { useStored } from "./storage";
 import type { StudyCollection } from "./studyCollections";
+import { GameSetup, MAX_MEMORY, MAX_STRUCTURES } from "./GameSetup";
 const byId = new Map(modelParts.map((m) => [m.id, m]));
 type GameResult = {
   id: string;
@@ -44,11 +45,10 @@ export function StudyGames({
   initialCollection?: string;
 }) {
   const [mode, setMode] = useState("Find & click");
-  const [region, setRegion] = useState(initialCollection ? "" : "Skull");
-  const [system, setSystem] = useState("");
+  const [region, setRegion] = useState(initialCollection ? "" : "Knee");
+  const system = "";
   const [collectionId, setCollectionId] = useState(initialCollection || "");
   const [checkedIds, setCheckedIds] = useState<string[]>([]);
-  const [scopeSearch, setScopeSearch] = useState("");
   const [seconds, setSeconds] = useState("0");
   const [running, setRunning] = useState(false);
   const collection = collections.find((c) => c.id === collectionId);
@@ -57,8 +57,9 @@ export function StudyGames({
     [region, system, collection],
   );
   useEffect(() => {
-    setCheckedIds(pool.slice(0, 12).map((m) => m.id));
-    setScopeSearch("");
+    setCheckedIds(
+      collection ? pool.slice(0, MAX_STRUCTURES).map((m) => m.id) : [],
+    );
   }, [pool]);
   const [roster, setRoster] = useState<ModelPart[]>([]);
   const [round, setRound] = useState(0);
@@ -190,13 +191,15 @@ export function StudyGames({
       setMessage("Choose a scope with at least two associated tissue types.");
       return;
     }
-    if (candidate.length > 24) {
-      setMessage("Choose up to 24 structures for a focused session.");
+    if (candidate.length > MAX_STRUCTURES) {
+      setMessage(
+        `Choose up to ${MAX_STRUCTURES} structures for a focused session.`,
+      );
       return;
     }
-    if (isMemory && candidate.length > 8) {
+    if (isMemory && candidate.length > MAX_MEMORY) {
       setMessage(
-        "Memory matching supports up to 8 checked structures. Uncheck extras or choose another activity.",
+        `Memory matching supports up to ${MAX_MEMORY} checked structures. Uncheck extras or choose another game.`,
       );
       return;
     }
@@ -278,212 +281,27 @@ export function StudyGames({
     <section className="learning-page games-page">
       <p className="eyebrow">PRACTICE WITH A PURPOSE</p>
       <h1>Study games</h1>
-      <p>
-        Choose a region or saved collection, check what you want to learn, then
-        practice. Start untimed to explore at your own pace.
-      </p>
+      <p>Pick what to study, tick the structures, then choose a game.</p>
       {!running || finished ? (
-        <>
-          <div className="learning-toolbar">
-            <label>
-              Activity
-              <select
-                aria-label="Game activity"
-                value={mode}
-                onChange={(e) => {
-                  setMode(e.target.value);
-                  if (e.target.value === "Tissue identification") {
-                    setRegion("");
-                    setSystem("");
-                  }
-                }}
-              >
-                {[
-                  "Find & click",
-                  "Structure → name",
-                  "Structure → function",
-                  "Memory matching",
-                  "Tissue identification",
-                ].map((n) => (
-                  <option key={n}>{n}</option>
-                ))}
-              </select>
-            </label>
-            <label>
-              Collection
-              <select
-                aria-label="Game collection"
-                value={collectionId}
-                onChange={(e) => setCollectionId(e.target.value)}
-              >
-                <option value="">Available atlas</option>
-                {collections.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label>
-              Region
-              <select
-                aria-label="Game region"
-                value={region}
-                onChange={(e) => setRegion(e.target.value)}
-              >
-                <option value="">Any region in scope</option>
-                {regionNames.map((n) => (
-                  <option key={n}>{n}</option>
-                ))}
-              </select>
-            </label>
-            <label>
-              System
-              <select
-                aria-label="Game system"
-                value={system}
-                onChange={(e) => setSystem(e.target.value)}
-              >
-                <option value="">All in scope</option>
-                {[
-                  "skeletal",
-                  "muscular",
-                  "nervous",
-                  "respiratory",
-                  "cardiovascular",
-                  "lymphatic",
-                ].map((n) => (
-                  <option key={n}>{n}</option>
-                ))}
-              </select>
-            </label>
-            <label>
-              Timer
-              <select
-                aria-label="Game timer"
-                value={seconds}
-                onChange={(e) => setSeconds(e.target.value)}
-              >
-                <option value="0">Untimed</option>
-                <option value="60">60 seconds</option>
-                <option value="120">120 seconds</option>
-              </select>
-            </label>
-            <button className="primary" onClick={() => start()}>
-              Start game
-            </button>
-          </div>
-          <section
-            className="game-scope-checklist"
-            aria-label="Choose structures to study"
-          >
-            <div className="game-scope-heading">
-              <div>
-                <p className="eyebrow">YOUR STUDY CHECKLIST</p>
-                <h2>What do you want to practice?</h2>
-                <p>
-                  {checkedIds.length} checked · choose 2–24 structures, or 2–8
-                  for memory. Your checks define the session.
-                </p>
-              </div>
-              <button
-                onClick={() =>
-                  setCheckedIds(pool.slice(0, 24).map((m) => m.id))
-                }
-              >
-                Select first 24
-              </button>
-              <button onClick={() => setCheckedIds([])}>Clear checklist</button>
-            </div>
-            <input
-              aria-label="Search study checklist"
-              value={scopeSearch}
-              onChange={(e) => setScopeSearch(e.target.value)}
-              placeholder="Find a bone, muscle or ligament…"
-            />
-            <div className="game-checklist-groups">
-              {[
-                "Bones",
-                "Muscles",
-                "Ligaments & connective",
-                "Organs, vessels & nerves",
-              ].map((group, i) => {
-                const items = pool.filter((m) =>
-                  i === 0
-                    ? m.layer === "bones"
-                    : i === 1
-                      ? m.layer === "muscles"
-                      : i === 2
-                        ? [
-                            "ligaments",
-                            "tendons",
-                            "cartilage",
-                            "fascia",
-                            "capsules",
-                            "bursae",
-                          ].includes(m.layer || "")
-                        : ![
-                            "bones",
-                            "muscles",
-                            "ligaments",
-                            "tendons",
-                            "cartilage",
-                            "fascia",
-                            "capsules",
-                            "bursae",
-                          ].includes(m.layer || ""),
-                );
-                if (!items.length) return null;
-                const filtered = items.filter((m) =>
-                  m.name.toLowerCase().includes(scopeSearch.toLowerCase()),
-                );
-                return (
-                  <details key={group} open>
-                    <summary>
-                      {group} ·{" "}
-                      {items.filter((m) => checkedIds.includes(m.id)).length}/
-                      {items.length}
-                    </summary>
-                    <div>
-                      {filtered.slice(0, 250).map((m) => (
-                        <label key={m.id}>
-                          <input
-                            type="checkbox"
-                            checked={checkedIds.includes(m.id)}
-                            onChange={(e) =>
-                              setCheckedIds((v) =>
-                                e.target.checked
-                                  ? [...v, m.id]
-                                  : v.filter((id) => id !== m.id),
-                              )
-                            }
-                          />
-                          {m.name}
-                        </label>
-                      ))}
-                      {filtered.length > 250 && (
-                        <p>
-                          Search to narrow the remaining {filtered.length - 250}{" "}
-                          entries.
-                        </p>
-                      )}
-                    </div>
-                  </details>
-                );
-              })}
-            </div>
-            <button className="primary" onClick={() => start()}>
-              Practice checked structures
-            </button>
-          </section>
-          <p>
-            {pool.length} structures available in this exact scope. Function
-            matching excludes identification-only entries. Timed games pause
-            during loading, rotation, feedback, hidden tabs, or an occluded
-            target.
-          </p>
-          {message && <p role="alert">{message}</p>}
-        </>
+        <GameSetup
+          collections={collections}
+          collectionId={collectionId}
+          setCollectionId={setCollectionId}
+          region={region}
+          setRegion={setRegion}
+          pool={pool}
+          checkedIds={checkedIds}
+          setCheckedIds={setCheckedIds}
+          mode={mode}
+          setMode={(m) => {
+            setMode(m);
+            setMessage("");
+          }}
+          seconds={seconds}
+          setSeconds={setSeconds}
+          onStart={() => start()}
+          message={message}
+        />
       ) : null}
       {running && !finished && (
         <div className="game-session">

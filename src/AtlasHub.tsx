@@ -1,4 +1,5 @@
 import { StudyGuide, SourceImage } from "./StudyGuide";
+import { StudyReview, RegionPicker } from "./StudyReview";
 import { useEffect, useMemo, useState, type ComponentProps } from "react";
 import { Explorer3D } from "./Explorer3D";
 import { useStored, getFile, deleteFile } from "./storage";
@@ -103,6 +104,12 @@ export function AtlasHub(props: Props) {
     if (!name.trim() || (!confirmed.length && !refs.length && !draft.trim())) {
       setError(
         "Name the workspace and add an image, notes or confirmed structure.",
+      );
+      return;
+    }
+    if (!confirmed.length && review.matches.length) {
+      setError(
+        `${review.matches.length} terms were found but none are confirmed yet. Click “Add every suggestion” (or tick the structures you want) so the model isn't empty.`,
       );
       return;
     }
@@ -306,59 +313,13 @@ export function AtlasHub(props: Props) {
                 />
               </details>
             ))}
-            <h3>Review matches before creating the model</h3>
-            <p>
-              Nothing is confirmed automatically. Unsided or shortened terms can
-              match several structures: choose the exact side and component. A
-              matching name does not verify the rest of your notes.
-            </p>
-            <div className="match-review">
-              {review.matches.map((row) => (
-                <details key={row.term} open={review.matches.length < 10}>
-                  <summary>
-                    {row.term} ·{" "}
-                    {row.exact ? "exact name" : "resolve side / component"} (
-                    {row.ids.length})
-                  </summary>
-                  <small>
-                    {row.references
-                      .map((r) => `${r.file}, ${r.kind} ${r.page}`)
-                      .join("; ")}
-                  </small>
-                  {row.ids.map((id) => (
-                    <label key={id}>
-                      <input
-                        type="checkbox"
-                        checked={confirmed.includes(id)}
-                        onChange={() => toggle(id)}
-                      />
-                      {modelParts.find((m) => m.id === id)?.name}
-                    </label>
-                  ))}
-                </details>
-              ))}
-            </div>
-            {!!review.unmatched.length && (
-              <details>
-                <summary>
-                  {review.unmatched.length} unmatched / unsupported passages —
-                  review manually
-                </summary>
-                {review.unmatched.map((r, i) => (
-                  <p key={i}>
-                    {r.file} {r.kind} {r.page}:{" "}
-                    {r.text ||
-                      "No readable labels were found. Add a topic or transcription, then review matching structures."}
-                  </p>
-                ))}
-                <p>
-                  Alveoli/bronchioles have a teaching diagram only;
-                  female-specific organs are available in the separate HRA
-                  reference; this collection uses the male source atlas.
-                  Unmatched text is never converted into invented anatomy.
-                </p>
-              </details>
-            )}
+            <StudyReview
+              review={review}
+              confirmed={confirmed}
+              setConfirmed={setConfirmed}
+              hasImages={refs.some((r) => r.kind === "image")}
+            />
+            <RegionPicker confirmed={confirmed} setConfirmed={setConfirmed} />
             <label>
               Manually find a source structure
               <input

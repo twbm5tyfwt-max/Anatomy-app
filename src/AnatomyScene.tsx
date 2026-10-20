@@ -75,6 +75,8 @@ export type SceneProps = {
   initialView?: CameraView;
   frameSize?: number;
   quiz?: boolean;
+  /** Flat atlas-plate presentation: near-orthographic camera, rotation locked, pan + zoom only. */
+  plate?: boolean;
   targetMarker?: string;
   opacityOverrides?: Record<string, number>;
   onSelect?: (id: string) => void;
@@ -178,12 +180,22 @@ export function AnatomyScene(props: SceneProps) {
         : "3D anatomical atlas. Drag to rotate; scroll or pinch to zoom. Click a structure to select.",
     );
     const scene = new THREE.Scene(),
-      camera = new THREE.PerspectiveCamera(35, 1, 0.01, 15);
+      camera = new THREE.PerspectiveCamera(props.plate ? 7 : 35, 1, 0.01, 15);
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.1;
     controls.minDistance = 0.015;
-    controls.maxDistance = 8;
+    controls.maxDistance = props.plate ? 120 : 8;
+    if (props.plate) {
+      controls.enableRotate = false;
+      controls.screenSpacePanning = true;
+      controls.mouseButtons = {
+        LEFT: THREE.MOUSE.PAN,
+        MIDDLE: THREE.MOUSE.DOLLY,
+        RIGHT: THREE.MOUSE.PAN,
+      };
+      controls.touches = { ONE: THREE.TOUCH.PAN, TWO: THREE.TOUCH.DOLLY_PAN };
+    }
     controls.zoomSpeed = 0.8;
     controls.rotateSpeed = 0.7;
     scene.add(new THREE.HemisphereLight(0xffffff, 0x394047, 1.4));
@@ -672,7 +684,12 @@ export function AnatomyScene(props: SceneProps) {
           0,
           Math.max(0, distance - 0.002),
         );
-        const blocker = ray.intersectObjects(solid, false)[0];
+        const hits = ray.intersectObjects(solid, false);
+        // On a flat plate the anchor sits inside its own structure, so only other
+        // structures in front of it hide the label.
+        const blocker = p.plate
+          ? hits.find((h) => h.object.userData.modelId !== l.modelId)
+          : hits[0];
         if (blocker && blocker.distance < distance - 0.0025) continue;
         shown.push({
           id: l.id,
@@ -688,7 +705,7 @@ export function AnatomyScene(props: SceneProps) {
         .sort((a, b) =>
           a.id === p.activeLandmark ? -1 : b.id === p.activeLandmark ? 1 : 0,
         )
-        .slice(0, p.quiz ? 20 : 8);
+        .slice(0, p.quiz ? 20 : p.plate ? 26 : 8);
       for (const side of [-1, 1]) {
         let last = 45;
         const items = filtered
@@ -816,13 +833,17 @@ export function AnatomyScene(props: SceneProps) {
                     ? "#bd9680"
                     : l === "cartilage"
                       ? "#a9c2cb"
-                      : l === "tendons" ||
-                          l === "ligaments" ||
-                          l === "fascia" ||
-                          l === "capsules" ||
-                          l === "bursae"
-                        ? "#dfd2b8"
-                        : "#b78373",
+                      : l === "ligaments"
+                        ? "#2fb5a5"
+                        : l === "tendons"
+                          ? "#e9c870"
+                          : l === "fascia"
+                            ? "#cdbfa5"
+                            : l === "capsules"
+                              ? "#b7a5d8"
+                              : l === "bursae"
+                                ? "#7db4e6"
+                                : "#b78373",
           );
           if (l === "muscles" && !p.quiz)
             color.copy(

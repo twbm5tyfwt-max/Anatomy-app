@@ -59,6 +59,11 @@ export function StudyGuide({
     [],
   );
   const [filter, setFilter] = useState("");
+  const [group, setGroup] = useState<
+    "all" | "bones" | "muscles" | "connective" | "other" | "todo"
+  >("all");
+  const [openIds, setOpenIds] = useState<string[]>([]);
+  const learnedCount = known.filter((id) => collection.ids.includes(id)).length;
   const [error, setError] = useState("");
   async function download() {
     try {
@@ -165,6 +170,47 @@ export function StudyGuide({
           </article>
         ))}
       </details>
+      {!!facts.length && (
+        <div className="guide-toolbar">
+          <div
+            className="guide-progress"
+            role="progressbar"
+            aria-valuemin={0}
+            aria-valuemax={facts.length}
+            aria-valuenow={learnedCount}
+            aria-label="Structures learned"
+          >
+            <span style={{ width: (learnedCount / facts.length) * 100 + "%" }} />
+            <b>
+              {learnedCount} of {facts.length} learned
+            </b>
+          </div>
+          <div className="guide-filters" role="group" aria-label="Show">
+            {(
+              [
+                ["all", "All"],
+                ["bones", "Bones"],
+                ["muscles", "Muscles"],
+                ["connective", "Ligaments & connective"],
+                ["other", "Other"],
+                ["todo", "Not learned yet"],
+              ] as const
+            ).map(([id, label]) => (
+              <button
+                key={id}
+                aria-pressed={group === id}
+                onClick={() => setGroup(id)}
+              >
+                {label}
+              </button>
+            ))}
+            <button onClick={() => setOpenIds(facts.map((f) => f.model.id))}>
+              Expand all
+            </button>
+            <button onClick={() => setOpenIds([])}>Collapse all</button>
+          </div>
+        </div>
+      )}
       <label>
         Find a structure in this guide{" "}
         <input
@@ -175,14 +221,39 @@ export function StudyGuide({
       </label>
       <div className="guide-structure-list">
         {facts
-          .filter(({ model: m }) =>
-            m.name.toLowerCase().includes(filter.toLowerCase()),
-          )
+          .filter(({ model: m }) => {
+            if (!m.name.toLowerCase().includes(filter.toLowerCase()))
+              return false;
+            const l = m.layer || "";
+            if (group === "bones") return l === "bones";
+            if (group === "muscles") return l === "muscles";
+            if (group === "connective")
+              return ["ligaments", "tendons", "cartilage", "fascia", "capsules", "bursae"].includes(l);
+            if (group === "other")
+              return !["bones", "muscles", "ligaments", "tendons", "cartilage", "fascia", "capsules", "bursae"].includes(l);
+            if (group === "todo") return !known.includes(m.id);
+            return true;
+          })
           .map(({ model: m, study: s }) => (
-            <article key={m.id} className="guide-structure">
-              <div className="guide-structure-heading">
+            <details
+              key={m.id}
+              className="guide-structure"
+              open={openIds.includes(m.id)}
+              onToggle={(e) => {
+                const isOpen = (e.currentTarget as HTMLDetailsElement).open;
+                setOpenIds((v) =>
+                  isOpen
+                    ? v.includes(m.id)
+                      ? v
+                      : [...v, m.id]
+                    : v.filter((x) => x !== m.id),
+                );
+              }}
+            >
+              <summary className="guide-structure-heading">
                 <h3>{m.name}</h3>
-                <label>
+                <span className="guide-kind">{m.layer}</span>
+                <label onClick={(e) => e.stopPropagation()}>
                   <input
                     type="checkbox"
                     checked={known.includes(m.id)}
@@ -196,10 +267,10 @@ export function StudyGuide({
                   />
                   Learned
                 </label>
-                <button onClick={() => onStudy(m.id)}>
-                  Find in my 3D model
-                </button>
-              </div>
+              </summary>
+              <button className="guide-find" onClick={() => onStudy(m.id)}>
+                Find in my 3D model
+              </button>
               <p>
                 <strong>Function:</strong> {s.function}
               </p>
@@ -208,7 +279,7 @@ export function StudyGuide({
               </p>
               <ReferenceDefinition id={m.id} />
               <AnatomyReading id={m.id} />
-              <details open={facts.length < 8}>
+              <details>
                 <summary>Landmarks, attachments & relationships</summary>
                 {[
                   ["Landmarks", s.landmarks],
@@ -259,7 +330,7 @@ export function StudyGuide({
                 />
               </label>
               <small>{s.source}</small>
-            </article>
+            </details>
           ))}
       </div>
       {!facts.length && (

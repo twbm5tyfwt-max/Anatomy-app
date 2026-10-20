@@ -159,8 +159,9 @@ try {
         .getByRole("textbox", { name: "Study workspace notes" })
         .fill("Right humerus, Right femur, alveoli");
       await expect(page.locator(".study-editor")).toContainText(
-        "unmatched / unsupported passages",
+        "nothing modeled) to match",
       );
+      await expect(page.locator(".study-editor")).toContainText("Exact match");
       await page
         .getByRole("checkbox", { name: "Right humerus", exact: true })
         .check();
@@ -209,21 +210,10 @@ try {
     "scoped games hide labels, score answers and retain sessions on reload",
     async () => {
       await page.getByRole("button", { name: "Games", exact: true }).click();
-      await page
-        .getByRole("combobox", { name: "Game collection" })
-        .selectOption({ label: "Arm and leg lab" });
-      await page
-        .getByRole("combobox", { name: "Game region" })
-        .selectOption("");
-      await page
-        .getByRole("combobox", { name: "Game activity" })
-        .selectOption("Structure → name");
-      await page
-        .getByRole("combobox", { name: "Game timer" })
-        .selectOption("0");
-      await page
-        .getByRole("button", { name: "Start game", exact: true })
-        .click();
+      await page.getByRole("button", { name: "Arm and leg lab", exact: true }).click();
+      await page.getByRole("radio", { name: /Name it/ }).click();
+      await page.getByRole("group", { name: "Timer" }).getByRole("button", { name: "Untimed" }).click();
+      await page.getByRole("button", { name: "Start", exact: true }).click();
       const gc = page.locator(".game-model .three-canvas");
       await expect(gc).toHaveAttribute("data-model-count", "4291", {
         timeout: 120000,
@@ -256,16 +246,13 @@ try {
     "PT resources and a replayable contextual tutorial are available",
     async () => {
       await page.getByRole("button", { name: "PT / AT", exact: true }).click();
-      await expect(page.locator(".learning-page")).toContainText(
-        "not a diagnosis or personalized",
+      await expect(page.locator(".pt-page")).toContainText(
+        "does not diagnose a problem",
       );
-      await page
-        .getByRole("button", { name: "Exercise examples", exact: true })
-        .click();
-      await expect(page.locator(".learning-page")).toContainText(
-        "Regressions".slice(0, -1),
-      );
-      await expect(page.locator(".learning-page a").first()).toHaveAttribute(
+      await page.getByRole("tab", { name: "Exercise examples" }).click();
+      await page.locator(".pt-exercise").first().getByRole("button", { name: /Technique, mistakes/ }).click();
+      await expect(page.locator(".pt-page")).toContainText("Easier (regression)");
+      await expect(page.locator(".pt-page a").first()).toHaveAttribute(
         "href",
         /^https:\/\/orthoinfo\.aaos\.org/,
       );
