@@ -45,13 +45,19 @@ const steps = [
   {
     title: "Games",
     text: "Three steps: pick a region or collection, tick the bones, muscles, ligaments or other structures you want to be quizzed on, then choose a game. Untimed is the default; find-and-click pauses during loading, rotation and feedback.",
-    selector: ".learning-toolbar",
+    selector: ".gs, .main-nav",
     tab: "games",
+  },
+  {
+    title: "Study tools",
+    text: "Study has your daily review (spaced repetition that includes things you missed), weak spots, flashcards from any study tab, muscle origin/insertion/action/nerve tables, printable label-the-diagram worksheets, a streak and exam countdown, and a backup file for everything you save.",
+    selector: ".sh, .main-nav",
+    tab: "study",
   },
   {
     title: "PT / AT study",
     text: "Pick a region to see its structures in 3D, then study common injuries, healing stages, exercise examples with technique, mistakes and precautions, and the Sources tab. Educational only, not a treatment plan.",
-    selector: ".learning-toolbar",
+    selector: ".pt-page, .main-nav",
     tab: "pt",
   },
 ];

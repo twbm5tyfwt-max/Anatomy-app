@@ -1,7 +1,8 @@
 import { modelParts, getModelStudy } from "./modelCatalog";
 import type { Question, QuizScope } from "./quiz";
+import type { AnatomyQuestionView } from "./anatomyQuestions";
 
-const centerOf = (m: { bounds: number[][] }) =>
+export const centerOf = (m: { bounds: number[][] }) =>
   [0, 1, 2].map((i) => (m.bounds[0][i] + m.bounds[1][i]) / 2);
 
 /** Keep the picture readable: bones are shown among bones, muscles among muscles and bone. */
@@ -12,8 +13,22 @@ const contextLayers = (layer?: string) =>
       ? ["ligaments", "bones"]
       : ["bones", "cartilage"];
 
+const diag = (m: { bounds: number[][] }) =>
+  Math.hypot(...[0, 1, 2].map((i) => m.bounds[1][i] - m.bounds[0][i]));
+
+/** Frame the target tightly, adding only neighbours of a similar size so small parts aren't lost. */
+export function frameIdsFor(
+  target: (typeof modelParts)[number],
+  context: (typeof modelParts)[number][],
+) {
+  return [
+    target.id,
+    ...context.filter((x) => diag(x) <= diag(target) * 3).slice(0, 3).map((x) => x.id),
+  ];
+}
+
 /** Neighbouring structures that give a highlighted part its surroundings. */
-function surroundings(target: (typeof modelParts)[number], wanted: number) {
+export function surroundings(target: (typeof modelParts)[number], wanted: number) {
     const left = /left/i.test(target.name);
   const right = /right/i.test(target.name);
   return modelParts
@@ -105,7 +120,7 @@ export function collectionQuestions(scope: QuizScope): Question[] {
         anatomySourceId: m.id,
         anatomy: {
           ids,
-          frameIds: [m.id, ...context.slice(0, 3).map((x) => x.id)],
+          frameIds: frameIdsFor(m, context),
           modelId: m.id,
           view: centerOf(m)[2] >= avgZ ? "front" : "back",
           highlightIds: [m.id, ...child],
@@ -141,4 +156,26 @@ export function collectionQuestions(scope: QuizScope): Question[] {
         (scope.format === "choice" && q.format === "image"),
     )
     .map((q) => (scope.format === "choice" ? { ...q, format: "choice" } : q));
+}
+
+/** A picture of one structure coloured among its neighbours (used by questions, flashcards and worksheets). */
+export function pointerView(m: (typeof modelParts)[number]): AnatomyQuestionView {
+  const context = surroundings(m, 7);
+  const all = [m, ...context];
+  const child = modelParts.filter((x) => x.parentId === m.id).map((x) => x.id);
+  const ids = [
+    ...all.map((x) => x.id),
+    ...all.flatMap((x) => modelParts.filter((c) => c.parentId === x.id).map((c) => c.id)),
+  ];
+  const avgZ = context.length
+    ? context.reduce((t, x) => t + centerOf(x)[2], 0) / context.length
+    : 0;
+  return {
+    ids,
+    frameIds: frameIdsFor(m, context),
+    modelId: m.id,
+    view: centerOf(m)[2] >= avgZ ? "front" : "back",
+    highlightIds: [m.id, ...child],
+    interaction: "identify",
+  };
 }

@@ -16,6 +16,7 @@ import { readAtlasState } from "./workspaceStorage";
 type Props = ComponentProps<typeof Explorer3D> & {
   onCollectionQuiz: (c: StudyCollection) => void;
   onCollectionGame: (c: StudyCollection) => void;
+  onCollectionCards: (c: StudyCollection) => void;
 };
 export function AtlasHub(props: Props) {
   const [collections, setCollections] = useStored<StudyCollection[]>(
@@ -188,6 +189,9 @@ export function AtlasHub(props: Props) {
                 <button onClick={() => edit(c)}>Edit collection</button>
                 <button onClick={() => props.onCollectionQuiz(c)}>
                   Quiz collection
+                </button>
+                <button onClick={() => props.onCollectionCards(c)}>
+                  Flashcards
                 </button>
                 <button onClick={() => props.onCollectionGame(c)}>
                   Play collection

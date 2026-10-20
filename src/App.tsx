@@ -21,6 +21,7 @@ import {
   FlaskConical,
   Flower2,
   GraduationCap,
+  NotebookText,
   Heart,
   Layers,
   Leaf,
@@ -59,6 +60,7 @@ import { AtlasHub } from "./AtlasHub";
 import { TissueBridge, HistologyFigure } from "./Histology";
 import { PTLearning } from "./PTLearning";
 import { StudyGames } from "./StudyGames";
+import { StudyHub } from "./StudyHub";
 import { Tutorial } from "./Tutorial";
 import { readAtlasState } from "./workspaceStorage";
 import type { StudyCollection } from "./studyCollections";
@@ -88,7 +90,8 @@ type Tab =
   | "progress"
   | "course"
   | "pt"
-  | "games";
+  | "games"
+  | "study";
 const systemIcons = [
   Leaf,
   Bone,
@@ -127,6 +130,7 @@ export default function App() {
   } | null>(null);
   const [ptRegion, setPtRegion] = useState("");
   const [gameCollection, setGameCollection] = useState("");
+  const [studyOpen, setStudyOpen] = useState<{ sub?: "cards"; collection?: string }>({});
   const [tour, setTour] = useState(false);
   const [tourSeen, setTourSeen] = useStored("forma-tour-seen", false);
   const [collections] = useStored<StudyCollection[]>(
@@ -293,6 +297,7 @@ export default function App() {
             { id: "quizzes", name: "Quizzes", icon: GraduationCap },
             { id: "pt", name: "PT / AT", icon: Activity },
             { id: "games", name: "Games", icon: Brain },
+            { id: "study", name: "Study", icon: NotebookText },
             { id: "progress", name: "My Progress", icon: ChartNoAxesCombined },
           ].map((n) => (
             <button
@@ -576,7 +581,9 @@ export default function App() {
                           ? "PT / AT"
                           : tab === "games"
                             ? "Games"
-                            : "My Materials"}
+                            : tab === "study"
+                              ? "Study"
+                              : "My Materials"}
               </strong>
             </span>
             <span className="device-status">
@@ -660,6 +667,10 @@ export default function App() {
                     format: "mixed",
                   })
                 }
+                onCollectionCards={(c) => {
+                  setStudyOpen({ sub: "cards", collection: c.id });
+                  setTab("study");
+                }}
                 onCollectionGame={(c) => {
                   setGameCollection(c.id);
                   setTab("games");
@@ -868,6 +879,18 @@ export default function App() {
               key={gameCollection}
               initialCollection={gameCollection}
               collections={readCollections(collections)}
+            />
+          )}
+          {tab === "study" && (
+            <StudyHub
+              key={studyOpen.collection || "study"}
+              collections={readCollections(collections)}
+              results={results}
+              missed={missed}
+              cards={cards}
+              onQuiz={openQuiz}
+              initialSub={studyOpen.sub}
+              initialCollection={studyOpen.collection}
             />
           )}
           {tab === "tissues" && (

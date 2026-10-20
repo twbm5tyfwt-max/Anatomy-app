@@ -9,6 +9,8 @@ A React 19 / TypeScript anatomy and PT/AT educational study app with a real segm
 - **Ligaments** have their own row in the left rail (show/hide, plus a focus mode that fades bones). Ligaments are teal.
 - **2D reference** is now a flat atlas drawn from the same 3D model (four views, layers, labels, search); published OpenStax plates remain as a second tab.
 - **Study models** from pictures: clearer review (exact matches pre-confirmed, ambiguous ones flagged), shorthand like ACL/quads, tolerance for OCR slips, a region picker for pictures with no readable text, and a compact study guide with progress.
+- **Study tab**: daily spaced-repetition review (including things you missed), streak and exam countdown, weak spots, flashcards from any study tab, muscle origin/insertion/action/nerve tables with a quiz, printable label-the-diagram worksheets, and a backup/restore file.
+- **Also new**: Landmarks game, sticky-note notebook, practice-exam import, point-to-part picture questions, cartilage row, Burdett’s Anatomy name.
 - See `COMMERCIAL_READINESS.md` (and `npm run audit:license`) before selling anything: the current bundle is noncommercial only.
 
 > `delivery/forma-preview.zip` is the standalone build from the previous round. Regenerate it with `npm run build && npm run export:preview` to get these changes.

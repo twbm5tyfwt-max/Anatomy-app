@@ -1,3 +1,4 @@
+import { logActivity } from "./studyStore";
 import { PracticeExams } from "./PracticeExams";
 import { anatomyQuestionModels } from "./anatomyQuestions";
 import { AnatomyQuestion } from "./AnatomyQuestion";
@@ -112,6 +113,7 @@ export function Quizzes({
     };
     setResult(res);
     onSave(res);
+    logActivity(questions.length);
     setMissed([
       ...new Set([
         ...missed.filter((id) => !correct.some((x) => x.id === id)),
@@ -119,6 +121,10 @@ export function Quizzes({
       ]),
     ]);
   }
+  // A quiz opened with ready-made questions (muscle tables) starts straight away.
+  useEffect(() => {
+    if (initialScope?.custom?.length) start(initialScope.custom);
+  }, []);
   useEffect(() => {
     if (!questions.length || result || !timed) return;
     const timer = window.setInterval(

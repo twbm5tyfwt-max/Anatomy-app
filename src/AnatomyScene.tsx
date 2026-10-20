@@ -44,6 +44,8 @@ export type SceneApi = {
   view: (v: CameraView) => void;
   zoom: (factor: number) => void;
   home: () => void;
+  /** A JPEG of what the viewer currently shows (used for printable worksheets). */
+  capture: () => string;
 };
 export type SceneProps = {
   catalog?: ModelPart[];
@@ -348,6 +350,11 @@ export function AnatomyScene(props: SceneProps) {
       start(center, Math.max(0.025, distance), view, duration);
     };
     const api: SceneApi = {
+      capture() {
+        // Render and read back in the same task so the drawing buffer is still valid.
+        composer.render();
+        return renderer.domElement.toDataURL("image/jpeg", 0.88);
+      },
       snapshot() {
         return {
           position: camera.position.toArray(),
@@ -771,6 +778,9 @@ export function AnatomyScene(props: SceneProps) {
         p.offsets,
         hoverId,
         p.landmarks?.map((l) => l.id),
+        p.onlyIds,
+        p.colorOverrides,
+        p.opacityOverrides,
       ]);
       const colors = JSON.stringify([
         p.appearance.bone,

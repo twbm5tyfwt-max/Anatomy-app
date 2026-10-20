@@ -8,6 +8,7 @@ import { TissueDiagram } from "./TissueDiagram";
 import { useStored } from "./storage";
 import type { StudyCollection } from "./studyCollections";
 import { tissuePalette } from "./tissueColors";
+import { logActivity } from "./studyStore";
 import { LandmarkGame } from "./LandmarkGame";
 import { landmarks as allLandmarks } from "./landmarkCatalog";
 import { GameSetup, MAX_MEMORY, MAX_STRUCTURES } from "./GameSetup";
@@ -303,6 +304,7 @@ export function StudyGames({
       collection: collection?.name,
     };
     setHistory((old) => [r, ...old].slice(0, 100));
+    logActivity(answers.length);
   }
   function answer(id: string) {
     if (!id || !byId.has(id)) return;

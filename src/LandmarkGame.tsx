@@ -4,6 +4,7 @@ import { defaultAppearance } from "./Appearance";
 import { landmarks, type AnatomyLandmark } from "./landmarkCatalog";
 import { modelParts } from "./modelCatalog";
 import { useStored } from "./storage";
+import { logActivity } from "./studyStore";
 
 const byId = new Map(modelParts.map((m) => [m.id, m]));
 const shuffle = <T,>(a: T[]) => [...a].sort(() => Math.random() - 0.5);
@@ -76,6 +77,7 @@ export function LandmarkGame({
   function finish() {
     if (finished) return;
     setFinished(true);
+    logActivity(answers.length);
     setHistory((old) =>
       [
         {
