@@ -5,15 +5,17 @@ import type { StudyCollection } from "./studyCollections";
 import "./games.css";
 import { tissueColor } from "./tissueColors";
 import { landmarkCounts } from "./LandmarkGame";
-
-export const gameModes = [
-  { id: "Find & click", title: "Find & click", text: "Click the named structure on the 3D model." },
-  { id: "Structure → name", title: "Name it", text: "See an isolated structure, pick its name." },
-  { id: "Structure → function", title: "Match function", text: "Pick what the structure does." },
-  { id: "Memory matching", title: "Memory", text: "Flip cards to pair identical names." },
-  { id: "Landmarks", title: "Landmarks", text: "Name the marked point on a bone (humerus, tibia, mandible…)." },
-  { id: "Tissue identification", title: "Tissues", text: "Identify tissue diagrams linked to your picks." },
-] as const;
+import {
+  MODES,
+  difficulties,
+  stars,
+  type Difficulty,
+  type GameSettings,
+  type GameStats,
+  type ModeId,
+  type Playlist,
+} from "./gameStats";
+import { canPlayOdd } from "./gameRounds";
 
 export const structureGroups: { id: string; label: string; layers: string[] }[] = [
   { id: "bones", label: "Bones", layers: ["bones"] },
@@ -57,6 +59,17 @@ export function GameSetup({
   setSeconds,
   onStart,
   message,
+  difficulty,
+  setDifficulty,
+  players,
+  setPlayers,
+  stats,
+  settings,
+  setSettings,
+  quick,
+  onPlaylist,
+  onDeletePlaylist,
+  onSavePlaylist,
 }: {
   collections: StudyCollection[];
   collectionId: string;
@@ -66,18 +79,32 @@ export function GameSetup({
   pool: ModelPart[];
   checkedIds: string[];
   setCheckedIds: (f: (v: string[]) => string[]) => void;
-  mode: string;
-  setMode: (m: string) => void;
+  mode: ModeId;
+  setMode: (m: ModeId) => void;
   seconds: string;
   setSeconds: (s: string) => void;
   onStart: () => void;
   message: string;
+  difficulty: Difficulty;
+  setDifficulty: (d: Difficulty) => void;
+  players: 1 | 2;
+  setPlayers: (p: 1 | 2) => void;
+  stats: GameStats;
+  settings: GameSettings;
+  setSettings: (s: GameSettings) => void;
+  quick: { label: string; sub: string; disabled?: boolean; onClick: () => void }[];
+  onPlaylist: (p: Playlist) => void;
+  onDeletePlaylist: (id: string) => void;
+  onSavePlaylist: (name: string) => void;
 }) {
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState<string[]>(["bones", "muscles", "ligaments"]);
   const checked = useMemo(() => new Set(checkedIds), [checkedIds]);
   const lmCounts = useMemo(() => landmarkCounts(), []);
-  const lmMode = mode === "Landmarks";
+  const lmMode = mode === "landmark";
+  const [listName, setListName] = useState("");
+  const info = MODES.find((m) => m.id === mode)!;
+  const byId = useMemo(() => new Map(pool.map((m) => [m.id, m])), [pool]);
   const byGroup = useMemo(() => {
     const out = new Map<string, ModelPart[]>();
     for (const m of lmMode ? pool.filter((p) => lmCounts.has(p.id)) : pool) {
@@ -86,17 +113,27 @@ export function GameSetup({
     }
     return out;
   }, [pool, lmMode, lmCounts]);
-  const limit = mode === "Memory matching" ? MAX_MEMORY : MAX_STRUCTURES;
-  const needsStructures = mode !== "Tissue identification";
-  const n = lmMode
-    ? checkedIds.filter((id) => lmCounts.has(id)).length
-    : checkedIds.length;
+  const limit = info.max;
+  const picked = checkedIds.map((id) => byId.get(id)).filter(Boolean) as ModelPart[];
+  const needsStructures = mode !== "tissue";
+  const n = lmMode ? checkedIds.filter((id) => lmCounts.has(id)).length : checkedIds.length;
   const lmTotal = checkedIds.reduce((t, id) => t + (lmCounts.get(id) || 0), 0);
+  const muscles = picked.filter((m) => m.layer === "muscles").length;
   const ok = lmMode
     ? lmTotal >= 4
-    : needsStructures
-      ? n >= 2 && n <= limit
-      : n >= 2;
+    : mode === "match"
+      ? muscles >= 4
+      : mode === "odd"
+        ? canPlayOdd(picked)
+        : needsStructures
+          ? n >= info.min && n <= limit
+          : n >= 2;
+  const need =
+    mode === "odd"
+      ? "needs 3 of one tissue plus another tissue"
+      : mode === "match"
+        ? `${muscles} muscles ticked · need at least 4`
+        : `Need ${info.min}–${limit} for this game`;
   const q = search.trim().toLowerCase();
 
   function setGroup(id: string, on: boolean) {
@@ -125,6 +162,30 @@ export function GameSetup({
 
   return (
     <div className="gs">
+      <section className="gs-home" aria-label="Quick start">
+        <div className="gs-quick">
+          {quick.map((q) => (
+            <button key={q.label} disabled={q.disabled} onClick={q.onClick}>
+              <strong>{q.label}</strong>
+              <span>{q.sub}</span>
+            </button>
+          ))}
+        </div>
+        {!!stats.playlists.length && (
+          <div className="gs-lists" aria-label="My playlists">
+            <span>My playlists</span>
+            {stats.playlists.map((p) => (
+              <span key={p.id} className="gs-list">
+                <button onClick={() => onPlaylist(p)}>{p.name}</button>
+                <button aria-label={`Delete playlist ${p.name}`} onClick={() => onDeletePlaylist(p.id)}>
+                  ×
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
+        {stats.totalPoints > 0 && <p className="gs-total">{stats.totalPoints.toLocaleString()} points earned in total</p>}
+      </section>
       <section className="gs-step">
         <header>
           <span className="gs-num">1</span>
@@ -248,6 +309,11 @@ export function GameSetup({
                             aria-hidden="true"
                           />
                           <span>{m.name}</span>
+                          {stars(stats.mastery["s:" + m.id]) > 0 && (
+                            <small className="gs-stars" title="Mastery from your game answers">
+                              {"★".repeat(stars(stats.mastery["s:" + m.id]))}
+                            </small>
+                          )}
                           {lmCounts.has(m.id) && (
                             <small className="gs-lm">
                               {lmCounts.get(m.id)} landmarks
@@ -272,31 +338,77 @@ export function GameSetup({
             <p>Untimed is the default. Timers pause during feedback and loading.</p>
           </div>
         </header>
-        <div className="gs-modes" role="radiogroup" aria-label="Game">
-          {gameModes.map((g) => (
-            <button
-              key={g.id}
-              role="radio"
-              aria-checked={mode === g.id}
-              onClick={() => setMode(g.id)}
-            >
-              <strong>{g.title}</strong>
-              <span>{g.text}</span>
-            </button>
-          ))}
+        {(["On the 3D model", "Quick thinking", "Exam practice"] as const).map((group) => (
+          <div key={group}>
+            <h3 className="gs-group-title">{group}</h3>
+            <div className="gs-modes" role="radiogroup" aria-label={group}>
+              {MODES.filter((g) => g.group === group).map((g) => (
+                <button
+                  key={g.id}
+                  role="radio"
+                  aria-checked={mode === g.id}
+                  onClick={() => setMode(g.id)}
+                >
+                  <strong>{g.title}</strong>
+                  <span>{g.text}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
+        <div className="gs-options">
+          <div role="radiogroup" aria-label="Difficulty" className="gs-seg">
+            {difficulties.map((d) => (
+              <button
+                key={d.id}
+                role="radio"
+                aria-checked={difficulty === d.id}
+                title={d.text}
+                onClick={() => setDifficulty(d.id)}
+              >
+                {d.label}
+              </button>
+            ))}
+          </div>
+          <span className="gs-hint">{difficulties.find((d) => d.id === difficulty)!.text}</span>
+          <div role="radiogroup" aria-label="Players" className="gs-seg">
+            {([1, 2] as const).map((p) => (
+              <button key={p} role="radio" aria-checked={players === p} onClick={() => setPlayers(p)}>
+                {p === 1 ? "1 player" : "Pass & play (2)"}
+              </button>
+            ))}
+          </div>
         </div>
+        <details className="gs-settings">
+          <summary>Game settings</summary>
+          {(
+            [
+              ["light", "Light graphics (older laptops and phones)"],
+              ["colorblind", "Colour-blind friendly colours"],
+              ["sound", "Sound effects"],
+              ["haptics", "Vibration feedback"],
+            ] as const
+          ).map(([k, label]) => (
+            <label key={k}>
+              <input
+                type="checkbox"
+                checked={settings[k]}
+                onChange={(e) => setSettings({ ...settings, [k]: e.target.checked })}
+              />{" "}
+              {label}
+            </label>
+          ))}
+        </details>
       </section>
 
       <div className="gs-bar" role="region" aria-label="Start game">
         <div className="gs-summary">
-          <strong>
-            {n} selected
-          </strong>
+          <strong>{n} selected</strong>
           <span>
             {lmMode
               ? `${lmTotal} landmarks on ${n} bone${n === 1 ? "" : "s"} · need at least 4`
               : needsStructures
-                ? `Need 2–${limit} for this game`
+                ? need
                 : "Tissues come from your picks"}
           </span>
         </div>
@@ -314,6 +426,23 @@ export function GameSetup({
         <button className="primary" disabled={!ok} onClick={onStart}>
           Start
         </button>
+        <span className="gs-save">
+          <input
+            aria-label="Playlist name"
+            placeholder="Save as playlist…"
+            value={listName}
+            onChange={(e) => setListName(e.target.value)}
+          />
+          <button
+            disabled={!ok || !listName.trim()}
+            onClick={() => {
+              onSavePlaylist(listName.trim());
+              setListName("");
+            }}
+          >
+            Save
+          </button>
+        </span>
       </div>
       {message && (
         <p role="alert" className="gs-msg">

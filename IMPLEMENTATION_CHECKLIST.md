@@ -72,3 +72,18 @@ All seven approved study ideas live in a new **Study** tab (Today · Flashcards 
 | Printable label-the-diagram worksheets | Pictures captured from the 3D model with one structure in pink (several views are tried until it is visible), optional word bank, name/date/score lines and an answer-key page; open to print or download. | Browser test (6+ pictures, key, size) and a visual check. | Some small inner structures are framed very tightly. Landmark-dot worksheets are not offered because the dots are drawn outside the 3D canvas. |
 
 Fixes found on the way: the 3D viewer ignored later changes to which structures it should show (it only read them at start); it now responds. Point-to-part pictures, flashcards and worksheets frame the target tightly with neighbours of similar size.
+
+## Round 5: games overhaul, female model, landmarks
+
+| Item | Status | Where |
+|---|---|---|
+| Games home: Continue, Daily challenge, My 10 weakest, Speed round, saved playlists | Done | `StudyGames.tsx`, `GameSetup.tsx` |
+| Difficulty (Easy clues/free hints, Normal, Hard typed + 25 s) and pass-and-play for two | Done | `GameRunner.tsx` |
+| Play HUD: points, combo, streak, progress, pause, hint, full screen, keys 1-4/H/P/F/Enter | Done | `GameRunner.tsx` |
+| New modes: Speed, Survival, Colour the labels, Odd one out, Muscle match, Lab practical | Done | `GameRunner.tsx`, `gameRounds.ts` |
+| One persistent 3D stage per session (no reload per question), light graphics, colour-blind palette | Done | `GameRunner.tsx`, `tissueColors.ts` |
+| Mastery stars, personal bests, daily record, misses sent to Review today | Done | `gameStats.ts` |
+| Results: every answer with your reply, points, best streak, practice mistakes | Done (no per-item pictures) | `StudyGames.tsx` |
+| Female model uses the full atlas plus 38 HRA reproductive structures | Done | `modelCatalog.ts`, `scripts/build-female-extras.mjs` |
+| Landmarks: larger pins, list always shown, similar-bone suggestions for unmapped bones | Done (only 52 of 142 bones have mapped points) | `Explorer3D.tsx` |
+| Layer peel game | Skipped: would require layer ordering that is not anatomically reliable | n/a |
