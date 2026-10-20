@@ -1,3 +1,4 @@
+import { collectionQuestions } from "./collectionQuestions";
 import { anatomyQuestions } from "./anatomyQuestions";
 import type { AnatomyQuestionView } from "./anatomyQuestions";
 import { structures, tissues } from "./content";
@@ -25,6 +26,8 @@ export type Question = {
   anatomySourceId?: string;
 };
 export type QuizScope = {
+  modelIds?: string[];
+  scopeLabel?: string;
   anatomy?: boolean;
   anatomyTopic?: string;
   system: string;
@@ -59,6 +62,7 @@ export function createQuestions(
   missed: string[] = [],
 ): Question[] {
   const qs: Question[] = [];
+  if(scope.modelIds && !scope.course)return shuffle(collectionQuestions(scope).filter(q=>!scope.missedOnly||missed.includes(q.id))).slice(0,scope.count);
   if (scope.anatomy && !scope.course) {
     let bank = anatomyQuestions(scope, options).filter(
       (q) => !scope.missedOnly || missed.includes(q.id),

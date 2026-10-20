@@ -8337,7 +8337,7 @@
         ]
       ],
       "triangles": 2546,
-      "layer": "cartilage",
+      "layer": "organs",
       "sourceName": "Anterior semilunar leaflet of pulmonary valve",
       "sourceMaterial": "Cartilage",
       "region": "Torso",
@@ -47197,7 +47197,7 @@
         ]
       ],
       "triangles": 9396,
-      "layer": "ligaments",
+      "layer": "organs",
       "sourceName": "Inferior leaflet of right atrioventricular valve",
       "sourceMaterial": "Ligament",
       "region": "Torso",
@@ -59998,7 +59998,7 @@
         ]
       ],
       "triangles": 1992,
-      "layer": "cartilage",
+      "layer": "organs",
       "sourceName": "Left semilunar leaflet of pulmonary valve",
       "sourceMaterial": "Cartilage",
       "region": "Torso",
@@ -62370,7 +62370,7 @@
         ]
       ],
       "triangles": 338,
-      "layer": "ligaments",
+      "layer": "fascia",
       "sourceName": "Linea alba",
       "sourceMaterial": "Ligament",
       "region": "Torso",
@@ -88948,7 +88948,7 @@
         ]
       ],
       "triangles": 7560,
-      "layer": "ligaments",
+      "layer": "organs",
       "sourceName": "Posterior leaflet of left atrioventricular valve",
       "sourceMaterial": "Ligament",
       "region": "Torso",
@@ -104874,7 +104874,7 @@
         ]
       ],
       "triangles": 2735,
-      "layer": "cartilage",
+      "layer": "organs",
       "sourceName": "Right semilunar leaflet of pulmonary valve",
       "sourceMaterial": "Cartilage",
       "region": "Torso",
@@ -107614,7 +107614,7 @@
         ]
       ],
       "triangles": 8788,
-      "layer": "ligaments",
+      "layer": "organs",
       "sourceName": "Septal leaflet of right atrioventricular valve",
       "sourceMaterial": "Ligament",
       "region": "Torso",

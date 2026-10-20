@@ -1,11 +1,15 @@
-# Open Forma 3D
+# Open Forma — Anatomy + PT/AT study
 
-Download `forma-preview.zip`, extract it, and open `forma-preview.html` in a browser with WebGL. No installation or server is needed. Use 2D reference if WebGL is unavailable.
+Download `forma-preview.zip`, extract it, and open `forma-preview.html` in a browser with WebGL. No installation, account or server is required. The original 2D reference library is still available.
 
-Body starts with the skeleton. Click a structure to highlight it; Focus slowly moves closer, and Isolate hides surrounding anatomy. Enable Focus after selecting for automatic focus. Drag to rotate, scroll/pinch to zoom, and use six anatomical views. Layers control visibility and transparency. Explore offers spine, shoulder, pelvis, knee, and matched-scale vertebra comparisons. Search finds individual structures; Landmarks mode shows reviewed source anchors. Customize changes the app, bone, and muscle colors.
+Click/tap to select; hover is temporary. Empty space clears selection. Drag to rotate. Hidden structures do not receive pointer hits. The overlap chooser helps with layered anatomy; surfaces below 45% opacity allow deeper opaque structures to be picked first. Reset clears old selection, labels and region state. Choose graphite, ivory or midnight in Studio.
 
-The source-derived Z-Anatomy atlas has 4,291 parts, including tissue surfaces and attachment illustrations. Specific landmark notes, detailed functions, and visual quizzes cover a reviewed subset. This is not Complete Anatomy's proprietary model and does not have photorealistic muscle fiber textures.
+Explore provides regional filters, knee dissection and an explicitly displaced exploded teaching view. A structure's tissue link opens diagrams, published microscope reference plates and comparisons while retaining the body camera. Prepared heart/airway diagrams are educational schematics, not cuts through a validated internal model.
 
-See the included credits and original licenses for Z-Anatomy, BodyParts3D, upstream third-party models, and OpenStax. Asset-specific licenses remain distinct; this educational distribution is for noncommercial use.
+Use + beside Body/Explore to review structures extracted locally from PDF/PPTX/text or transcribed images. Confirm sides/components before saving an independent study model. Uploads stay in this browser; no AI/OCR service receives them. Quizzes and games can be restricted to confirmed collections. Help replays the contextual tutorial.
 
-Skin limitation: the bundled skin is divided into source anatomical regions with visible seams. It is not a continuous photorealistic skin surface; no invented replacement or cosmetic smoothing is presented as anatomical realism.
+PT / AT offers introductory anatomy/injury concepts, healing stages and exercise examples with precautions and source links. It is not individualized care. AAOS/NHS retrieval was blocked by the environment, so latest clinical source dates/recommendations are not verified. A complete female model, seamless skin/fiber textures and validated organ cutaways remain unavailable. See the included implementation checklist.
+
+This distribution is for **noncommercial educational website/app use** under the separate source licenses. Credit does not waive restrictions. Keep LICENSES.md, ASSET_CREDITS.md, ASSET_MANIFEST.json, the original license statements and THIRD_PARTY_LICENSES.txt with distributions. The website build also prepares a legal/ folder; retain it when hosting. Published microscopy captions, specimen information and original labels remain visible.
+
+Saved data is browser-local and depends on the same browser/origin. Keep the same hosted origin or local file location when replacing an earlier copy; clearing browser storage or moving to a different origin does not transfer progress or uploaded originals.

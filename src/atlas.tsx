@@ -1,3 +1,4 @@
+import { anatomyImages } from "./assetPaths";
 import { useId } from "react";
 export type AtlasArea = {
   id: string;
@@ -356,7 +357,7 @@ export function Atlas({
       <g mask={`url(#visible${uid})`}>
         {skeletal ? (
           <image
-            href="/anatomy/701_Axial_Skeleton-01.jpg"
+            href={anatomyImages["701_Axial_Skeleton-01.jpg"]}
             x="0"
             y="0"
             width="620"
@@ -365,7 +366,7 @@ export function Atlas({
         ) : (
           <g clipPath={`url(#body${uid})`} filter={`url(#clear${uid})`}>
             <image
-              href="/anatomy/1105_Anterior_and_Posterior_Views_of_Muscles.jpg"
+              href={anatomyImages["1105_Anterior_and_Posterior_Views_of_Muscles.jpg"]}
               width="620"
               height="1398.3"
               y={view === "front" ? 0 : -716}

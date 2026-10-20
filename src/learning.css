@@ -1,0 +1,606 @@
+/* Shared learning tools inherit the existing appearance palette. */
+[hidden] {
+  display: none !important;
+}
+.overlap-picker,
+.region-structure-list {
+  position: absolute;
+  z-index: 8;
+  left: 16px;
+  top: 90px;
+  max-width: min(310px, 70%);
+  max-height: 45%;
+  overflow: auto;
+  background: var(--panel, #fff);
+  color: var(--text-primary, #243047);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 10px;
+  box-shadow: 0 8px 28px #0002;
+}
+.region-structure-list {
+  top: auto;
+  bottom: 120px;
+}
+.overlap-picker button,
+.region-structure-list button {
+  display: block;
+  text-align: left;
+  padding: 7px;
+  font-size: 11px;
+}
+.overlap-picker p {
+  font-size: 11px;
+  max-width: 230px;
+}
+.region-structure-list > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border-top: 1px solid var(--border);
+}
+.region-structure-list > div > button:first-child {
+  flex: 1;
+}
+.region-tools,
+.study-workspaces,
+.collection-actions,
+.learning-toolbar,
+.game-status {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px 16px;
+  background: var(--panel, #fff);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin: 8px 0;
+}
+.region-tools label,
+.learning-toolbar label {
+  display: grid;
+  gap: 5px;
+  font-size: 11px;
+}
+.region-tools small,
+.region-tools span {
+  font-size: 11px;
+  max-width: 420px;
+}
+.region-tools strong {
+  color: #a3642c;
+  font-size: 12px;
+}
+.region-tools select,
+.learning-toolbar select,
+.pro-display-settings select {
+  max-width: 220px;
+  font: inherit;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 7px;
+  background: var(--panel, #fff);
+  color: inherit;
+}
+.region-tools button,
+.study-workspaces button,
+.collection-actions button,
+.linked-learning button,
+.learning-toolbar button {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  font-size: 12px;
+}
+.study-workspaces [aria-selected="true"],
+.learning-toolbar [aria-pressed="true"],
+.airway-stages [aria-pressed="true"] {
+  color: var(--accent);
+  background: var(--accent-soft, #efefff);
+  border-color: var(--accent);
+}
+.study-workspaces {
+  overflow: auto;
+  flex-wrap: nowrap;
+}
+.study-workspaces button {
+  white-space: nowrap;
+}
+.collection-actions span {
+  font-size: 11px;
+  flex: 1;
+}
+.pro-presets {
+  flex-wrap: wrap;
+}
+.pro-display-settings {
+  flex-wrap: wrap;
+  height: auto;
+  min-height: 40px;
+  gap: 12px;
+}
+.pro-display-settings > span {
+  max-width: 260px;
+  line-height: 1.4;
+  font-size: 9px;
+}
+.linked-learning {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 12px 0;
+}
+.pro-inspector details > button {
+  display: block;
+  padding: 8px;
+  text-align: left;
+}
+.pro-inspector details > summary {
+  padding: 9px 0;
+}
+.pro-atlas .pro-stage {
+  background: linear-gradient(145deg, #233345, #0d1726);
+}
+.pro-light-studio .pro-stage {
+  background: linear-gradient(#f1f1e9, #cbd7dc);
+}
+.study-editor,
+.tissue-bridge {
+  max-width: 950px;
+  width: calc(100% - 24px);
+  max-height: 90dvh;
+  overflow: auto;
+  padding: 30px !important;
+}
+.study-editor label {
+  display: grid;
+  gap: 6px;
+  margin: 12px 0;
+}
+.study-editor input:not([type="checkbox"]),
+.study-editor textarea {
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  font: inherit;
+  width: 100%;
+  background: var(--panel, #fff);
+  color: inherit;
+}
+.study-editor .match-review label,
+.manual-matches label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+.study-editor details {
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin: 8px 0;
+}
+.manual-matches,
+.match-review {
+  max-height: 300px;
+  overflow: auto;
+}
+.study-editor small {
+  font-size: 11px;
+  display: block;
+  color: var(--text-secondary);
+}
+.modal-backdrop {
+  z-index: 80;
+}
+.learning-page {
+  max-width: 1180px;
+  margin: 20px auto;
+}
+.learning-page h1 {
+  font-size: clamp(25px, 3vw, 38px);
+  letter-spacing: -1px;
+}
+.education-note,
+.source-review {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  line-height: 1.7;
+  font-size: 13px;
+  background: var(--panel, #fff);
+}
+.learning-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  margin: 20px 0;
+}
+.learning-card {
+  background: var(--panel, #fff);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  margin: 18px 0;
+  line-height: 1.7;
+}
+.learning-grid .learning-card {
+  margin: 0;
+}
+.learning-card h2 {
+  font-size: 21px;
+}
+.learning-card h3,
+.tissue-bridge h3 {
+  font-size: 13px;
+  margin: 18px 0 6px;
+}
+.learning-card p,
+.tissue-bridge p {
+  font-size: 13px;
+  line-height: 1.75;
+}
+.learning-card a,
+.histology-figure a {
+  color: var(--accent);
+  text-decoration: underline;
+}
+.source-review {
+  margin-top: 24px;
+}
+.source-review p {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+.tissue-bridge > label {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  margin: 12px 12px 12px 0;
+  font-size: 12px;
+}
+.tissue-bridge select {
+  max-width: 220px;
+}
+.bridge-visual {
+  background: var(--panel, #fff);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+}
+.histology-figure {
+  margin: 0;
+}
+.histology-figure img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: auto;
+}
+.histology-figure figcaption {
+  font-size: 11px;
+  line-height: 1.6;
+  padding: 16px;
+}
+.histology-figure figcaption p {
+  font-size: 11px;
+}
+.histology-figure strong {
+  display: block;
+}
+.airway-stages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+}
+.airway-stages button {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 7px;
+  font-size: 12px;
+}
+.bridge-visual svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.game-model {
+  height: 420px;
+  position: relative;
+  background: #152334;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.game-status {
+  justify-content: space-between;
+}
+.game-session {
+  max-width: 900px;
+  margin: 24px auto;
+}
+.game-session h2 {
+  font-size: 21px;
+}
+.game-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+.game-options button,
+.memory-grid button {
+  border: 1px solid var(--border);
+  background: var(--panel, #fff);
+  color: inherit;
+  border-radius: 10px;
+  padding: 18px;
+  min-height: 64px;
+  text-align: left;
+}
+.game-options button:hover {
+  border-color: var(--accent);
+}
+.memory-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+.memory-grid button {
+  text-align: center;
+  min-height: 90px;
+}
+.memory-grid button:disabled {
+  opacity: 0.65;
+}
+.game-feedback {
+  padding: 16px;
+  border: 1px solid var(--accent);
+  border-radius: 10px;
+}
+.game-feedback button {
+  padding: 9px 16px;
+  background: var(--accent);
+  color: white;
+  border-radius: 6px;
+}
+.help-trigger {
+  padding: 7px 9px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 11px;
+}
+.tutorial-popover {
+  position: fixed;
+  z-index: 100;
+  width: 310px;
+  max-width: calc(100vw - 24px);
+  padding: 20px;
+  background: var(--panel, #fff);
+  color: var(--text-primary, #243047);
+  box-shadow: 0 16px 50px #0005;
+  border: 2px solid var(--accent);
+  border-radius: 12px;
+}
+.tutorial-popover h2 {
+  font-size: 18px;
+}
+.tutorial-popover p {
+  font-size: 12px;
+  line-height: 1.7;
+}
+.tutorial-popover > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+.tutorial-popover button {
+  padding: 8px;
+  border-radius: 6px;
+}
+.tour-target {
+  outline: 2px solid var(--accent) !important;
+  outline-offset: 4px;
+}
+.tour-invite {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 40;
+  background: var(--panel, #fff);
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 30px #0002;
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+}
+.tour-invite button {
+  color: var(--accent);
+}
+@media (max-width: 1500px) {
+  .brand-tagline {
+    display: none !important;
+  }
+  .topbar {
+    gap: 12px;
+  }
+  .main-nav button {
+    font-size: 11px;
+    padding: 10px;
+  }
+  .main-nav {
+    gap: 3px;
+  }
+}
+@media (max-width: 1050px) {
+  .learning-grid {
+    grid-template-columns: 1fr;
+  }
+  .course-link span,
+  .appearance-trigger span {
+    display: none;
+  }
+  .main-nav button {
+    padding: 9px 7px;
+    font-size: 10px;
+  }
+  .main-nav svg {
+    display: none;
+  }
+  .pro-stage {
+    min-height: 450px;
+  }
+  .pro-presets {
+    gap: 8px;
+  }
+  .pro-header {
+    flex-wrap: wrap;
+  }
+  .pro-search {
+    min-width: 150px;
+  }
+}
+@media (max-width: 700px) {
+  .learning-toolbar {
+    align-items: stretch;
+  }
+  .learning-toolbar label {
+    flex: 1;
+    min-width: 120px;
+  }
+  .memory-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .game-options {
+    grid-template-columns: 1fr;
+  }
+  .game-model {
+    height: 360px;
+  }
+  .study-editor,
+  .tissue-bridge {
+    padding: 20px !important;
+  }
+  .region-tools {
+    font-size: 11px;
+  }
+  .region-tools select {
+    max-width: 165px;
+  }
+  .tour-invite {
+    bottom: 78px;
+    left: 12px;
+    right: 12px;
+  }
+  .study-workspaces {
+    margin-top: 3px;
+  }
+  .pro-stage {
+    height: 530px;
+  }
+  .help-trigger {
+    margin-left: auto;
+  }
+  .main-nav {
+    overflow: auto;
+    max-width: 60vw;
+  }
+  .main-nav button {
+    white-space: nowrap;
+  }
+  .main-nav svg {
+    display: none;
+  }
+  .topbar .main-nav {
+    display: flex !important;
+  }
+  .topbar .avatar,
+  .topbar .brand {
+    display: none;
+  }
+  .topbar {
+    height: auto !important;
+    min-height: 62px;
+    padding: 8px !important;
+    gap: 7px;
+  }
+  .appearance-trigger {
+    display: none !important;
+  }
+  .course-link {
+    display: flex !important;
+  }
+  .topbar .mobile-menu {
+    display: block;
+  }
+  .learning-page {
+    margin: 12px auto;
+  }
+  .pro-view-controls button {
+    font-size: 9px;
+    padding: 7px;
+  }
+  .pro-view-controls {
+    gap: 3px;
+  }
+  .pro-display-settings > span {
+    display: none;
+  }
+}
+.pro-selection-strip {
+  height: auto !important;
+  min-height: 48px;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px !important;
+}
+.pro-selection-strip > label:last-of-type {
+  max-width: 220px;
+}
+.pro-selection-strip > span {
+  max-width: 260px;
+  line-height: 1.4;
+  font-size: 9px;
+}
+.pro-selection-strip select {
+  max-width: 190px;
+  font-size: 11px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 5px;
+  background: var(--panel, #fff);
+  color: inherit;
+}
+.pro-selection-strip > button {
+  font-size: 11px;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+}
+/* HUD controls stay above projected annotations, including on touch screens. */
+.pro-camera-tools,
+.pro-selection-actions,
+.pro-view-controls {
+  z-index: 30 !important;
+}
+.pro-corner-label {
+  z-index: 25 !important;
+  pointer-events: none;
+}
+.pro-corner-label button {
+  pointer-events: auto;
+}
+.overlap-picker,
+.region-structure-list {
+  z-index: 35;
+}
+.anchored-label {
+  z-index: 10;
+}
+.landmark-pin {
+  z-index: 11;
+}

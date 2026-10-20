@@ -53,6 +53,17 @@ import {
   spineRegionNotes,
   type AnatomyLandmark,
 } from "./landmarkCatalog";
+import {
+  regionNames,
+  regionParts,
+  associatedTissue,
+  viewNames,
+  viewTips,
+  kneeOffsets,
+  groupNodes,
+} from "./atlasDomain";
+import type { CameraState } from "./AnatomyScene";
+import { readAtlasState, saveAtlasState } from "./workspaceStorage";
 import { systems } from "./content";
 import type { Appearance } from "./Appearance";
 import "./atlas-workspace.css";
@@ -114,7 +125,17 @@ export function Explorer3D({
   bookmarks,
   onQuiz,
   onReference,
+  onNewStudy,
+  onTissue,
+  allowedIds,
+  workspaceId = "main",
+  onPT,
 }: {
+  workspaceId?: string;
+  allowedIds?: string[];
+  onNewStudy?: () => void;
+  onTissue?: (id: string, alveoli?: boolean) => void;
+  onPT?: (region: string) => void;
   visible: string[];
   onVisibleChange: (v: string[]) => void;
   highlightedSystems: string[];
@@ -129,26 +150,51 @@ export function Explorer3D({
   onQuiz: (id: string) => void;
   onReference: () => void;
 }) {
+  const savedState = useRef(readAtlasState(workspaceId));
+  const cameraMemory = useRef<CameraState | undefined>(
+    savedState.current?.camera,
+  );
   const [workspace, setWorkspace] = useState<"body" | "explore">("body"),
-    [selected, setSelected] = useState<string | null>(null),
+    [selected, setSelected] = useState<string | null>(
+      savedState.current?.selected || null,
+    ),
     [scope, setScope] = useState<"whole" | "component" | "tissue">("whole");
-  const [hidden, setHidden] = useState<string[]>([]),
-    [isolated, setIsolated] = useState<string[] | null>(null),
+  const [hidden, setHidden] = useState<string[]>(
+      savedState.current?.hidden || [],
+    ),
+    [isolated, setIsolated] = useState<string[] | null>(
+      savedState.current?.isolated || null,
+    ),
     [history, setHistory] = useState<Snapshot[]>([]);
   const [layers, setLayers] = useState<Record<string, number>>({
       ...defaultLayers,
+      ...(allowedIds
+        ? Object.fromEntries(
+            Object.keys(defaultLayers).map((k) => [
+              k,
+              k === "attachment" ? 0 : 1,
+            ]),
+          )
+        : {}),
+      ...savedState.current?.layers,
     }),
     [layerMenu, setLayerMenu] = useState<string | null>(null);
-  const [selectionMode, setSelectionMode] = useState<
-      "structure" | "tissue" | "landmark"
-    >("structure"),
-    [labels, setLabels] = useState(true),
+  const [labels, setLabels] = useState(true),
     [quality, setQuality] = useState(true),
     [autoFocus, setAutoFocus] = useState(false);
   const [view, setView] = useState<CameraView>("front"),
     [search, setSearch] = useState(""),
     [browse, setBrowse] = useState(false),
     [kind, setKind] = useState("All");
+  const [candidates, setCandidates] = useState<string[]>([]);
+  const [background, setBackground] = useState<
+    "graphite" | "ivory" | "midnight"
+  >("graphite");
+  const [exploreRegion, setExploreRegion] = useState("");
+  const [regionLayers, setRegionLayers] = useState<string[]>([]);
+  const [exploded, setExploded] = useState(false);
+  const [dissectionStep, setDissectionStep] = useState(0);
+  const [variant, setVariant] = useState("male");
   const [hover, setHover] = useState<string | null>(null),
     [infoTab, setInfoTab] = useState("Overview"),
     [landmark, setLandmark] = useState<AnatomyLandmark | null>(null);
@@ -163,10 +209,13 @@ export function Explorer3D({
     compareApis = useRef<(SceneApi | null)[]>([null, null]),
     searchRef = useRef<HTMLInputElement>(null),
     previousVisible = useRef(visible);
-  const pendingFrame = useRef<{ ids: string[]; view?: CameraView } | null>(null);
+  const pendingFrame = useRef<{ ids: string[]; view?: CameraView } | null>(
+    null,
+  );
   function requestFrame(ids: string[], view?: CameraView) {
-    if (api.current && !compare) api.current.frame(ids, view);
-    else pendingFrame.current = { ids, view };
+    const targetIds = ids.length ? ids : allowedIds || [];
+    if (api.current && !compare) api.current.frame(targetIds, view);
+    else pendingFrame.current = { ids: targetIds, view };
   }
   const model = selected ? byId.get(selected) : undefined,
     base = model ? parentModel(model) : undefined;
@@ -188,7 +237,7 @@ export function Explorer3D({
       ? displayName(model)
       : model.name
     : "";
-  const primaryGroup = group.filter((m) => !m.parentId);
+  const primaryGroup = model ? displayGroup(model).filter((m) => !m.parentId) : [];
   const localLandmarks = base ? landmarksFor(base.id) : [];
   const attachmentCandidates = modelParts.filter(
     (m) =>
@@ -219,6 +268,7 @@ export function Explorer3D({
     setLandmark(null);
     setAttachmentKind(null);
     setHover(null);
+    setCandidates([]);
   }
   function restore() {
     remember();
@@ -231,11 +281,37 @@ export function Explorer3D({
     clear();
     setHidden([]);
     setIsolated(null);
-    setLayers({ ...defaultLayers });
-    onVisibleChange(["skeletal"]);
+    setLayers(
+      allowedIds
+        ? Object.fromEntries(
+            Object.keys(defaultLayers).map((k) => [
+              k,
+              k === "attachment" ? 0 : 1,
+            ]),
+          )
+        : { ...defaultLayers },
+    );
+    onVisibleChange(
+      allowedIds
+        ? [
+            ...new Set(
+              modelParts
+                .filter((m) => allowedIds.includes(m.id))
+                .map((m) => m.system),
+            ),
+          ]
+        : ["skeletal"],
+    );
     onRegionChange("");
     onClearHighlights();
     setView("front");
+    setInfoTab("Overview");
+    setCandidates([]);
+    setBrowse(false);
+    setSearch("");
+    setExploreRegion("");
+    setExploded(false);
+    setDissectionStep(0);
     setCompare(false);
     requestFrame([], "front");
   }
@@ -269,20 +345,9 @@ export function Explorer3D({
       clear();
       return;
     }
-    const m = selectionMode === "tissue" ? raw : parentModel(raw);
-    if (
-      !focus &&
-      selected &&
-      (selectionMode === "tissue"
-        ? m.id === selected
-        : displayGroupKey(m) === displayGroupKey(model!))
-    ) {
-      clear();
-      return;
-    }
-    const nextScope = selectionMode === "tissue" ? "tissue" : "whole";
-    const ids =
-      nextScope === "tissue" ? [m.id] : displayGroup(m).map((m) => m.id);
+    const m = raw;
+    const nextScope = m.parentId ? ("tissue" as const) : ("component" as const);
+    const ids = m.parentId ? [m.id] : children([m.id]);
     setSelected(m.id);
     setScope(nextScope);
     setLandmark(null);
@@ -291,7 +356,7 @@ export function Explorer3D({
     setBrowse(false);
     setHover(null);
     onSelect("model:" + m.id);
-    ensure(ids);
+    ensure(focus ? ids : [m.id]);
     if (focus) {
       remember();
       setIsolated(ids);
@@ -389,7 +454,6 @@ export function Explorer3D({
   function focusLandmark(l: AnatomyLandmark) {
     setLandmark(l);
     setInfoTab("Landmarks");
-    setSelectionMode("landmark");
     const ids = children(l.contextIds);
     ensure(ids);
     setIsolated(ids);
@@ -432,9 +496,21 @@ export function Explorer3D({
     clear();
     setCompare(false);
     setWorkspace("explore");
+    setExploreRegion(name);
+    setRegionLayers([]);
+    setExploded(false);
+    setDissectionStep(0);
     setHidden([]);
     onVisibleChange(["skeletal"]);
-    setLayers({ ...defaultLayers, ligaments: 1, tendons: 1 });
+    setLayers({
+      ...defaultLayers,
+      cartilage: 1,
+      ligaments: 1,
+      tendons: 1,
+      muscles: 1,
+      fascia: 1,
+      organs: 1,
+    });
     let parts: ModelPart[] = [],
       frame: string[] = [];
     if (name === "Spine") {
@@ -483,14 +559,53 @@ export function Explorer3D({
         "Posterior cruciate ligament.r",
       ]);
     }
-    const ids = parts.map((m) => m.id);
+    const curated = regionParts(name);
+    if (curated.length) parts = curated;
+    const ids = parts
+      .map((m) => m.id)
+      .filter((id) => !allowedIds || allowedIds.includes(id));
+    onVisibleChange([
+      ...new Set(parts.filter((m) => ids.includes(m.id)).map((m) => m.system)),
+    ]);
     setIsolated(ids);
     setView("front");
     requestFrame(frame.length ? frame : ids, "front");
   }
+  useEffect(() => {
+    const f = (e: Event) => {
+      if (workspaceId === "main") preset((e as CustomEvent).detail);
+    };
+    window.addEventListener("forma-region", f);
+    return () => window.removeEventListener("forma-region", f);
+  }, [visible, allowedIds]);
+  useEffect(() => {
+    if (exploreRegion === "Knee") {
+      const ids = regionParts("Knee")
+        .filter((m) => /patella|menisc|cruciate/i.test(m.name) && !m.parentId)
+        .map((m) => m.id)
+        .filter((id) => !allowedIds || allowedIds.includes(id));
+      requestFrame(ids, "front");
+    }
+  }, [exploded]);
+  useEffect(() => {
+    if (!selected) return;
+    const m = byId.get(selected);
+    if (
+      !m ||
+      hidden.includes(selected) ||
+      !visible.includes(m.system) ||
+      (layers[m.layer || "organs"] ?? 1) <= 0 ||
+      (isolated && !isolated.includes(selected))
+    )
+      clear();
+  }, [visible, layers, hidden, isolated]);
   const seen = new Set<string>();
   const matches = modelParts.filter((m) => {
-    if (m.layer === "attachment" || (m.parentId && selectionMode !== "tissue"))
+    if (
+      (allowedIds && !allowedIds.includes(m.id)) ||
+      m.layer === "attachment" ||
+      m.parentId
+    )
       return false;
     if (
       (kind === "Bones" && m.layer !== "bones") ||
@@ -513,7 +628,7 @@ export function Explorer3D({
         .includes(search.toLowerCase())
     )
       return false;
-    const key = selectionMode === "tissue" ? m.id : displayGroupKey(m);
+    const key = m.id;
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
@@ -524,23 +639,76 @@ export function Explorer3D({
       return Math.max(...b[0].map((v, i) => b[1][i] - v));
     }),
   );
-  const sceneProps = {
-    visible,
-    selected: selectedIds,
+  const currentRegionParts = (
+    exploreRegion ? regionParts(exploreRegion, regionLayers) : []
+  ).filter((m) => !allowedIds || allowedIds.includes(m.id));
+  const stepHidden =
+    exploreRegion === "Knee"
+      ? currentRegionParts
+          .filter(
+            (m) =>
+              (dissectionStep >= 1 &&
+                /patella|quadriceps.*tendon/i.test(m.name)) ||
+              (dissectionStep >= 2 && m.layer === "capsules") ||
+              (dissectionStep >= 3 && m.layer === "bones"),
+          )
+          .map((m) => m.id)
+      : [];
+  const offsets =
+    exploded && exploreRegion === "Knee"
+      ? kneeOffsets(currentRegionParts)
+      : undefined;
+  const snapshotRef = useRef({
+    selected,
     hidden,
     isolated,
     layers,
+    camera: cameraMemory.current,
+    visible,
+  });
+  snapshotRef.current = {
+    selected,
+    hidden,
+    isolated,
+    layers,
+    camera: cameraMemory.current,
+    visible,
+  };
+  useEffect(() => {
+    const save = () =>
+      saveAtlasState(workspaceId, {
+        ...snapshotRef.current,
+        camera: cameraMemory.current,
+      });
+    const t = setTimeout(save, 500);
+    window.addEventListener("pagehide", save);
+    return () => {
+      clearTimeout(t);
+      save();
+      window.removeEventListener("pagehide", save);
+    };
+  }, [workspaceId, selected, hidden, isolated, layers, visible]);
+  const sceneProps = {
+    visible,
+    selected: selectedIds,
+    hidden: [...hidden, ...stepHidden],
+    allowedIds,
+    isolated,
+    layers,
+    offsets,
+    cameraState: cameraMemory.current,
+    onCamera: (state: CameraState) => {
+      cameraMemory.current = state;
+    },
     highlightedSystems,
     attachments: overlays,
     appearance,
     quality,
-    landmarks: selectionMode === "landmark" ? localLandmarks : [],
+    background,
+    onCandidates: setCandidates,
+    landmarks: infoTab === "Landmarks" && !exploded ? localLandmarks : [],
     activeLandmark: landmark?.id,
     labels,
-    selectionMode:
-      selectionMode === "landmark"
-        ? ("landmark" as const)
-        : ("structure" as const),
     onSelect: (id: string) => pick(id),
     onLandmark: (id: string) => {
       const l = localLandmarks.find((l) => l.id === id);
@@ -549,6 +717,7 @@ export function Explorer3D({
     onHover: setHover,
     onReady: (v: SceneApi) => {
       api.current = v;
+      if (allowedIds && !cameraMemory.current) v.frame(allowedIds, "front", 0);
       if (pendingFrame.current) {
         v.frame(pendingFrame.current.ids, pendingFrame.current.view);
         pendingFrame.current = null;
@@ -586,6 +755,11 @@ export function Explorer3D({
             <Focus size={15} />
             Explore
           </button>
+          {onNewStudy && (
+            <button aria-label="Create study workspace" onClick={onNewStudy}>
+              +
+            </button>
+          )}
         </div>
         <div className="pro-search">
           <Search size={15} />
@@ -621,7 +795,16 @@ export function Explorer3D({
       {workspace === "explore" && (
         <div className="pro-presets">
           <span>Explore a region</span>
-          {["Spine", "Shoulder", "Pelvis", "Knee"].map((n) => (
+          {[
+            "Spine",
+            "Shoulder",
+            "Pelvis",
+            "Knee",
+            "Heart",
+            "Lungs",
+            "Abdomen",
+            "Skull",
+          ].map((n) => (
             <button key={n} onClick={() => preset(n)}>
               {n}
             </button>
@@ -638,6 +821,102 @@ export function Explorer3D({
             Compare vertebrae
           </button>
         </div>
+      )}
+      {workspace === "explore" && !compare && (
+        <section className="region-tools">
+          <label>
+            Region{" "}
+            <select
+              aria-label="Isolate region"
+              value={exploreRegion}
+              onChange={(e) => preset(e.target.value)}
+            >
+              <option value="">Choose a region</option>
+              {regionNames.map((n) => (
+                <option key={n}>{n}</option>
+              ))}
+            </select>
+          </label>
+          <label>
+            Tissues{" "}
+            <select
+              aria-label="Region tissue filter"
+              value={regionLayers.join(",")}
+              onChange={(e) => {
+                const ls = e.target.value ? e.target.value.split(",") : [];
+                setRegionLayers(ls);
+                const ids = regionParts(exploreRegion, ls).map((m) => m.id);
+                setIsolated(ids);
+                ensure(ids);
+                requestFrame(ids, "front");
+              }}
+            >
+              <option value="">All available</option>
+              <option value="muscles,tendons,fascia">
+                Muscles & attachments
+              </option>
+              <option value="bones,cartilage">Bones & cartilage</option>
+              <option value="bones,ligaments">Bones & ligaments</option>
+              <option value="organs">Organs / vessels</option>
+            </select>
+          </label>
+          {exploreRegion === "Knee" && (
+            <>
+              <label>
+                Dissection{" "}
+                <select
+                  aria-label="Knee dissection stage"
+                  value={dissectionStep}
+                  onChange={(e) => {
+                    setDissectionStep(+e.target.value);
+                    clear();
+                  }}
+                >
+                  <option value={0}>Registered joint</option>
+                  <option value={1}>Remove patella / extensor cover</option>
+                  <option value={2}>Remove capsule</option>
+                  <option value={3}>Soft tissues only</option>
+                </select>
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={exploded}
+                  onChange={(e) => setExploded(e.target.checked)}
+                />
+                Exploded teaching view
+              </label>
+              {exploded && (
+                <strong>
+                  Structures moved from normal positions · not to scale
+                </strong>
+              )}
+            </>
+          )}
+          {exploreRegion === "Heart" && (
+            <span>
+              Native source components; use the list to hide chambers. Internal
+              surface completeness is not validated.{" "}
+              <button onClick={() => onTissue?.("cardiac-muscle")}>
+                Prepared heart diagram & tissue
+              </button>
+            </span>
+          )}
+          {exploreRegion === "Lungs" && (
+            <button onClick={() => onTissue?.("simple-squamous", true)}>
+              Airway → alveolus magnified guide
+            </button>
+          )}
+          {exploreRegion === "Skull" && (
+            <small>Bony skull; nasal cartilage is a separate layer.</small>
+          )}
+          {exploreRegion === "Abdomen" && (
+            <small>
+              Rectus, external/internal oblique and transversus are separate
+              source structures. Hide outer layers to reveal deeper muscles.
+            </small>
+          )}
+        </section>
       )}
       <div className={`pro-workspace ${study ? "has-selection" : ""}`}>
         <section className="pro-viewer">
@@ -743,10 +1022,54 @@ export function Explorer3D({
                 <Undo2 size={16} />
               </button>
             </div>
+            {candidates.length > 1 && !compare && (
+              <details className="overlap-picker">
+                <summary>
+                  Choose overlapping structure ({candidates.length})
+                </summary>
+                <p>
+                  Surfaces below 45% opacity allow deeper structures to be
+                  picked first.
+                </p>
+                {candidates.map((id) => (
+                  <button key={id} onClick={() => pick(id)}>
+                    {byId.get(id)?.name}
+                  </button>
+                ))}
+              </details>
+            )}
             {hover && !compare && (
               <div className="pro-hover" role="status">
                 {hover}
               </div>
+            )}
+            {!compare && exploreRegion && (
+              <details className="region-structure-list">
+                <summary>{exploreRegion}: select / hide structures</summary>
+                {currentRegionParts
+                  .filter((m) => !m.parentId)
+                  .map((m) => (
+                    <div key={m.id}>
+                      <button onClick={() => pick(m.id)}>{m.name}</button>
+                      <button
+                        aria-label={`Toggle ${m.name}`}
+                        aria-pressed={!hidden.includes(m.id)}
+                        onClick={() => {
+                          remember();
+                          const ids = children([m.id]);
+                          setHidden((h) =>
+                            h.includes(m.id)
+                              ? h.filter((id) => !ids.includes(id))
+                              : [...new Set([...h, ...ids])],
+                          );
+                          clear();
+                        }}
+                      >
+                        {hidden.includes(m.id) ? "Show" : "Hide"}
+                      </button>
+                    </div>
+                  ))}
+              </details>
             )}
             {!compare && model && (
               <div className="pro-selection-actions">
@@ -784,7 +1107,8 @@ export function Explorer3D({
                   className={
                     (compare ? compareView : view) === v ? "active" : ""
                   }
-                  aria-label={`Anatomy ${v} view`}
+                  aria-label={`Anatomy ${viewNames[v]} view`}
+                  title={viewTips[v]}
                   onClick={() => {
                     if (compare) {
                       setCompareView(v);
@@ -792,7 +1116,7 @@ export function Explorer3D({
                     } else changeView(v);
                   }}
                 >
-                  {v[0].toUpperCase() + v.slice(1)}
+                  {viewNames[v]}
                 </button>
               ))}
             </div>
@@ -826,7 +1150,7 @@ export function Explorer3D({
                   {matches.slice(0, 70).map((m) => (
                     <button key={m.id} onClick={() => pick(m.id, true)}>
                       <span>
-                        {selectionMode === "tissue" ? m.name : displayName(m)}
+                        {m.name}
                         <small>
                           {m.layer?.replace(/_/g, " ")} · {getRegion(m)}
                         </small>
@@ -920,20 +1244,25 @@ export function Explorer3D({
             )}
           </div>
           <div className="pro-selection-strip">
+            <button
+              onClick={() =>
+                setInfoTab(infoTab === "Landmarks" ? "Overview" : "Landmarks")
+              }
+            >
+              Landmark labels
+            </button>
             <label>
-              <MousePointer2 size={13} />
+              Studio{" "}
               <select
-                aria-label="Anatomy selection mode"
-                value={selectionMode}
-                onChange={(e) => {
-                  const v = e.target.value as typeof selectionMode;
-                  setSelectionMode(v);
-                  if (v === "landmark") setInfoTab("Landmarks");
-                }}
+                aria-label="Viewer background"
+                value={background}
+                onChange={(e) =>
+                  setBackground(e.target.value as typeof background)
+                }
               >
-                <option value="structure">Whole structures</option>
-                <option value="tissue">Tissue regions</option>
-                <option value="landmark">Landmarks</option>
+                <option value="graphite">Graphite</option>
+                <option value="ivory">Ivory</option>
+                <option value="midnight">Midnight</option>
               </select>
             </label>
             <label>
@@ -952,7 +1281,23 @@ export function Explorer3D({
               />
               Close-up shading
             </label>
-            <span>Drag to rotate · scroll to zoom</span>
+            <label>
+              Reference{" "}
+              <select
+                aria-label="Anatomical model"
+                value={variant}
+                onChange={(e) => setVariant(e.target.value)}
+              >
+                <option value="male">Male source anatomy</option>
+                <option value="female" disabled>
+                  Female full model — asset unavailable
+                </option>
+              </select>
+            </label>
+            <span>
+              Shared anatomy is not gender identity. A female-specific 3D
+              dataset has not been licensed/bundled.
+            </span>
           </div>
         </section>
         <aside className="pro-inspector">
@@ -1006,6 +1351,23 @@ export function Explorer3D({
                 {systems.find((s) => s.id === study.system)?.name} ·{" "}
                 {getRegion(model)}
               </p>
+              <div className="linked-learning">
+                <button onClick={() => onTissue?.(associatedTissue(model))}>
+                  Tissue & microscopic features
+                </button>
+                {onPT && (
+                  <button onClick={() => onPT(getRegion(model))}>
+                    PT / AT connections
+                  </button>
+                )}
+              </div>
+              {model.system === "lymphatic" && (
+                <p>
+                  {groupNodes(model)}. Nodes filter lymph; some source objects
+                  contain several nodes. No continuous fine lymphatic network is
+                  modeled.
+                </p>
+              )}
               {model.surfaceRegion && (
                 <p className="pro-source-note">
                   Source-classified {model.layer} surface region of {base?.name}
@@ -1051,6 +1413,18 @@ export function Explorer3D({
                   )}
                 </details>
               )}
+              {modelParts.some((m) => m.parentId === model.id) && (
+                <details>
+                  <summary>Associated tissue surfaces</summary>
+                  {modelParts
+                    .filter((m) => m.parentId === model.id)
+                    .map((m) => (
+                      <button key={m.id} onClick={() => pick(m.id)}>
+                        {m.name}
+                      </button>
+                    ))}
+                </details>
+              )}
               <div className="pro-info-tabs">
                 {["Overview", "Landmarks", "Attachments"].map((t) => (
                   <button
@@ -1058,7 +1432,6 @@ export function Explorer3D({
                     className={infoTab === t ? "active" : ""}
                     onClick={() => {
                       setInfoTab(t);
-                      if (t === "Landmarks") setSelectionMode("landmark");
                     }}
                   >
                     {t}
@@ -1160,23 +1533,32 @@ export function Explorer3D({
                 </div>
               ) : (
                 <div className="pro-notes">
-                  {base?.layer === "muscles" && /head|part of|belly of/i.test(base.name) && <p>Study notes may describe the parent muscle; individual head attachments can differ. Source patches apply only to the selected component where available.</p>}
-                  {base?.layer === "muscles" && <div className="pro-attachment-buttons">
-                    {(["origin", "insertion"] as const).map((k) => (
-                      <button
-                        key={k}
-                        disabled={
-                          !attachmentCandidates.some(
-                            (m) => m.attachmentKind === k,
-                          )
-                        }
-                        onClick={() => attachments(k)}
-                      >
-                        <span className={k} />
-                        {k === "origin" ? "Show origin" : "Show insertion"}
-                      </button>
-                    ))}
-                  </div>}
+                  {base?.layer === "muscles" &&
+                    /head|part of|belly of/i.test(base.name) && (
+                      <p>
+                        Study notes may describe the parent muscle; individual
+                        head attachments can differ. Source patches apply only
+                        to the selected component where available.
+                      </p>
+                    )}
+                  {base?.layer === "muscles" && (
+                    <div className="pro-attachment-buttons">
+                      {(["origin", "insertion"] as const).map((k) => (
+                        <button
+                          key={k}
+                          disabled={
+                            !attachmentCandidates.some(
+                              (m) => m.attachmentKind === k,
+                            )
+                          }
+                          onClick={() => attachments(k)}
+                        >
+                          <span className={k} />
+                          {k === "origin" ? "Show origin" : "Show insertion"}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                   {overlays.length > 0 && (
                     <div className="pro-attachment-key">
                       <strong>Illustrated {attachmentKind} region</strong>
@@ -1192,7 +1574,14 @@ export function Explorer3D({
                   ).map((k) =>
                     study[k] ? (
                       <div key={k}>
-                        <h4>{base?.layer === "ligaments" && (k === "origin" || k === "insertion") ? (k === "origin" ? "Attachment 1" : "Attachment 2") : k[0].toUpperCase() + k.slice(1)}</h4>
+                        <h4>
+                          {base?.layer === "ligaments" &&
+                          (k === "origin" || k === "insertion")
+                            ? k === "origin"
+                              ? "Attachment 1"
+                              : "Attachment 2"
+                            : k[0].toUpperCase() + k.slice(1)}
+                        </h4>
                         <p>{study[k]}</p>
                       </div>
                     ) : null,
@@ -1270,8 +1659,8 @@ export function Explorer3D({
                   illustrated attachment regions
                 </p>
                 <p>
-                  Open atlas geometry. Skin retains regional seams. Fine fiber textures and photoreal skin
-                  are not included.
+                  Open atlas geometry. Skin retains regional seams. Fine fiber
+                  textures and photoreal skin are not included.
                 </p>
               </div>
             </>

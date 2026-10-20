@@ -42,20 +42,7 @@ try {
           if (!id.includes("/src/")) return;
           if (id.endsWith("/AnatomyScene.tsx"))
             source = source.replaceAll("/models/anatomy.glb", modelData);
-          if (id.endsWith("/atlas.tsx")) {
-            for (const [name, data] of Object.entries(plates))
-              source = source.replaceAll("/anatomy/" + name, data);
-          }
-          if (id.endsWith("/App.tsx")) {
-            source = source.replace(
-              /src=\{`\/anatomy\/\$\{([\s\S]*?)\}`\}/g,
-              "src={previewPlates[$1]}",
-            );
-            source +=
-              "\nconst previewPlates:Record<string,string>=" +
-              JSON.stringify(plates) +
-              ";\n";
-          }
+          if(id.endsWith("/assetPaths.ts")) for(const [name,data] of Object.entries(plates))source=source.replaceAll("/anatomy/"+name,data);
           return source;
         },
       },
@@ -108,7 +95,7 @@ try {
   archive.file("forma-preview.html", html);
   archive.file(
     "OPEN-ME.txt",
-    "Extract this archive, then open forma-preview.html in your browser. No development server or Node installation is needed. The app includes its images, fonts, quiz engine, and document parsers. Study data stays in the browser. This is an introductory 3D anatomy atlas with a 2D reference library. 3D requires WebGL; if it is unavailable, choose the 2D reference tab. OpenStax educational assets and adapted content are CC BY-NC-SA 4.0; see the included credits and license.\n",
+    "Extract this archive, then open forma-preview.html in your browser. No development server or Node installation is needed. The app includes its images, fonts, quiz engine, and document parsers. Study data stays in the browser. This is a combined anatomy and PT/AT educational study app with 3D/2D references, tissue study, custom collections, quizzes and games. It is not a personalized treatment service. Some advanced anatomy assets remain unavailable; see IMPLEMENTATION_CHECKLIST.md. 3D requires WebGL; if it is unavailable, choose the 2D reference tab. OpenStax educational assets and adapted content are CC BY-NC-SA 4.0; see the included credits and license.\n",
   );
   archive.file(
     "ASSET_CREDITS.md",
@@ -123,6 +110,9 @@ try {
     await readFile(join(root, "public/models/LICENSE-bodyparts.txt")),
   );
   archive.file("LICENSE-z-anatomy.txt", await readFile(join(root, "public/models/LICENSE-z-anatomy.txt")));
+  archive.file("IMPLEMENTATION_CHECKLIST.md",await readFile(join(root,"IMPLEMENTATION_CHECKLIST.md")));
+  archive.file("LICENSES.md",await readFile(join(root,"LICENSES.md")));
+  archive.file("ASSET_MANIFEST.json", await readFile(join(root,"public/ASSET_MANIFEST.json")));
   let notices = "";
   async function collectLicenses(directory) {
     for (const entry of await readdir(directory, { withFileTypes: true })) {

@@ -93,6 +93,7 @@ await doc.transform(prune(),meshopt({encoder:MeshoptEncoder,level:'high'}));
 const io=new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({'meshopt.encoder':MeshoptEncoder,'meshopt.decoder':MeshoptDecoder});
 const binary=await io.writeBinary(doc);await mkdir('public/models',{recursive:true});await mkdir('src/generated',{recursive:true});
 await writeFile('public/models/anatomy.glb',binary);
+for(const m of models){if(/leaflet.*valve/i.test(m.name))m.layer='organs';if(m.name==='Linea alba')m.layer='fascia';}
 await writeFile('src/model-manifest.json',JSON.stringify({revision,source:'https://github.com/Z-Anatomy/Models-of-human-anatomy',sourceBlob,models},null,2));
 await writeFile('src/generated/landmark-anchors.json',JSON.stringify(landmarkAnchors,null,2));
 console.log('Saved',models.length,'parts;',triangles,'triangles;',Math.round(binary.length/1024/1024*10)/10,'MB;',landmarkAnchors.length,'source anchors.');

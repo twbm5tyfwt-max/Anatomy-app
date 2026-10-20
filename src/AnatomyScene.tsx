@@ -9,6 +9,7 @@ import { OutlinePass } from "three/addons/postprocessing/OutlinePass.js";
 import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 import { SSAOPass } from "three/addons/postprocessing/SSAOPass.js";
 import { modelParts, type ModelPart, type AnatomyLayer } from "./modelCatalog";
+import { orderPicks } from "./interaction";
 import { muscleColor } from "./modelDisplay";
 import type { Appearance } from "./Appearance";
 export type CameraView =
@@ -25,7 +26,14 @@ export type LandmarkPoint = {
   modelId: string;
   contextIds?: string[];
 };
+export type CameraState = {
+  position: number[];
+  target: number[];
+  view: CameraView;
+};
 export type SceneApi = {
+  snapshot: () => CameraState;
+  restore: (state: CameraState) => void;
   frame: (ids: string[], view?: CameraView, duration?: number) => void;
   view: (v: CameraView) => void;
   zoom: (factor: number) => void;
@@ -35,12 +43,21 @@ export type SceneProps = {
   visible: string[];
   selected: string[];
   hidden: string[];
+  allowedIds?: string[];
   isolated: string[] | null;
   layers: Record<string, number>;
   highlightedSystems?: string[];
   attachments?: string[];
   appearance: Appearance;
   region?: string;
+  background?: "graphite" | "ivory" | "midnight";
+  offsets?: Record<string, number[]>;
+  cameraState?: CameraState;
+  onCamera?: (state: CameraState) => void;
+  onCandidates?: (ids: string[]) => void;
+  onPickable?: (ids: string[]) => void;
+  onInteracting?: (active: boolean) => void;
+  disableStructurePick?: boolean;
   quality?: boolean;
   distinct?: boolean;
   landmarks?: LandmarkPoint[];
@@ -202,6 +219,7 @@ export function AnatomyScene(props: SceneProps) {
       base: THREE.Color[];
     };
     const records = new Map<string, Record3D>();
+    let desiredAo = false;
     let needsRender = true,
       lastSignature = "",
       lastColors = "",
@@ -218,6 +236,8 @@ export function AnatomyScene(props: SceneProps) {
       fromTarget: THREE.Vector3;
       toTarget: THREE.Vector3;
       start: number;
+      elapsed: number;
+      last: number;
       duration: number;
     } | null = null;
     const start = (
@@ -228,19 +248,40 @@ export function AnatomyScene(props: SceneProps) {
     ) => {
       const to = target
         .clone()
-        .add((view ? directions[view].clone() : camera.position.clone().sub(controls.target)).normalize().multiplyScalar(distance));
+        .add(
+          (view
+            ? directions[view].clone()
+            : camera.position.clone().sub(controls.target)
+          )
+            .normalize()
+            .multiplyScalar(distance),
+        );
       tween = {
         from: camera.position.clone(),
         to,
         fromTarget: controls.target.clone(),
         toTarget: target,
         start: performance.now(),
+        elapsed: 0,
+        last: performance.now(),
         duration: reduced ? 0 : duration,
       };
       needsRender = true;
     };
-    const fit = (ids: string[], view: CameraView | undefined, duration: number) => {
+    const fit = (
+      ids: string[],
+      view: CameraView | undefined,
+      duration: number,
+    ) => {
       const box = ids.length ? union(ids) : bodyBox.clone();
+      if (ids.length && live.current.offsets)
+        for (const id of ids) {
+          const offset = live.current.offsets[id];
+          if (offset) {
+            const b = union([id]).translate(new THREE.Vector3(...offset));
+            box.union(b);
+          }
+        }
       if (box.isEmpty()) return;
       const center = box.getCenter(new THREE.Vector3()).sub(bodyCenter),
         size = box.getSize(new THREE.Vector3());
@@ -272,6 +313,21 @@ export function AnatomyScene(props: SceneProps) {
       start(center, Math.max(0.025, distance), view, duration);
     };
     const api: SceneApi = {
+      snapshot() {
+        return {
+          position: camera.position.toArray(),
+          target: controls.target.toArray(),
+          view: currentView,
+        };
+      },
+      restore(state) {
+        tween = null;
+        camera.position.fromArray(state.position);
+        controls.target.fromArray(state.target);
+        currentView = state.view;
+        controls.update();
+        needsRender = true;
+      },
       frame(ids, v, duration = 1600) {
         fit(ids, v, duration);
       },
@@ -314,52 +370,124 @@ export function AnatomyScene(props: SceneProps) {
     controls.addEventListener("start", () => {
       tween = null;
     });
-    let down: [number, number] = [0, 0],
-      lastHover = 0;
+    let down: [number, number] | null = null,
+      moved = false,
+      lastHover = 0,
+      hoverId = "";
+    const pointers = new Set<number>();
+    function setHover(id: string) {
+      if (hoverId === id) return;
+      hoverId = id;
+      lastSignature = "";
+      needsRender = true;
+      live.current.onHover?.(byId.get(id)?.name || null);
+      renderer.domElement.style.cursor = id ? "pointer" : "grab";
+    }
     const rayAt = (x: number, y: number) => {
       const rect = renderer.domElement.getBoundingClientRect(),
         ray = new THREE.Raycaster();
       ray.setFromCamera(
         new THREE.Vector2(
           ((x - rect.left) / rect.width) * 2 - 1,
-          (-(y - rect.top) / rect.height) * 2 + 1,
+          -((y - rect.top) / rect.height) * 2 + 1,
         ),
         camera,
       );
-      const hits = ray.intersectObjects(
-        [...records.values()].flatMap((r) => r.meshes.filter((m) => m.visible)),
-        false,
+      ray.near=camera.near;ray.far=camera.far;
+      root.updateMatrixWorld(true);
+      const meshes = [...records.values()].flatMap((r) =>
+        r.meshes.filter((m) => m.visible && m.userData.pickOpacity > 0.05),
       );
-      return (
-        hits.find(
-          (h) => (h.object as THREE.Mesh).userData.pickOpacity > 0.45,
-        ) || hits[0]
-      );
+      const hits = ray.intersectObjects(meshes, false);
+      const candidates = hits.map((h) => ({
+        id: h.object.userData.modelId,
+        opacity: h.object.userData.pickOpacity,
+        distance: h.distance,
+      }));
+      // Small lymph-node targets receive an invisible 8 px hit tolerance, only
+      // when their center is not occluded by a nearer opaque surface.
+      if (!live.current.quiz)
+        for (const [id, r] of records) {
+          if (
+            !/nodes?|gangli/i.test(r.model.name) ||
+            r.model.system !== "lymphatic" ||
+            !r.meshes.some((m) => m.visible)
+          )
+            continue;
+          const center = union([id])
+              .getCenter(new THREE.Vector3())
+              .sub(bodyCenter),
+            point = center.clone().project(camera);
+          const px = ((point.x + 1) * rect.width) / 2,
+            py = ((1 - point.y) * rect.height) / 2;
+          if (
+            point.z > -1 && point.z < 1 &&
+            Math.hypot(px - (x - rect.left), py - (y - rect.top)) <= 8
+          ) {
+            const d = center.distanceTo(camera.position),
+              nr = new THREE.Raycaster(
+                camera.position,
+                center.clone().sub(camera.position).normalize(),
+                0,
+                d - 0.003,
+              );
+            if (
+              !nr.intersectObjects(
+                meshes.filter((m) => m.userData.pickOpacity >= 0.9),
+                false,
+              ).length
+            )
+              candidates.push({ id, opacity: 1, distance: d });
+          }
+        }
+      return orderPicks(candidates).map((h) => h.id);
     };
     const pointerDown = (e: PointerEvent) => {
-      down = [e.clientX, e.clientY];
-      live.current.onHover?.(null);
+      live.current.onInteracting?.(true);
+      pointers.add(e.pointerId);
+      if (pointers.size > 1) moved = true;
+      if (pointers.size === 1) {
+        down = [e.clientX, e.clientY];
+        moved = false;
+      }
+      setHover("");
     };
     const pointerUp = (e: PointerEvent) => {
-      if (
-        e.button !== 0 ||
-        Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 5 ||
-        live.current.selectionMode === "landmark"
-      )
-        return;
-      const hit = rayAt(e.clientX, e.clientY);
-      live.current.onSelect?.(hit?.object.userData.modelId || "");
+      live.current.onInteracting?.(false);
+      pointers.delete(e.pointerId);
+      const tap =
+        down &&
+        !moved &&
+        Math.hypot(e.clientX - down[0], e.clientY - down[1]) <= 5 &&
+        e.button === 0;
+      down = null;
+      if (!tap || live.current.disableStructurePick) return;
+      const ids = rayAt(e.clientX, e.clientY);
+      live.current.onCandidates?.(ids.slice(0, 12));
+      live.current.onSelect?.(ids[0] || "");
     };
     const hover = (e: PointerEvent) => {
-      if (e.buttons || performance.now() - lastHover < 100 || live.current.quiz)
+      if (down && Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 5)
+        moved = true;
+      if (
+        e.buttons ||
+        pointers.size ||
+        performance.now() - lastHover < 90 ||
+        live.current.quiz
+      )
         return;
       lastHover = performance.now();
-      const hit = rayAt(e.clientX, e.clientY);
-      const m = hit && byId.get(hit.object.userData.modelId);
-      live.current.onHover?.(m?.name || null);
-      renderer.domElement.style.cursor = m ? "pointer" : "grab";
+      setHover(rayAt(e.clientX, e.clientY)[0] || "");
     };
-    const leave = () => live.current.onHover?.(null);
+    const leave = () => setHover("");
+    const cancel = () => {
+      live.current.onInteracting?.(false);
+      pointers.clear();
+      down = null;
+      moved = true;
+      setHover("");
+    };
+    renderer.domElement.addEventListener("pointercancel", cancel);
     renderer.domElement.addEventListener("pointerdown", pointerDown);
     renderer.domElement.addEventListener("pointerup", pointerUp);
     renderer.domElement.addEventListener("pointermove", hover);
@@ -408,6 +536,7 @@ export function AnatomyScene(props: SceneProps) {
           });
           obj.material = Array.isArray(obj.material) ? mats : mats[0];
           obj.userData.modelId = model.id;
+          obj.userData.sourcePosition = obj.position.clone();
           const rec = records.get(model.id) || {
             model,
             meshes: [],
@@ -427,12 +556,69 @@ export function AnatomyScene(props: SceneProps) {
         lastSignature = "";
         lastColors = "";
         fit(framing, currentView, 0);
+        if (live.current.cameraState) api.restore(live.current.cameraState);
         live.current.onReady?.(api);
         needsRender = true;
       })
       .catch((e) => {
         if (!cancelled) setError(e.message);
       });
+    let lastPickable = "";
+    function reportPickable() {
+      if (!live.current.onPickable || tween) return;
+      const rect = renderer.domElement.getBoundingClientRect(),
+        found: string[] = [];
+      const pickPoints:Record<string,number[]>={};
+      for (const [id, r] of records) {
+        if (r.model.parentId || !r.meshes.some((m) => m.visible)) continue;
+        let ok = false;
+        for (const mesh of r.meshes.filter((m) => m.visible)) {
+          const index = mesh.geometry.index,
+            position = mesh.geometry.attributes.position;
+          if (!position) continue;
+          const count = index?.count || position.count;
+          for (
+            let i = 0;
+            i < count;
+            i += Math.max(3, Math.floor(count / 36 / 3) * 3)
+          ) {
+            const v = new THREE.Vector3();
+            for (let j = 0; j < 3; j++) {
+              const n = index
+                ? index.getX(Math.min(i + j, count - 1))
+                : Math.min(i + j, count - 1);
+              v.add(new THREE.Vector3().fromBufferAttribute(position, n));
+            }
+            v.divideScalar(3).applyMatrix4(mesh.matrixWorld).project(camera);
+            if (
+              v.z < 0 ||
+              v.z > 1 ||
+              Math.abs(v.x) > 0.88 ||
+              Math.abs(v.y) > 0.88
+            )
+              continue;
+            const picked = rayAt(
+              rect.left + ((v.x + 1) * rect.width) / 2,
+              rect.top + ((1 - v.y) * rect.height) / 2,
+            )[0];
+            if (picked === id || byId.get(picked)?.parentId === id) {
+              pickPoints[id]=[(v.x+1)/2,(1-v.y)/2];
+              ok = true;
+              break;
+            }
+          }
+          if (ok) break;
+        }
+        if (ok) found.push(id);
+      }
+      el.dataset.pickableIds = JSON.stringify(found);
+      el.dataset.pickPoints=JSON.stringify(pickPoints);
+      const signature = found.join(",");
+      if (signature !== lastPickable) {
+        lastPickable = signature;
+        live.current.onPickable(found);
+      }
+    }
     const project = () => {
       const p = live.current,
         w = el.clientWidth,
@@ -524,6 +710,7 @@ export function AnatomyScene(props: SceneProps) {
         only = p.onlyIds ? new Set(p.onlyIds) : null,
         attachments = new Set(p.attachments || []);
       const signature = JSON.stringify([
+        p.allowedIds,
         p.visible,
         p.selected,
         p.hidden,
@@ -534,6 +721,9 @@ export function AnatomyScene(props: SceneProps) {
         p.region,
         p.quality,
         p.activeLandmark,
+        p.background,
+        p.offsets,
+        hoverId,
         p.landmarks?.map((l) => l.id),
       ]);
       const colors = JSON.stringify([
@@ -547,24 +737,43 @@ export function AnatomyScene(props: SceneProps) {
       if (signature !== lastSignature || colors !== lastColors) {
         lastSignature = signature;
         lastColors = colors;
-        renderer.setClearColor(
-          p.appearance.studio === "adaptive" && p.appearance.mode === "light"
-            ? "#e1e6e6"
-            : "#182128",
-          1,
-        );
+        const theme =
+          p.background ||
+          (p.appearance.studio === "adaptive" && p.appearance.mode === "light"
+            ? "ivory"
+            : "graphite");
+        const palettes = {
+          graphite: ["#233345", "#0d1726"],
+          ivory: ["#f1f1e9", "#cbd7dc"],
+          midnight: ["#1d3658", "#080f21"],
+        };
+        const bg = document.createElement("canvas");
+        bg.width = 4;
+        bg.height = 512;
+        const ctx = bg.getContext("2d")!,
+          gradient = ctx.createLinearGradient(0, 0, 0, 512);
+        gradient.addColorStop(0, palettes[theme][0]);
+        gradient.addColorStop(1, palettes[theme][1]);
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, 4, 512);
+        (scene.background as THREE.Texture | null)?.dispose();
+        const texture = new THREE.CanvasTexture(bg);
+        texture.colorSpace = THREE.SRGBColorSpace;
+        scene.background = texture;
         let count = 0,
           transparent = false;
         for (const [id, r] of records) {
           const l = r.model.layer || "organs";
-          const show = only
-            ? only.has(id)
-            : attachments.has(id) ||
-              (!hidden.has(id) &&
-                (!isolated || isolated.has(id)) &&
-                p.visible.includes(r.model.system) &&
-                (p.layers[l] ?? 1) > 0 &&
-                l !== "attachment");
+          const show =
+            (!p.allowedIds || p.allowedIds.includes(id)) &&
+            (only
+              ? only.has(id)
+              : attachments.has(id) ||
+                (!hidden.has(id) &&
+                  (!isolated || isolated.has(id)) &&
+                  p.visible.includes(r.model.system) &&
+                  (p.layers[l] ?? 1) > 0 &&
+                  l !== "attachment"));
           const opacity = only
             ? (p.opacityOverrides?.[l] ?? 1)
             : attachments.has(id)
@@ -595,7 +804,10 @@ export function AnatomyScene(props: SceneProps) {
                         ? "#dfd2b8"
                         : "#b78373",
           );
-          if (l === "muscles" && !p.quiz) color.copy(muscleColor(r.model, p.appearance.muscle, p.distinct !== false));
+          if (l === "muscles" && !p.quiz)
+            color.copy(
+              muscleColor(r.model, p.appearance.muscle, p.distinct !== false),
+            );
           if (r.model.system === "cardiovascular")
             color.set(/vein|vena/i.test(r.model.name) ? "#698ab7" : "#b34b50");
           if (r.model.system === "nervous") color.set("#d2bb6e");
@@ -606,7 +818,13 @@ export function AnatomyScene(props: SceneProps) {
               new THREE.Color(p.appearance.accent),
               p.quiz ? 0.65 : 0.18,
             );
+          if (id === hoverId && show)
+            color.lerp(new THREE.Color("#e4f1cf"), 0.22);
           r.meshes.forEach((m) => {
+            const offset = p.offsets?.[id] || [0, 0, 0];
+            m.position
+              .copy(m.userData.sourcePosition)
+              .add(new THREE.Vector3(...offset));
             m.visible = show;
             m.userData.pickOpacity = opacity;
           });
@@ -636,12 +854,21 @@ export function AnatomyScene(props: SceneProps) {
             transparent ||= opacity < 0.999;
           }
         }
-        outline.selectedObjects = [...selected].flatMap(
+        if (hoverId && !records.get(hoverId)?.meshes.some((m) => m.visible))
+          setHover("");
+        root.updateMatrixWorld(true);
+        outline.selectedObjects = [...new Set([...selected, hoverId])].flatMap(
           (id) => records.get(id)?.meshes.filter((m) => m.visible) || [],
         );
         outline.visibleEdgeColor.set(p.appearance.accent);
         outline.enabled = outline.selectedObjects.length > 0 && !p.quiz;
-        ao.enabled = !!p.quality && !transparent && count < 500;
+        desiredAo =
+          !!p.quality &&
+          !transparent &&
+          count < 50 &&
+          camera.position.distanceTo(controls.target) < 0.8;
+        el.dataset.hoveredId = hoverId;
+        el.dataset.selectedIds = JSON.stringify([...selected]);
         el.dataset.visibleMeshes = String(count);
         el.dataset.selectedParts = String(selected.size);
         el.dataset.isolated = String(!!p.isolated);
@@ -650,8 +877,10 @@ export function AnatomyScene(props: SceneProps) {
         needsRender = true;
       }
       if (tween) {
+        tween.elapsed += Math.min(100, Math.max(0, now - tween.last));
+        tween.last = now;
         const t = tween.duration
-          ? THREE.MathUtils.clamp((now - tween.start) / tween.duration, 0, 1)
+          ? THREE.MathUtils.clamp(tween.elapsed / tween.duration, 0, 1)
           : 1;
         const ease = t * t * (3 - 2 * t);
         camera.position.lerpVectors(tween.from, tween.to, ease);
@@ -665,12 +894,20 @@ export function AnatomyScene(props: SceneProps) {
       camera.far = Math.max(4, distance * 5);
       camera.updateProjectionMatrix();
       const changed = controls.update();
+      if (changed || tween) live.current.onCamera?.(api.snapshot());
       el.dataset.animating = String(!!tween);
       el.dataset.cameraView = currentView;
       el.dataset.cameraDistance = distance.toFixed(4);
       if (needsRender || changed) {
+        ao.enabled = desiredAo && !tween && pointers.size === 0;
+        outline.enabled =
+          outline.selectedObjects.length > 0 &&
+          !p.quiz &&
+          !tween &&
+          pointers.size === 0;
         composer.render();
         project();
+        reportPickable();
         needsRender = false;
       }
       raf = requestAnimationFrame(tick);
@@ -685,7 +922,10 @@ export function AnatomyScene(props: SceneProps) {
       composer.dispose();
       ao.dispose();
       outline.dispose();
+      live.current.onCamera?.(api.snapshot());
+      (scene.background as THREE.Texture | null)?.dispose();
       renderer.dispose();
+      renderer.forceContextLoss();
       renderer.domElement.remove();
     };
   }, []);
@@ -753,7 +993,7 @@ export const defaultLayers: Record<AnatomyLayer, number> = {
   bones: 1,
   tendons: 0,
   ligaments: 0,
-  cartilage: 1,
+  cartilage: 0,
   fascia: 0,
   capsules: 0,
   bursae: 0,

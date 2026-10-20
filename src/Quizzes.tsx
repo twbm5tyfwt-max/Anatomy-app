@@ -27,6 +27,7 @@ import {
   type CourseCard,
 } from "./quiz";
 export const defaultScope: QuizScope = {
+  modelIds: undefined, scopeLabel: undefined,
   anatomy: false,
   anatomyTopic: "",
   system: "muscular",
@@ -438,6 +439,7 @@ export function Quizzes({
             <h2>Build your practice</h2>
             <span className="badge">No AI required</span>
           </div>
+          {scope.modelIds && <p className="education-note">Confirmed collection: {scope.scopeLabel || "Study model"} · {scope.modelIds.length} structures. Other catalog entries are excluded. <button onClick={()=>change({modelIds:undefined,scopeLabel:undefined})}>Leave collection scope</button></p>}
           <div className="quiz-presets">
             <button
               onClick={() =>

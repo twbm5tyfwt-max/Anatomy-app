@@ -519,6 +519,7 @@ export function getModelStudy(m: ModelPart): ModelStudy {
   let fn = "";
   let note = "";
   let level: ModelStudy["detailLevel"] = "identification";
+  let curatedSource = "";
   if (known) {
     fn = known.function;
     level = "detailed";
@@ -606,6 +607,71 @@ export function getModelStudy(m: ModelPart): ModelStudy {
     fn = connective.function;
     level = "detailed";
   }
+  if (m.system === "lymphatic" && /node/i.test(name)) {
+    kind = /nodes/i.test(name) ? "Regional lymph-node group" : "Lymph node";
+    fn =
+      "Filters lymph draining nearby tissues. Lymphocytes and antigen-presenting cells support immune surveillance; nodes do not pump lymph. A plural source name represents a group, not a single enlarged node. Specific drainage pathways should be checked in your course atlas.";
+    level = "overview";
+  }
+  if (name === "linea alba") {
+    kind = "Aponeurotic raphe";
+    fn =
+      "Midline fibrous seam formed by the interwoven abdominal muscle aponeuroses. Connects the two sides of the abdominal wall and transmits tension; it does not contract.";
+    level = "overview";
+  }
+  const chambers: Record<string, string> = {
+    "left ventricle":
+      "Pumps oxygenated blood through the aortic valve into the systemic circulation. Its thick myocardium develops the pressure needed for systemic flow.",
+    "right ventricle":
+      "Pumps blood through the pulmonary valve into the pulmonary trunk and lungs. It normally operates at lower pressure than the left ventricle.",
+    "left atrium":
+      "Receives oxygenated blood from the pulmonary veins and delivers it through the mitral valve to the left ventricle.",
+    "right atrium":
+      "Receives systemic venous blood through the venae cavae and coronary sinus and delivers it through the tricuspid valve to the right ventricle.",
+  };
+  if (chambers[name]) {
+    kind = "Cardiac chamber";
+    fn = chambers[name];
+    level = "overview";
+    note =
+      "Source component isolation is not a complete or validated sectional reconstruction of this chamber.";
+    curatedSource =
+      "OpenStax Anatomy and Physiology 2e, §19.1 Heart Anatomy; source geometry: Z-Anatomy.";
+  }
+  if (/leaflet.*valve/.test(name)) {
+    kind = "Valve leaflet";
+    fn = /pulmonary/.test(name)
+      ? "One component of the pulmonary semilunar valve. Valve closure limits backflow from the pulmonary trunk into the right ventricle during ventricular relaxation."
+      : "One component of an atrioventricular valve. Closure limits backflow into the atrium during ventricular contraction; chordae tendineae and papillary muscles support the leaflets.";
+    level = "overview";
+    note =
+      "Valve leaflets are fibrous connective tissue with an endothelial covering, not articular cartilage or skeletal ligaments. Only some source leaflets are separately modeled.";
+    curatedSource =
+      "OpenStax Anatomy and Physiology 2e, §19.1 Heart Anatomy; source geometry: Z-Anatomy.";
+  }
+  if (m.system === "respiratory" && /bronchus/.test(name)) {
+    kind = "Conducting airway";
+    fn =
+      "Conducts air between the larger airways and more distal lung branches. Bronchi have cartilage support and smooth muscle. Most gas exchange occurs across the alveolar-capillary barrier, not in the conducting bronchus.";
+    level = "overview";
+    note =
+      "The source models larger bronchial branches; microscopic bronchioles and alveoli are shown separately as teaching diagrams.";
+    curatedSource =
+      "OpenStax Anatomy and Physiology 2e, §§22.1–22.4; source geometry: Z-Anatomy.";
+  }
+  if (m.layer === "cartilage" && /meniscus/.test(name)) {
+    kind = "Fibrocartilaginous meniscus";
+    fn =
+      "Distributes load across the tibiofemoral joint and improves congruence and stability. Menisci are wedge-shaped fibrocartilage, distinct from the thin hyaline articular cartilage coating bone surfaces.";
+    level = "overview";
+    note =
+      "Peripheral and inner meniscal regions differ in vascular supply. The illustration does not establish the healing potential or treatment of a particular tear.";
+    curatedSource =
+      "OpenStax Anatomy and Physiology 2e, §9.6 Anatomy of Selected Synovial Joints; source geometry: Z-Anatomy.";
+  }
+  if (m.system === "lymphatic" && /node/i.test(name))
+    note =
+      "Regional groups may contain several nodes in one source object. No individual-node segmentation or fine vessel network is inferred.";
   const family = known?.name || table?.name || action?.[0] || m.name;
   const guideKey = Object.keys(boneGuides).find((k) => name.includes(k));
   const result: ModelStudy = {
@@ -634,6 +700,7 @@ export function getModelStudy(m: ModelPart): ModelStudy {
     insertion: connective?.insertion || known?.insertion || table?.insertion,
     actions: known?.actions || table?.actions,
     source:
+      curatedSource ||
       known?.source ||
       table?.source ||
       (level === "overview"
