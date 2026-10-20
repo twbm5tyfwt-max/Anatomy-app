@@ -21,6 +21,15 @@ async function run(name, fn) {
 }
 try {
   await page.goto(base);
+  await page.getByRole("button", { name: "2D reference", exact: true }).click();
+  if (
+    await page
+      .getByRole("button", { name: "Hide Skeletal system", exact: true })
+      .count()
+  )
+    await page
+      .getByRole("button", { name: "Hide Skeletal system", exact: true })
+      .click();
   await run(
     "select, mask, undo, isolate, restore, and switch views",
     async () => {
@@ -77,6 +86,14 @@ try {
     await page
       .getByRole("button", { name: "Body Explorer", exact: true })
       .click();
+    if (
+      await page
+        .getByRole("button", { name: "Hide Skeletal system", exact: true })
+        .count()
+    )
+      await page
+        .getByRole("button", { name: "Hide Skeletal system", exact: true })
+        .click();
     await page
       .getByRole("button", { name: "Show Skeletal system", exact: true })
       .click();

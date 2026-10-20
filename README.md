@@ -1,10 +1,16 @@
-# Forma — anatomy, understood
+# Forma — interactive 3D anatomy study
 
-A working, local-first anatomy study app built with React 19, TypeScript, and Vite. No account, API key, or paid AI service is required.
+A React 19 / TypeScript anatomy study app with a real segmented 3D explorer, customizable appearance, tissue study, quizzes, local course materials, and saved progress. No account, API key, or paid AI service is required.
 
-## Run
+## Open the downloadable app
 
-Use Node.js 22.12+ (tested with Node 24).
+Download `delivery/forma-preview.zip` from the `forma-app` branch on GitHub, extract it, and open `forma-preview.html` in a browser with WebGL support. The HTML bundles the anatomy model, images, fonts, and document parsers; no Node installation or server is required for that copy. Local file navigation is blocked by this environment's managed browser, so the standalone copy is tested through an internal HTTP server with all assets embedded.
+
+This environment setup screen's Index visualization is not a reliable live preview. Use the GitHub download, not a `/workspace` chat link.
+
+## Development
+
+Node.js 22.12+ is required (tested with Node 24).
 
 ```sh
 cd /workspace/Anatomy-app
@@ -12,60 +18,51 @@ npm ci --cache /tmp/forma-npm-cache
 npm run dev -- --port 3000
 ```
 
-The development server binds to `0.0.0.0:3000`. For a production bundle, run `npm run build`; the static output is in `dist/`. `npm run preview -- --port 3000` serves the production build.
+`npm run build` checks TypeScript and builds `dist/`. `npm run preview -- --port 3001` serves that bundle. `npm run export:preview` regenerates the standalone HTML and ZIP.
 
-## Standalone interactive preview
+## What changed in version 2
 
-This environment setup screen does not provide an embedded live preview. The generated `forma-preview.zip` contains a self-contained browser copy: extract it and open `forma-preview.html`. It bundles the images, fonts, quiz engine, and document parsers. No Node installation or development server is needed to use that copy. Browser-local study data is separate from other origins.
+- **Real 3D anatomy:** 924 separately selectable named model parts from BodyParts3D, across all 11 systems. These include 437 muscle-related meshes and 249 skeletal structures. Mesh parts are not a count of distinct whole muscles or bones: a muscle may be split into heads, regions, or sides, and skeletal structures include supporting tissues.
+- **Bring a part forward:** clicking the actual 3D surface smoothly isolates and enlarges that model. Drag to rotate, scroll to zoom, inspect it from front/back/left/right, then return to its original context with Back to body. A searchable part browser makes deep and small structures accessible.
+- **Layers that share coordinates:** combine systems, make muscle meshes transparent, hide individual parts, undo removal, and restore hidden parts. This uses source-registered 3D geometry.
+- **Modern appearance:** an indigo default, light/dark modes, five accent presets, a custom accent picker, independent bone and muscle colors, and a choice of studio background. Preferences save automatically.
+- **Structure information:** exact model name, side or component, system, region, functional notes, and coverage level. Notes for heads or subparts explicitly identify when they describe the parent muscle or bone.
+- **Landmark study:** rotatable bone surfaces plus detailed directional guides for the humerus, femur, scapula, clavicle, radius, ulna, tibia, and fibula. Other curated bones retain their landmark, articulation, and attachment lists. Guide buttons orient the view; they do not claim to pinpoint a landmark on the mesh.
+- **Bookmarks:** 3D model parts can be saved and reopened from My Progress.
 
-Regenerate it with `npm run export:preview`. The export helper preserves the normal Vite build and includes asset credits and third-party license notices in the archive. The standalone bundle passed all 10 browser workflows when served as a single file, with no separate asset requests. Direct file navigation cannot be tested in this environment because its managed browser blocks `file:` URLs.
+## Study content and limits
 
-## What works
+The original 51 detailed study structures and 25 tissue schematics remain available, as do all 11 system overviews, directions, planes, and movement concepts. Additional muscle-table notes come from OpenStax chapter 11. All 437 muscle-related model parts have a functional overview or a detailed parent study entry; connective structures such as tendons and retinacula are distinguished from contracting muscle.
 
-- Responsive body explorer with OpenStax anterior and posterior muscle and skeleton plates. Select supported hotspots, search all entries, hide regional artwork, undo, restore, isolate a supported region, zoom, fade a plate, compare separate plates, and bookmark structures.
-- Overviews and cross-system connections for all 11 organ systems; 51 structure entries, including 20 muscles with origin, insertion, action, and innervation, and 13 bones with landmarks, articulations, and attachment sites. Both male and female reproductive study entries are included.
-- Anatomy essentials covering anatomical position, directions, planes, and movements.
-- 25 educational tissue schematics: all nine requested epithelial variants, 11 connective tissues, three muscle tissues, neurons, and glial support. Label toggling, zoom, and side-by-side comparison. Compact bone includes central canals, lamellae, lacunae, osteocytes, and canaliculi.
-- Scoped multiple-choice, typed identification, illustrated identification, and anterior muscle click questions. Combine system and tissue-class collections in one quiz. Foundations covers function and location; Detailed adds muscle origins, insertions, and innervation. Practice and exam modes, optional 10-minute timer, explanations, missed-item retry, and saved questions.
-- PDF text and `.pptx` slide extraction with page/slide provenance. Image uploads and scanned PDFs can be opened and manually transcribed. Create explicitly reviewed course cards and take course-only typed quizzes.
-- Local quiz results, per-topic accuracy, suggestions based on mistakes, bookmarked structures, course collections, and answer review after reload.
+Current per-part study coverage is 183 detailed entries, 478 functional overviews, and 263 identification/general-role entries. These are counts of model parts inheriting notes, not 924 distinct reviewed textbooks entries. Many vessels, neural subdivisions, and other small parts still need specific functions, courses, innervation, and relationships. The UI marks this explicitly. A complete landmark map and complete origin/insertion/action/innervation coverage for every model part are not claimed.
 
-## Honest limits
+The geometry is from **one adult male reference**. Female reproductive study content remains available, but corresponding female 3D models are not bundled. Source geometry is optimized for browser performance; very small surface features may be smoothed. This is an educational atlas, not a diagnostic or surgical model. Anatomy display colors are user-chosen, not natural tissue colors.
 
-The explorer is a **2D atlas**, not a 3D model. No individually segmented, licensed 3D asset is bundled. Rotation, lateral views, true dissection, and anatomically registered multi-system transparency remain unimplemented. The interface identifies these limits.
+The 2D reference tab preserves the OpenStax anterior/posterior plates and their existing regional masks. Those masks hide plate artwork rather than simulate dissection. Skeleton source labels are embedded. Tissue illustrations are educational schematics, not microscopy slides, and are not to scale.
 
-There are 13 supported anterior muscle regions, eight posterior muscle regions, 13 anterior bone regions, and five posterior bone regions. Muscle artwork includes both superficial and selected deeper anatomy on opposite halves, as in the source. Hotspots are regional masks, not exact segmentation of every fiber or structure. Removing one masks artwork; it does not reveal invented underlying anatomy. Skeleton labels are embedded in the source image and cannot be toggled. Selected muscle callouts can be toggled. Some original leader-line gaps remain in the adapted muscle view; the unmodified reference is accessible from the expand button.
+## Quizzes and course materials
 
-Other organ systems have overviews and selected study entries, not selectable body illustrations. Coverage is introductory, with no claim to be comprehensive. Tissue images are clearly labeled educational schematics, not microscopy slides; slide-level detail and accurate relative scale are outside this version.
+Scoped multiple-choice, typed identification, illustrated tissue/muscle questions, and 2D muscle click questions remain available. Combine system and tissue topics, choose Foundations or Detailed, use practice/exam mode, set a timer, retry mistakes, and save difficult questions. Quiz generation remains restricted to the original structured study content or explicitly reviewed course cards; the entire 3D metadata catalog is not automatically treated as a verified quiz bank.
 
-There is no automatic generation of unreviewed questions from arbitrary course documents. Uploads are indexed locally by source page/slide, and you review each answer/clue before it enters the course quiz bank. Scanned PDFs and images require transcription; OCR and legacy `.ppt` parsing are not bundled. Conflicts are left for review rather than resolved by inference. No server or AI receives uploaded content.
-
-Progress and extracted text use localStorage; original files use IndexedDB. Clearing browser data removes them. There is no cloud synchronization or export/restore UI in this version. If localStorage is full, the app reports that changes could not be saved. Large extracted documents are limited to avoid exhausting browser storage.
+PDF text and `.pptx` slide extraction preserves page/slide references. Scanned pages and images require manual transcription and review. No course material goes to a server or AI service. Extracted text, themes, progress, and bookmarks use localStorage; originals use IndexedDB. Clearing browser data removes them. Browser-local data does not automatically move between different origins or files.
 
 ## Validation
 
 ```sh
 npm test
 npm run build
-# Start the development server in another terminal, then:
+# With a server running:
 npm run test:e2e
+# Against a generated standalone copy served for testing:
+FORMA_BASE_URL=http://127.0.0.1:3002/forma-preview.html npm run test:3d
 ```
 
-The 14 unit tests validate scope restrictions and combinations, answer keys, distinguishing clues for shared attachments, visual-question eligibility, missed items, source-linked course questions, and typed grading. The 10 browser workflows passed against both the development server and the production bundle. Browser tests exercise actual selection/masking/restoration, view switching, search, bookmarks after reload, multi-plate comparison, tissue labels/zoom/comparison, practice and exam submission, course import/review/quizzing, and mobile overflow.
+There are 21 unit tests for study scope, answer grading, source identities, model coordinate relationships, muscle-versus-connective roles, explicit content coverage, and landmarks. The browser suites exercise 10 original study workflows plus five new workflows for actual 3D picking, mesh isolation, rotation, hide/undo, system visibility, landmark guidance, bookmarks, mobile layout, and theme/color persistence. Tests use `/usr/bin/chromium` when present; otherwise install Playwright Chromium.
 
-Browser checks use `/usr/bin/chromium` when present. On another machine, install the Playwright Chromium browser with `npx playwright install chromium`. Set `FORMA_BASE_URL` to test another running server.
+## Sources, licenses, and geometry rebuilds
 
-## Content and assets
+See [ASSET_CREDITS.md](ASSET_CREDITS.md) for revisions, checksums, original asset paths, and adaptations. **3D geometry is CC BY-SA 2.1 Japan**, while OpenStax content/plates and their educational adaptations are **CC BY-NC-SA 4.0**. These licenses apply to their respective assets; the 3D model is not relicensed under the OpenStax license. Required notices are included in the downloadable ZIP.
 
-- `src/content.ts`: study structures, systems, directions, and tissues.
-- `src/atlas.tsx`: source-plate presentation and named regional hotspots. A future 3D viewer can reuse stable structure IDs.
-- `src/TissueDiagram.tsx`: educational tissue schematics.
-- `src/quiz.ts`: source-derived question generation and answer grading.
-- `src/Course.tsx`: local document parsing and explicitly reviewed course cards.
-- `public/anatomy/`: locally bundled plates and source license.
+The bundled `public/models/bodyparts.glb` is ready to use; normal installation does not download raw anatomy geometry. For an optional rebuild, `python scripts/fetch-3d-source.py` downloads about 1.31 GB of STLs into `/tmp/forma-stl`, verifies every file against its recorded Git blob hash, and `npm run build:models` converts/optimizes them. This keeps original source coordinates, simplifies meshes with bounded error, and uses meshopt compression. Source metadata and resulting per-part bounds are committed.
 
-OpenStax source attribution, exact asset paths, revision, checksums, and adaptation details are in [ASSET_CREDITS.md](ASSET_CREDITS.md). The app also exposes these credits and its coverage from the sidebar. OpenStax assets and adapted educational material are **CC BY-NC-SA 4.0** and carry noncommercial and share-alike conditions. Review those conditions before redistributing this app in a different context.
-
-## Environment
-
-Use this existing checkout directly; cloud tasks are already isolated. No worktree or external service is needed. Dependencies and static assets persist on disk; the Vite server must be started in each new task. Reusable installation and startup instructions are saved to the environment configuration draft when the platform supports it.
+Use the existing checkout directly; cloud tasks are already isolated. No worktree or external service is required. The development server must restart in each new task.

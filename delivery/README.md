@@ -1,9 +1,9 @@
-# Open the Forma anatomy app
+# Open Forma 3D
 
-Download `forma-preview.zip` from this folder using GitHub’s download-file button, then extract it and open `forma-preview.html` in a desktop browser. This standalone version needs no Node installation or development server. It bundles the anatomy artwork, fonts, quiz engine, and document parsers.
+Download `forma-preview.zip` using GitHub's download-file button, extract it, and open `forma-preview.html` in a desktop browser with WebGL. No Node installation or server is needed for this bundled copy. Use the 2D reference tab if 3D is unavailable.
 
-`forma-preview.png` shows the app’s initial screen. The complete editable React project is at the repository root; its README explains development setup, validation, and coverage.
+Click a structure to bring it forward and rotate it. Back to body restores its context. Customize changes light/dark mode, accent, and bone/muscle colors.
 
-The standalone version passed all 10 browser workflows when served as a single HTML document, with no separate asset requests. The development environment’s managed browser blocks direct `file:` navigation, so opening the file directly must be checked in your own browser.
+The app includes 924 named 3D model parts from one adult male source, 51 original detailed study structures, additional functional notes, and 25 tissue schematics. Detailed functions and landmarks do not yet cover every part; coverage is labeled per entry. Female-specific 3D anatomy is not bundled.
 
-The app is an introductory 2D atlas, with 51 structure entries and 25 tissue schematics. OpenStax artwork and adapted educational content are CC BY-NC-SA 4.0. Credits and required license notices are included in the ZIP.
+See the included credits and licenses: BodyParts3D geometry is CC BY-SA 2.1 Japan; OpenStax educational material is CC BY-NC-SA 4.0.

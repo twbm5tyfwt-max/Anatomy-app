@@ -1,0 +1,275 @@
+[
+  {
+    "name": "Subclavius",
+    "origin": "First rib",
+    "insertion": "Inferior surface of clavicle",
+    "actions": "Stabilizes clavicle during movement by depressing it",
+    "source": "OpenStax Anatomy and Physiology 2e, chapter 11; source module m46495"
+  },
+  {
+    "name": "Pectoralis minor",
+    "origin": "Anterior surfaces of certain ribs (2\u20134 or 3\u20135)",
+    "insertion": "Coracoid process of scapula",
+    "actions": "Rotates shoulder anteriorly (throwing motion); assists with inhalation",
+    "source": "OpenStax Anatomy and Physiology 2e, chapter 11; source module m46495"
+  },
+  {
+    "name": "Serratus anterior",
+    "origin": "Muscle slips from certain ribs (1\u20138 or 1\u20139)",
+    "insertion": "Anterior surface of vertebral border of scapula",
+    "actions": "Moves arm from side of body to front of body; assists with inhalation",
+    "source": "OpenStax Anatomy and Physiology 2e, chapter 11; source module m46495"
+  },
+  {
+    "name": "Trapezius",
+    "origin": "Skull; vertebral column",
+    "insertion": "Acromion and spine of scapula; clavicle",
+    "actions": "Elevates shoulders (shrugging); pulls shoulder blades together; tilts head backwards",
+    "source": "OpenStax Anatomy and Physiology 2e, chapter 11; source module m46495"
+  },
+  {
+    "name": "Rhomboid major",
+    "origin": "Thoracic vertebrae (T2\u2013T5)",
+    "insertion": "Medial border of scapula",
+    "actions": "Stabilizes scapula during pectoral girdle movement",
+    "source": "OpenStax Anatomy and Physiology 2e, chapter 11; source module m46495"
+  },
+  {
+    "name": "Rhomboid minor",
+    "origin": "Cervical and thoracic vertebrae (C7 and T1)",
+    "insertion": "Medial border of scapula",
+    "actions": "Stabilizes scapula during pectoral girdle movement",
+    "source": "OpenStax Anatomy and Physiology 2e, chapter 11; source module m46495"
+  },
+  {
+    "name": "Abductor pollicis brevis",
+    "origin": "Flexor retinaculum; and nearby carpals",
+    "insertion": "Lateral base of proximal phalanx of thumb",
+    "actions": "Moves thumb away from body",
+    "source": "OpenStax Anatomy and Physiology 2e, chapter 11; source module m46495"
+  },
+  {
+    "name": "Opponens pollicis",
+    "origin": "Flexor retinaculum; trapezium",
+    "insertion": "Anterior of first metacarpal",
+    "actions": "Moves thumb across palm to touch other fingers",
+    "source": "OpenStax Anatomy and Physiology 2e, chapter 11; source module m46495"
+  },
+  {
+    "name": "Flexor pollicis brevis",
+    "origin": "Flexor retinaculum; trapezium",
+    "insertion": "Lateral base of proximal phalanx of thumb",
+    "actions": "Flexes thumb",
+    "source": "OpenStax Anatomy and Physiology 2e, chapter 11; source module m46495"
+  },
+  {
+    "name": "Adductor pollicis",
+    "origin": "Capitate bone; bases of metacarpals 2\u20134; front of metacarpal 3",
+    "insertion": "Medial base of proximal phalanx of thumb",
+    "actions": "Moves thumb toward body",
+    "source": "OpenStax Anatomy and Physiology 2e, chapter 11; source module m46495"
+  },
+  {
+    "name": "Abductor digiti minimi",
+    "origin": "Pisiform bone",
+    "insertion": "Medial side of proximal phalanx of little finger",
+    "actions": "Moves little finger away from body",
+    "source": "OpenStax Anatomy and Physiology 2e, chapter 11; source module m46495"
+  },
+  {
+    "name": "Flexor digiti minimi brevis",
+    "origin": "Hamate bone; flexor retinaculum",
+    "insertion": "Medial side of proximal phalanx of little finger",
+    "actions": "Flexes little finger",
+    "source": "OpenStax Anatomy and Physiology 2e, chapter 11; source module m46495"
+  },
+  {
+    "name": "Opponens digiti minimi",
+    "origin": "Hamate bone; flexor retinaculum",
+    "insertion": "Medial side of fifth metacarpal",
+    "actions": "Moves little finger across palm to touch thumb",
+    "source": "OpenStax Anatomy and Physiology 2e, chapter 11; source module m46495"
+  },
+  {
+    "name": "Lumbricals",
+    "origin": "Palm (lateral sides of tendons in flexor digitorum profundus)",
+    "insertion": "Fingers 2\u20135 (lateral edges of extensional expansions on first phalanges)",
+    "actions": "Flexes each finger at metacarpo-phalangeal joints; extends each finger at interphalangeal joints",
+    "source": "OpenStax Anatomy and Physiology 2e, chapter 11; source module m46495"
+  },
+  {
+    "name": "Palmar interossei",
+    "origin": "Side of each metacarpal that faces metacarpal 3 (absent from metacarpal 3)",
+    "insertion": "Extensor expansion on first phalanx of each finger (except finger 3) on side facing finger 3",
+    "actions": "Adducts and flexes each finger at metacarpo-phalangeal joints; extends each finger at interphalangeal joints",
+    "source": "OpenStax Anatomy and Physiology 2e, chapter 11; source module m46495"
+  },
+  {
+    "name": "Dorsal interossei",
+    "origin": "Sides of metacarpals",
+    "insertion": "Both sides of finger 3; for each other finger, extensor expansion over first phalanx on side opposite finger 3",
+    "actions": "Abducts and flexes the three middle fingers at metacarpo-phalangeal joints; extends the three middle fingers at interphalangeal joints",
+    "source": "OpenStax Anatomy and Physiology 2e, chapter 11; source module m46495"
+  },
+  {
+    "name": "External obliques; internal obliques",
+    "origin": "Ribs 5\u201312; ilium",
+    "insertion": "Ribs 7\u201310; linea alba; ilium",
+    "actions": "Twisting at waist; also bending to the side",
+    "source": "OpenStax Anatomy and Physiology 2e, chapter 11; source module m46485"
+  },
+  {
+    "name": "Transversus abdominis",
+    "origin": "Ilium; ribs 5\u201310",
+    "insertion": "Sternum; linea alba; pubis",
+    "actions": "Squeezing abdomen during forceful exhalations, defecation, urination, and childbirth",
+    "source": "OpenStax Anatomy and Physiology 2e, chapter 11; source module m46485"
+  },
+  {
+    "name": "Rectus abdominis",
+    "origin": "Pubis",
+    "insertion": "Sternum; ribs 5 and 7",
+    "actions": "Sitting up",
+    "source": "OpenStax Anatomy and Physiology 2e, chapter 11; source module m46485"
+  },
+  {
+    "name": "Quadratus lumborum",
+    "origin": "Ilium; ribs 5\u201310",
+    "insertion": "Rib 12; vertebrae L1\u2013L4",
+    "actions": "Bending to the side",
+    "source": "OpenStax Anatomy and Physiology 2e, chapter 11; source module m46485"
+  },
+  {
+    "name": "Diaphragm",
+    "origin": "Sternum; ribs 6\u201312; lumbar vertebrae",
+    "insertion": "Central tendon",
+    "actions": "Inhalation; exhalation",
+    "source": "OpenStax Anatomy and Physiology 2e, chapter 11; source module m46485"
+  },
+  {
+    "name": "External intercostals",
+    "origin": "Rib superior to each intercostal muscle",
+    "insertion": "Rib inferior to each intercostal muscle",
+    "actions": "Inhalation;exhalation",
+    "source": "OpenStax Anatomy and Physiology 2e, chapter 11; source module m46485"
+  },
+  {
+    "name": "Internal intercostals",
+    "origin": "Rib inferior to each intercostal muscle",
+    "insertion": "Rib superior to each intercostal muscle",
+    "actions": "Forced exhalation",
+    "source": "OpenStax Anatomy and Physiology 2e, chapter 11; source module m46485"
+  },
+  {
+    "name": "Superior rectus",
+    "origin": "Common tendinous ring (ring attaches to optic foramen)",
+    "insertion": "Superior surface of eyeball",
+    "actions": "Moves eyes up and toward nose; rotates eyes from 1 o\u2019clock to 3 o\u2019clock",
+    "source": "OpenStax Anatomy and Physiology 2e, chapter 11; source module m46484"
+  },
+  {
+    "name": "Inferior rectus",
+    "origin": "Common tendinous ring (ring attaches to optic foramen)",
+    "insertion": "Inferior surface of eyeball",
+    "actions": "Moves eyes down and toward nose; rotates eyes from 6 o\u2019clock to 3 o\u2019clock",
+    "source": "OpenStax Anatomy and Physiology 2e, chapter 11; source module m46484"
+  },
+  {
+    "name": "Lateral rectus",
+    "origin": "Common tendinous ring (ring attaches to optic foramen)",
+    "insertion": "Lateral surface of eyeball",
+    "actions": "Moves eyes away from nose",
+    "source": "OpenStax Anatomy and Physiology 2e, chapter 11; source module m46484"
+  },
+  {
+    "name": "Medial rectus",
+    "origin": "Common tendinous ring (ring attaches to optic foramen)",
+    "insertion": "Medial surface of eyeball",
+    "actions": "Moves eyes toward nose",
+    "source": "OpenStax Anatomy and Physiology 2e, chapter 11; source module m46484"
+  },
+  {
+    "name": "Inferior oblique",
+    "origin": "Floor of orbit (maxilla)",
+    "insertion": "Surface of eyeball between inferior rectus and lateral rectus",
+    "actions": "Moves eyes up and away from nose; rotates eyeball from 12 o\u2019clock to 9 o\u2019clock",
+    "source": "OpenStax Anatomy and Physiology 2e, chapter 11; source module m46484"
+  },
+  {
+    "name": "Superior oblique",
+    "origin": "Sphenoid bone",
+    "insertion": "Surface of eyeball between superior rectus and lateral rectus",
+    "actions": "Moves eyes down and away from nose; rotates eyeball from 6 o\u2019clock to 9 o\u2019clock",
+    "source": "OpenStax Anatomy and Physiology 2e, chapter 11; source module m46484"
+  },
+  {
+    "name": "Levator palpabrae superioris",
+    "origin": "Roof of orbit (sphenoid bone)",
+    "insertion": "Skin of upper eyelids",
+    "actions": "Opens eyes",
+    "source": "OpenStax Anatomy and Physiology 2e, chapter 11; source module m46484"
+  },
+  {
+    "name": "Orbicularis oculi",
+    "origin": "Medial bones composing the orbit",
+    "insertion": "Circumference of orbit",
+    "actions": "Closes eyelids",
+    "source": "OpenStax Anatomy and Physiology 2e, chapter 11; source module m46484"
+  },
+  {
+    "name": "Masseter",
+    "origin": "Maxilla arch; zygomatic arch (for masseter)",
+    "insertion": "Mandible",
+    "actions": "Closes mouth; aids chewing",
+    "source": "OpenStax Anatomy and Physiology 2e, chapter 11; source module m46484"
+  },
+  {
+    "name": "Temporalis",
+    "origin": "Temporal bone",
+    "insertion": "Mandible",
+    "actions": "Closes mouth; pulls lower jaw in under upper jaw",
+    "source": "OpenStax Anatomy and Physiology 2e, chapter 11; source module m46484"
+  },
+  {
+    "name": "Lateral pterygoid",
+    "origin": "Pterygoid process of sphenoid bone",
+    "insertion": "Mandible",
+    "actions": "Opens mouth; pushes lower jaw out under upper jaw; moves lower jaw side-to-side",
+    "source": "OpenStax Anatomy and Physiology 2e, chapter 11; source module m46484"
+  },
+  {
+    "name": "Medial pterygoid",
+    "origin": "Sphenoid bone; maxilla",
+    "insertion": "Mandible; temporo-mandibular joint",
+    "actions": "Closes mouth; pushes lower jaw out under upper jaw; moves lower jaw side-to-side",
+    "source": "OpenStax Anatomy and Physiology 2e, chapter 11; source module m46484"
+  },
+  {
+    "name": "Sternocleidomastoid",
+    "origin": "Sternum; clavicle",
+    "insertion": "Temporal bone (mastoid process); occipital bone",
+    "actions": "Rotates and tilts head to the side; tilts head forward",
+    "source": "OpenStax Anatomy and Physiology 2e, chapter 11; source module m46484"
+  },
+  {
+    "name": "Semispinalis capitis",
+    "origin": "Transverse and articular processes of cervical and thoracic vertebra",
+    "insertion": "Occipital bone",
+    "actions": "Rotates and tilts head backward",
+    "source": "OpenStax Anatomy and Physiology 2e, chapter 11; source module m46484"
+  },
+  {
+    "name": "Splenius capitis",
+    "origin": "Spinous processes of cervical and thoracic vertebra",
+    "insertion": "Temporal bone (mastoid process); occipital bone",
+    "actions": "Rotates and tilts head to the side; tilts head backward",
+    "source": "OpenStax Anatomy and Physiology 2e, chapter 11; source module m46484"
+  },
+  {
+    "name": "Longissimus capitis",
+    "origin": "Transverse and articular processes of cervical and thoracic vertebra",
+    "insertion": "Temporal bone (mastoid process)",
+    "actions": "Rotates and tilts head to the side; tilts head backward",
+    "source": "OpenStax Anatomy and Physiology 2e, chapter 11; source module m46484"
+  }
+]

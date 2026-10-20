@@ -43,3 +43,31 @@ Text references: chapter 4 (tissues), chapter 5 (integument), chapters 6–8 (bo
 Course uploads are supplied by the user and retain their original ownership. They are stored locally and are not included in the distributed app.
 
 Fonts: DM Sans and Manrope, bundled from @fontsource; font packages include their SIL Open Font License. Icons: Lucide, ISC license, supplied by lucide-react.
+
+## BodyParts3D 3D model geometry
+
+**BodyParts3D, © The Database Center for Life Science, licensed under Creative Commons Attribution-ShareAlike 2.1 Japan.**
+
+- Dataset: BodyParts3D release 3.0 / 20110915; one adult male reference.
+- Original archive: https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html
+- Source mirror and conversion to STL: Kevin-Mattheus-Moerman/BodyParts3D, https://github.com/Kevin-Mattheus-Moerman/BodyParts3D
+- Exact source revision: `f0eeb6e843380cfe6b83797cf8c3e1af74de5e61`.
+- Original mesh paths: `assets/BodyParts3D_data/stl/<model ID>.stl`.
+- Model names / ontology: source `parts_list_e.txt` and FMA.csv; source names, classifications, and individual Git blob hashes are recorded in `scripts/bodyparts-source.json`.
+- Attribution license: https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en
+- Source license statement is bundled as `public/models/LICENSE-bodyparts.txt` and in the preview ZIP.
+- Citation: Mitsuhashi N, Fujieda K, Tamura T, Kawamoto S, Takagi T, Okubo K. BodyParts3D: 3D structure database for anatomical concepts. Nucleic Acids Res. 2009;37(Database issue):D782–D785. DOI: https://doi.org/10.1093/nar/gkn613. Dataset DOI: https://doi.org/10.18908/lsdba.nbdc00837-000.
+
+### Adaptation
+
+924 named source meshes are bundled. Alternate `nsn` mesh variants are omitted. Raw STLs were checked against the Git blob hashes at the recorded source revision. Coordinates were converted from millimeters (x = subject left, y = posterior, z = superior) to browser meters (x = subject left, y = superior, z = anterior). This is a shared rigid coordinate conversion, preserving original spatial registration.
+
+The pipeline merges coincident vertices, performs bounded-error mesh simplification with protected boundaries, recomputes smooth normals, and uses quantized meshopt-compressed glTF. Important long bones receive higher triangle budgets. The resulting model has 2,657,736 triangles and is about 12.8 MB. Surface details can be reduced; users should compare fine landmarks to their course references. Models are rendered with illustrative, customizable colors. These derived geometry assets retain CC BY-SA 2.1 Japan.
+
+Bundled model SHA-256: `ce7fcca46227cdefaf2e719042f0c6245ff94252cecf2cebd5aa62ceaa16d3d4`.
+
+### Additional study notes
+
+39 parsed muscle table rows originate from the official OpenStax chapter 11 CNXML tables. Included notes retain source module references in `src/generated/muscle-notes.json`. Additional introductory functional summaries distinguish muscle actions, skeletal roles, and noncontractile support tissues; these are overviews, not exhaustive origin/insertion/innervation entries. Detailed notes for a parent muscle or bone are explicitly labeled when shown with an individual side, head, or part. Neural and vascular entries without reviewed specific details are marked as identification/general-role coverage.
+
+Three.js (MIT) renders the geometry; meshoptimizer (MIT) handles compression; glTF Transform (MIT) is used in the build pipeline. Package license notices are collected in the preview ZIP.
