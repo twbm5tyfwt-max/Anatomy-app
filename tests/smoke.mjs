@@ -130,7 +130,7 @@ try {
     },
   );
   await run("exam mode withholds feedback until submission", async () => {
-    await page.getByRole("button", { name: "Exam", exact: false }).click();
+    await page.locator(".mode-options").getByRole("button", { name: /^Exam/ }).click();
     await page.getByRole("button", { name: "Start 5-question quiz" }).click();
     for (let i = 0; i < 5; i++) {
       if (await page.locator(".answer-options button").count())
@@ -313,7 +313,7 @@ try {
       .getByLabel("Organ system", { exact: true })
       .selectOption("muscular");
     await page.getByRole("checkbox", { name: "10-minute timer" }).check();
-    await page.getByRole("button", { name: "Exam", exact: false }).click();
+    await page.locator(".mode-options").getByRole("button", { name: /^Exam/ }).click();
     await page.clock.install();
     await page.getByRole("button", { name: "Start 10-question quiz" }).click();
     await page.clock.runFor(600000);

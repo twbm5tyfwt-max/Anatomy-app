@@ -163,13 +163,13 @@ try {
       );
       await expect(page.locator(".study-editor")).toContainText("Exact match");
       await page
-        .getByRole("checkbox", { name: "Right humerus", exact: true })
+        .getByRole("checkbox", { name: /^Right humerus/ })
         .check();
       await page
-        .getByRole("checkbox", { name: "Right femur", exact: true })
+        .getByRole("checkbox", { name: /^Right femur/ })
         .check();
       await page
-        .getByRole("button", { name: "Save study workspace", exact: true })
+        .getByRole("button", { name: /Create study model/ })
         .click();
       await page
         .getByRole("button", { name: "3D study model", exact: true })

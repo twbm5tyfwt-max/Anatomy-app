@@ -321,16 +321,24 @@ try {
         buffer: Buffer.from(data, "base64"),
       });
       await expect(
-        page.getByRole("checkbox", { name: "Right humerus", exact: true }),
+        page.getByRole("checkbox", { name: /^Right humerus/ }),
       ).toBeVisible({ timeout: 120000 });
       await page
-        .getByRole("checkbox", { name: "Right humerus", exact: true })
+        .getByRole("checkbox", { name: /^Right humerus/ })
         .check();
       await page
-        .getByRole("checkbox", { name: "Right femur", exact: true })
+        .getByRole("checkbox", { name: /^Right femur/ })
         .check();
       await page
-        .getByRole("button", { name: "Save study workspace", exact: true })
+        .getByRole("button", { name: /Create study model/ })
+        .click();
+      // A new study model opens on its 3D tab with landmarks showing; the guide is one tab away.
+      await settled();
+      await expect(page.locator(".pro-inspector:visible")).toContainText(
+        /Right (humerus|femur)/,
+      );
+      await page
+        .getByRole("button", { name: "Study guide", exact: true })
         .click();
       await expect(page.locator(".personal-study-guide:visible")).toContainText(
         "Right humerus",
@@ -368,6 +376,9 @@ try {
       await page.reload();
       await page
         .getByRole("tab", { name: "Image lab guide", exact: true })
+        .click();
+      await page
+        .getByRole("button", { name: "Study guide", exact: true })
         .click();
       await expect(page.locator(".personal-study-guide:visible")).toContainText(
         "Right humerus",

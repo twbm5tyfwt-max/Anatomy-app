@@ -76,48 +76,23 @@ export function Atlas2D({
   );
   const sys = useMemo(() => [...shownSystems], [shownSystems]);
 
-  // Label the larger structures that are currently on the plate.
+  // Nothing is labeled until a structure is clicked; only that structure gets a label.
   const landmarks = useMemo<LandmarkPoint[]>(() => {
-    if (!labels) return [];
-    // Well-known structures first, then the rest by size.
-    const known =
-      /\b(deltoid|pectoralis major|biceps brachii|triceps brachii|rectus abdominis|external oblique|serratus anterior|sartorius|rectus femoris|vastus lateralis|gastrocnemius|soleus|tibialis anterior|gluteus maximus|trapezius|latissimus dorsi|sternocleidomastoid|brachioradialis|masseter|temporalis|orbicularis|femur|humerus|tibia|fibula|radius|ulna|clavicle|scapula|sternum|patella|mandible|frontal bone|parietal bone|rib|hip bone|sacrum|anterior cruciate|posterior cruciate|tibial collateral|fibular collateral|calcaneal tendon|iliotibial|liver|heart|stomach|right lung)\b/i;
-    const size = (m: (typeof modelParts)[number]) => {
-      const dx = m.bounds[1][0] - m.bounds[0][0],
-        dy = m.bounds[1][1] - m.bounds[0][1],
-        dz = m.bounds[1][2] - m.bounds[0][2];
-      return dx * dy * dz + dy * 0.002;
-    };
-    const rank = (m: (typeof modelParts)[number]) =>
-      (known.test(m.name) ? 1 : 0) * 1e3 + size(m);
-    const wanted = modelParts
-      .filter(
-        (m) =>
-          !m.parentId &&
-          m.layer &&
-          m.layer !== "attachment" &&
-          m.layer !== "skin" &&
-          (layers[m.layer] ?? 0) > 0 &&
-          shownSystems.has(m.system) &&
-          !hidden.includes(m.id) &&
-          // plate labels favour the viewer-facing side and midline structures
-          !/^left |left /i.test(m.name) === (view !== "left"),
-      )
-      .sort((a, b) => rank(b) - rank(a));
-    const picks = wanted.slice(0, 60);
-    if (selected && byId.has(selected) && !picks.some((m) => m.id === selected))
-      picks.unshift(byId.get(selected)!);
-    return picks.map((m) => ({
-      id: m.id,
-      name: m.name,
-      anchor: [
-        (m.bounds[0][0] + m.bounds[1][0]) / 2,
-        (m.bounds[0][1] + m.bounds[1][1]) / 2,
-        (m.bounds[0][2] + m.bounds[1][2]) / 2,
-      ],
-      modelId: m.id,
-    }));
-  }, [labels, layers, shownSystems, hidden, selected, view]);
+    const m = selected ? byId.get(selected) : null;
+    if (!labels || !m) return [];
+    return [
+      {
+        id: m.id,
+        name: m.name,
+        anchor: [
+          (m.bounds[0][0] + m.bounds[1][0]) / 2,
+          (m.bounds[0][1] + m.bounds[1][1]) / 2,
+          (m.bounds[0][2] + m.bounds[1][2]) / 2,
+        ],
+        modelId: m.id,
+      },
+    ];
+  }, [labels, selected]);
 
   useEffect(() => {
     api.current?.view(view);
@@ -199,7 +174,7 @@ export function Atlas2D({
           aria-pressed={labels}
           onClick={() => setLabels(!labels)}
         >
-          Labels {labels ? "on" : "off"}
+          Label on click: {labels ? "on" : "off"}
         </button>
       </div>
 
@@ -227,7 +202,7 @@ export function Atlas2D({
             }}
           />
           <div className="a2d-hint" aria-live="polite">
-            {hover ? hover : "Hover a structure to identify it"}
+            {hover ? hover : "Click a bone or muscle to label it"}
           </div>
           <div className="a2d-zoom">
             <button aria-label="Zoom in" onClick={() => api.current?.zoom(0.75)}>

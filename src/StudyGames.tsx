@@ -7,6 +7,9 @@ import { tissues } from "./content";
 import { TissueDiagram } from "./TissueDiagram";
 import { useStored } from "./storage";
 import type { StudyCollection } from "./studyCollections";
+import { tissuePalette } from "./tissueColors";
+import { LandmarkGame } from "./LandmarkGame";
+import { landmarks as allLandmarks } from "./landmarkCatalog";
 import { GameSetup, MAX_MEMORY, MAX_STRUCTURES } from "./GameSetup";
 const byId = new Map(modelParts.map((m) => [m.id, m]));
 type GameResult = {
@@ -36,6 +39,44 @@ export function gamePool(
       (!regional || regional.has(m.id)) &&
       (!system || m.system === system),
   );
+}
+/** Progressive, name-free hints for the Find & click game. */
+function findHint(m: ModelPart, n: number) {
+  const side = /^left |\bleft\b/i.test(m.name)
+    ? "left"
+    : /^right |\bright\b/i.test(m.name)
+      ? "right"
+      : "midline";
+  const tissue = tissuePalette[m.layer || "organs"]?.label.toLowerCase() || "structure";
+  if (n === 1)
+    return `it is a ${tissue} ${side === "midline" ? "on or near the midline" : "on the " + side + " side"}.`;
+  // Hint 2: name the closest neighbouring structures, never the target itself.
+  const center = (x: ModelPart) =>
+    [0, 1, 2].map((i) => (x.bounds[0][i] + x.bounds[1][i]) / 2);
+  const c = center(m);
+  const family = m.name.replace(/^(left|right) /i, "").toLowerCase();
+  const near = modelParts
+    .filter(
+      (x) =>
+        !x.parentId &&
+        x.id !== m.id &&
+        ["bones", m.layer || "bones"].includes(x.layer || "") &&
+        !x.name.toLowerCase().includes(family) &&
+        // same side of the body as the target
+        (side === "midline" ||
+          new RegExp(side, "i").test(x.name) ||
+          !/left|right/i.test(x.name)),
+    )
+    .map((x) => ({
+      name: x.name,
+      d: Math.hypot(...center(x).map((v, i) => v - c[i])),
+    }))
+    .sort((a, b) => a.d - b.d)
+    .slice(0, 2)
+    .map((x) => x.name);
+  return near.length
+    ? `it sits right next to the ${near.join(" and the ")}.`
+    : "look near the structures in this region.";
 }
 export function StudyGames({
   collections,
@@ -68,6 +109,9 @@ export function StudyGames({
     [],
   );
   const [feedback, setFeedback] = useState("");
+  // Find & click: unlimited tries per target. Each miss gives a hint; the third reveals it.
+  const [misses, setMisses] = useState(0);
+  const [findMsg, setFindMsg] = useState("");
   const [eligible, setEligible] = useState<string[]>([]);
   const [ready, setReady] = useState(false);
   const [interacting, setInteracting] = useState(false);
@@ -149,6 +193,23 @@ export function StudyGames({
       finish();
   }, [paired]);
   function start(only?: string[]) {
+    if (mode === "Landmarks") {
+      const bones = (only || checkedIds).filter((id) =>
+        allLandmarks.some((l) => l.modelId === id),
+      );
+      if (allLandmarks.filter((l) => bones.includes(l.modelId)).length < 4) {
+        setMessage(
+          "Tick bones that have at least four mapped landmark points in total, such as the humerus, tibia, mandible or frontal bone.",
+        );
+        return;
+      }
+      setRoster(bones.map((id) => byId.get(id)!));
+      setAnswers([]);
+      setFinished(false);
+      setMessage("");
+      setRunning(true);
+      return;
+    }
     if (mode === "Tissue identification") {
       const unsupported = pool.filter(
         (m) =>
@@ -209,6 +270,8 @@ export function StudyGames({
     setRound(0);
     setAnswers([]);
     setFeedback("");
+    setMisses(0);
+    setFindMsg("");
     setEligible([]);
     setReady(isMemory || isTissue);
     setInteracting(false);
@@ -256,11 +319,31 @@ export function StudyGames({
     const model = byId.get(id);
     const selected = model?.parentId || id;
     const correct = selected === targetId;
-    setAnswers((old) => [...old, { id: targetId, correct }]);
-    setFeedback(correct ? "Correct." : `Study again: ${target.name}.`);
+    if (isFind && !correct) {
+      const n = misses + 1;
+      setMisses(n);
+      if (n === 1)
+        setAnswers((old) => [...old, { id: targetId, correct: false }]);
+      const clicked = byId.get(selected)?.name || "another structure";
+      setFindMsg(
+        n >= 3
+          ? `That was the ${clicked}. The ${target.name} is now highlighted: click it.`
+          : `That was the ${clicked}, not the ${target.name}. Hint ${n} of 3: ${findHint(target, n)}`,
+      );
+      return;
+    }
+    if (isFind && misses > 0) {
+      // already counted as missed on the first wrong click
+      setFeedback("Found it. It stays on your missed list so you can practice it again.");
+    } else {
+      setAnswers((old) => [...old, { id: targetId, correct }]);
+      setFeedback(correct ? "Correct." : `Study again: ${target.name}.`);
+    }
   }
   function next() {
     setFeedback("");
+    setMisses(0);
+    setFindMsg("");
     setRound((n) => n + 1);
     setTargetId(roster[(round + 1) % roster.length].id);
     if (!isFind && !isMemory && !isTissue) setReady(false);
@@ -303,7 +386,14 @@ export function StudyGames({
           message={message}
         />
       ) : null}
-      {running && !finished && (
+      {running && mode === "Landmarks" && (
+        <LandmarkGame
+          boneIds={roster.map((m) => m.id)}
+          seconds={+seconds}
+          onExit={() => setRunning(false)}
+        />
+      )}
+      {running && !finished && mode !== "Landmarks" && (
         <div className="game-session">
           <div className="game-status">
             <strong>{mode}</strong>
@@ -316,6 +406,16 @@ export function StudyGames({
             </span>
             <button onClick={finish}>Finish session</button>
           </div>
+          {!isMemory && !isTissue && (
+            <ul className="tissue-legend" aria-label="Colour key">
+              {[...new Set(roster.map((m) => m.layer || "organs"))].map((l) => (
+                <li key={l}>
+                  <i style={{ background: tissuePalette[l]?.color }} />
+                  {tissuePalette[l]?.label || l}
+                </li>
+              ))}
+            </ul>
+          )}
           {isMemory ? (
             <>
               <h2>Find the identical structure-name pairs</h2>
@@ -392,7 +492,7 @@ export function StudyGames({
                   key={isFind ? roster.map((m) => m.id).join(",") : targetId}
                   quiz
                   visible={[]}
-                  selected={[]}
+                  selected={isFind && misses >= 3 ? [targetId] : []}
                   hidden={[]}
                   isolated={null}
                   layers={defaultLayers}
@@ -413,8 +513,26 @@ export function StudyGames({
                   }}
                   onInteracting={setInteracting}
                   onSelect={isFind ? answer : undefined}
+                  onReady={(a) =>
+                    a.frame(
+                      isFind
+                        ? included
+                        : included.filter(
+                            (id) =>
+                              id === targetId ||
+                              byId.get(id)?.parentId === targetId,
+                          ),
+                      "front",
+                      0,
+                    )
+                  }
                 />
               </div>
+              {isFind && findMsg && !feedback && (
+                <p className="find-msg" role="alert">
+                  {findMsg}
+                </p>
+              )}
               {!playable && !feedback && (
                 <p role="status">
                   Paused: preparing a visible, selectable target. Rotate or

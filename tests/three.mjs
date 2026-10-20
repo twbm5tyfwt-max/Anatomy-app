@@ -143,9 +143,14 @@ try {
       expect(+(await canvas.getAttribute("data-visible-meshes"))).toBeLessThan(
         10,
       );
+      // Landmark points are already showing on an isolated bone; open their list.
+      await expect(
+        page.getByRole("checkbox", { name: "Landmark labels", exact: true }),
+      ).toBeChecked();
       await page
-        .getByRole("checkbox", { name: "Landmark labels", exact: true })
-        .check();
+        .locator(".pro-inspector")
+        .getByRole("button", { name: "Landmarks", exact: true })
+        .click();
       await page
         .locator(".pro-landmarks > button")
         .filter({ hasText: "Spinous process" })

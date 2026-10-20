@@ -1,3 +1,4 @@
+import { PracticeExams } from "./PracticeExams";
 import { anatomyQuestionModels } from "./anatomyQuestions";
 import { AnatomyQuestion } from "./AnatomyQuestion";
 import { modelParts } from "./modelCatalog";
@@ -439,6 +440,7 @@ export function Quizzes({
             <h2>Build your practice</h2>
             <span className="badge">No AI required</span>
           </div>
+          <PracticeExams onStart={(qs) => start(qs)} />
           {scope.modelIds && <p className="education-note">Confirmed collection: {scope.scopeLabel || "Study model"} · {scope.modelIds.length} structures. Other catalog entries are excluded. <button onClick={()=>change({modelIds:undefined,scopeLabel:undefined})}>Leave collection scope</button></p>}
           <div className="quiz-presets">
             <button
@@ -523,7 +525,7 @@ export function Quizzes({
                   })
                 }
               >
-                <option value="atlas">Forma anatomy collection</option>
+                <option value="atlas">Burdett’s Anatomy collection</option>
                 <option value="anatomy3d">
                   3D anatomy & reviewed landmarks
                 </option>

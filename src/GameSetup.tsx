@@ -3,12 +3,15 @@ import { regionNames, regionParts } from "./atlasDomain";
 import type { ModelPart } from "./modelCatalog";
 import type { StudyCollection } from "./studyCollections";
 import "./games.css";
+import { tissueColor } from "./tissueColors";
+import { landmarkCounts } from "./LandmarkGame";
 
 export const gameModes = [
   { id: "Find & click", title: "Find & click", text: "Click the named structure on the 3D model." },
   { id: "Structure → name", title: "Name it", text: "See an isolated structure, pick its name." },
   { id: "Structure → function", title: "Match function", text: "Pick what the structure does." },
   { id: "Memory matching", title: "Memory", text: "Flip cards to pair identical names." },
+  { id: "Landmarks", title: "Landmarks", text: "Name the marked point on a bone (humerus, tibia, mandible…)." },
   { id: "Tissue identification", title: "Tissues", text: "Identify tissue diagrams linked to your picks." },
 ] as const;
 
@@ -73,18 +76,27 @@ export function GameSetup({
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState<string[]>(["bones", "muscles", "ligaments"]);
   const checked = useMemo(() => new Set(checkedIds), [checkedIds]);
+  const lmCounts = useMemo(() => landmarkCounts(), []);
+  const lmMode = mode === "Landmarks";
   const byGroup = useMemo(() => {
     const out = new Map<string, ModelPart[]>();
-    for (const m of pool) {
+    for (const m of lmMode ? pool.filter((p) => lmCounts.has(p.id)) : pool) {
       const g = groupOf(m);
       out.set(g, [...(out.get(g) || []), m]);
     }
     return out;
-  }, [pool]);
+  }, [pool, lmMode, lmCounts]);
   const limit = mode === "Memory matching" ? MAX_MEMORY : MAX_STRUCTURES;
   const needsStructures = mode !== "Tissue identification";
-  const n = checkedIds.length;
-  const ok = needsStructures ? n >= 2 && n <= limit : n >= 2;
+  const n = lmMode
+    ? checkedIds.filter((id) => lmCounts.has(id)).length
+    : checkedIds.length;
+  const lmTotal = checkedIds.reduce((t, id) => t + (lmCounts.get(id) || 0), 0);
+  const ok = lmMode
+    ? lmTotal >= 4
+    : needsStructures
+      ? n >= 2 && n <= limit
+      : n >= 2;
   const q = search.trim().toLowerCase();
 
   function setGroup(id: string, on: boolean) {
@@ -202,6 +214,11 @@ export function GameSetup({
                       }
                     >
                       <span className="gs-caret">{isOpen ? "▾" : "▸"}</span>
+                      <i
+                        className="gs-dot"
+                        style={{ background: tissueColor(g.layers[0]) }}
+                        aria-hidden="true"
+                      />
                       {g.label}
                       <b>
                         {count}/{items.length}
@@ -225,7 +242,17 @@ export function GameSetup({
                               )
                             }
                           />
+                          <i
+                            className="gs-dot sm"
+                            style={{ background: tissueColor(m.layer) }}
+                            aria-hidden="true"
+                          />
                           <span>{m.name}</span>
+                          {lmCounts.has(m.id) && (
+                            <small className="gs-lm">
+                              {lmCounts.get(m.id)} landmarks
+                            </small>
+                          )}
                         </label>
                       ))}
                       {!shown.length && <p className="gs-empty">No matches.</p>}
@@ -266,9 +293,11 @@ export function GameSetup({
             {n} selected
           </strong>
           <span>
-            {needsStructures
-              ? `Need 2–${limit} for this game`
-              : "Tissues come from your picks"}
+            {lmMode
+              ? `${lmTotal} landmarks on ${n} bone${n === 1 ? "" : "s"} · need at least 4`
+              : needsStructures
+                ? `Need 2–${limit} for this game`
+                : "Tissues come from your picks"}
           </span>
         </div>
         <div className="gs-timer" role="group" aria-label="Timer">

@@ -1,3 +1,4 @@
+import { tissueColor } from "./tissueColors";
 import { anatomyModels } from "./assetPaths";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
@@ -79,6 +80,8 @@ export type SceneProps = {
   plate?: boolean;
   targetMarker?: string;
   opacityOverrides?: Record<string, number>;
+  /** Per-structure colours, e.g. one colour per head of a multi-part muscle. */
+  colorOverrides?: Record<string, string>;
   onSelect?: (id: string) => void;
   onLandmark?: (id: string) => void;
   onHover?: (text: string | null) => void;
@@ -166,7 +169,9 @@ export function AnatomyScene(props: SceneProps) {
       );
       return;
     }
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setPixelRatio(
+      Math.min(window.devicePixelRatio || 1, props.plate || props.quiz ? 1.5 : 2),
+    );
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.05;
@@ -211,7 +216,10 @@ export function AnatomyScene(props: SceneProps) {
     const root = new THREE.Group();
     root.position.copy(bodyCenter).negate();
     scene.add(root);
-    const samples = Math.min(4, renderer.capabilities.maxSamples);
+    const samples = Math.min(
+      props.plate || props.quiz ? 2 : 4,
+      renderer.capabilities.maxSamples,
+    );
     const renderTarget = new THREE.WebGLRenderTarget(1, 1, {
       type: THREE.HalfFloatType,
       samples,
@@ -245,7 +253,9 @@ export function AnatomyScene(props: SceneProps) {
     };
     const records = new Map<string, Record3D>();
     let desiredAo = false;
-    let needsRender = true,
+    let lastActive = 0,
+      idleDirty = true,
+      needsRender = true,
       lastSignature = "",
       lastColors = "",
       lastLabelSignature = "";
@@ -705,7 +715,7 @@ export function AnatomyScene(props: SceneProps) {
         .sort((a, b) =>
           a.id === p.activeLandmark ? -1 : b.id === p.activeLandmark ? 1 : 0,
         )
-        .slice(0, p.quiz ? 20 : p.plate ? 26 : 8);
+        .slice(0, p.quiz ? 20 : p.plate ? 26 : 16);
       for (const side of [-1, 1]) {
         let last = 45;
         const items = filtered
@@ -821,9 +831,9 @@ export function AnatomyScene(props: SceneProps) {
             !p.highlightedSystems.includes(r.model.system) &&
             !selected.has(id);
           let color = new THREE.Color(
-            l === "bones"
+            l === "bones" && !p.quiz
               ? p.appearance.bone
-              : l === "muscles"
+              : l === "muscles" && !p.quiz
                 ? p.appearance.muscle
                 : l === "attachment"
                   ? r.model.attachmentKind === "origin"
@@ -831,19 +841,7 @@ export function AnatomyScene(props: SceneProps) {
                     : "#6dc8d8"
                   : l === "skin"
                     ? "#bd9680"
-                    : l === "cartilage"
-                      ? "#a9c2cb"
-                      : l === "ligaments"
-                        ? "#2fb5a5"
-                        : l === "tendons"
-                          ? "#e9c870"
-                          : l === "fascia"
-                            ? "#cdbfa5"
-                            : l === "capsules"
-                              ? "#b7a5d8"
-                              : l === "bursae"
-                                ? "#7db4e6"
-                                : "#b78373",
+                    : tissueColor(l),
           );
           if (l === "muscles" && !p.quiz)
             color.copy(
@@ -853,8 +851,10 @@ export function AnatomyScene(props: SceneProps) {
             color.set(/vein|vena/i.test(r.model.name) ? "#698ab7" : "#b34b50");
           if (r.model.system === "nervous") color.set("#d2bb6e");
           if (r.model.system === "lymphatic") color.set("#7a9c76");
+          const custom = p.colorOverrides?.[id];
+          if (custom) color.set(custom);
           if (dim) color.multiplyScalar(0.3);
-          if (selected.has(id))
+          if (selected.has(id) && !custom)
             color.lerp(
               new THREE.Color(p.appearance.accent),
               p.quiz ? 0.65 : 0.18,
@@ -953,9 +953,22 @@ export function AnatomyScene(props: SceneProps) {
           !tween &&
           pointers.size === 0;
         composer.render();
+        needsRender = false;
+        lastActive = now;
+        // Label projection and pickability checks cast many rays; run them only once the
+        // camera has settled so dragging, panning and zooming stay smooth.
+        idleDirty = true;
+        el.classList.toggle("moving", pointers.size > 0 || !!tween);
+      } else if (
+        idleDirty &&
+        pointers.size === 0 &&
+        !tween &&
+        now - lastActive > 140
+      ) {
         project();
         reportPickable();
-        needsRender = false;
+        idleDirty = false;
+        el.classList.remove("moving");
       }
       raf = requestAnimationFrame(tick);
     };

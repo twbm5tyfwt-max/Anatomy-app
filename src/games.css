@@ -82,7 +82,7 @@
 }
 .gs-presets button {
   border-style: dashed;
-  color: var(--accent);
+  color: var(--accent-ink);
   background: none;
 }
 .gs-chips button[aria-pressed="true"],
@@ -110,7 +110,7 @@
 .gs-group-head button {
   border: 0;
   background: none;
-  color: var(--accent);
+  color: var(--accent-ink);
   font: inherit;
   font-size: 13px;
   font-weight: 600;
@@ -457,4 +457,77 @@ details.guide-structure > summary h3 {
 }
 .guide-find {
   margin-bottom: 8px;
+}
+
+.gs-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid #0003;
+  flex: none;
+}
+.gs-dot.sm {
+  width: 10px;
+  height: 10px;
+}
+.tissue-legend {
+  display: flex;
+  gap: 8px 14px;
+  flex-wrap: wrap;
+  list-style: none;
+  margin: 6px 0 10px;
+  padding: 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.tissue-legend li {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.tissue-legend i {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid #0003;
+}
+
+.gs-lm {
+  margin-left: auto;
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  background: var(--raised);
+  padding: 1px 8px;
+  border-radius: 99px;
+}
+.lm-model {
+  height: 440px;
+  border-radius: 14px;
+  overflow: hidden;
+}
+.lm-tip {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 6px 0;
+}
+.game-options button.right {
+  background: #1d8f5a;
+  border-color: #1d8f5a;
+  color: #fff;
+}
+.game-options button.wrong {
+  background: #b3392f;
+  border-color: #b3392f;
+  color: #fff;
+}
+
+.find-msg {
+  margin: 8px 0;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: color-mix(in srgb, #d98a1c 14%, var(--panel));
+  border: 1px solid color-mix(in srgb, #d98a1c 45%, var(--border));
+  color: var(--text);
+  font-size: 14.5px;
 }

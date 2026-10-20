@@ -4,6 +4,8 @@ import { modelParts } from "./modelCatalog";
 import { regionNames, regionParts } from "./atlasDomain";
 import { groupOf, structureGroups } from "./GameSetup";
 import type { Match, Reference } from "./studyCollections";
+import { landmarks as allLandmarks } from "./landmarkCatalog";
+const lmCount = (id: string) => allLandmarks.filter((l) => l.modelId === id).length;
 
 const byId = new Map(modelParts.map((m) => [m.id, m]));
 const nameOf = (id: string) => byId.get(id)?.name || id;
@@ -31,16 +33,27 @@ export function StudyReview({
     );
 
   // Exact-name matches are pre-confirmed once; anything ambiguous waits for a choice.
+  // A plain left/right pair ("maxilla" → left + right) is added as both sides; the row
+  // still offers Right only / Left only.
+  const isPair = (m: Match) =>
+    m.ids.length === 2 &&
+    nameOf(m.ids[0]).replace(/left|right/i, "").trim().toLowerCase() ===
+      nameOf(m.ids[1]).replace(/left|right/i, "").trim().toLowerCase();
   useEffect(() => {
     const fresh = review.matches.filter(
-      (m) => m.exact && !m.fuzzy && !seen.current.has(m.term),
+      (m) =>
+        (m.exact || isPair(m)) && !m.fuzzy && !m.alias && !seen.current.has(m.term),
     );
     for (const m of review.matches) seen.current.add(m.term);
     if (fresh.length) add(fresh.flatMap((m) => m.ids), true);
   }, [review.matches]);
 
-  const exact = review.matches.filter((m) => m.exact && !m.fuzzy);
-  const needs = review.matches.filter((m) => !m.exact || m.fuzzy);
+  const exact = review.matches.filter(
+    (m) => (m.exact || (isPair(m) && !m.alias)) && !m.fuzzy,
+  );
+  const needs = review.matches.filter(
+    (m) => !(m.exact || (isPair(m) && !m.alias)) || m.fuzzy,
+  );
   const resolved = (m: Match) => m.ids.some((id) => chosen.has(id));
   const open = needs.filter((m) => !resolved(m));
   const suggested = review.matches.filter((m) => !m.fuzzy).flatMap((m) => m.ids);
@@ -86,20 +99,22 @@ export function StudyReview({
           return (
             <article
               key={m.term}
-              className={"sr-row" + (resolved(m) ? " done" : m.exact && !m.fuzzy ? "" : " todo")}
+              className={"sr-row" + (resolved(m) ? " done" : (m.exact || isPair(m)) && !m.fuzzy && !m.alias ? "" : " todo")}
             >
               <header>
                 <strong>{m.term}</strong>
                 <span
                   className={
                     "sr-badge " +
-                    (m.fuzzy ? "fuzzy" : m.exact ? "exact" : m.alias ? "alias" : "pick")
+                    (m.fuzzy ? "fuzzy" : m.exact || (isPair(m) && !m.alias) ? "exact" : m.alias ? "alias" : "pick")
                   }
                 >
                   {m.fuzzy
                     ? "Possible misspelling: check"
                     : m.exact
                       ? "Exact match"
+                      : isPair(m) && !m.alias
+                        ? "Both sides added"
                       : m.alias
                         ? `Shorthand for ${m.alias}`
                         : "Choose side / part"}
@@ -149,6 +164,9 @@ export function StudyReview({
                       onChange={(e) => add([id], e.target.checked)}
                     />
                     {nameOf(id)}
+                    {lmCount(id) > 0 && (
+                      <small className="gs-lm">{lmCount(id)} landmarks</small>
+                    )}
                   </label>
                 ))}
                 {ids.length > 40 && <small>+{ids.length - 40} more variants</small>}

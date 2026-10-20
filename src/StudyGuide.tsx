@@ -215,6 +215,7 @@ export function StudyGuide({
         Find a structure in this guide{" "}
         <input
           aria-label="Search study guide"
+          placeholder="Search this guide, e.g. mandible"
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
         />
@@ -323,6 +324,8 @@ export function StudyGuide({
               <label>
                 My explanation / course notes
                 <textarea
+                  rows={2}
+                  placeholder={`Write your own notes about the ${m.name.toLowerCase()}…`}
                   value={notes[m.id] || ""}
                   onChange={(e) =>
                     setNotes((v) => ({ ...v, [m.id]: e.target.value }))

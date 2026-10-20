@@ -1,4 +1,4 @@
-# Forma — interactive 3D anatomy study
+# Burdett’s Anatomy — interactive 3D anatomy study
 
 A React 19 / TypeScript anatomy and PT/AT educational study app with a real segmented 3D explorer, customizable appearance, tissue study, quizzes, local course materials, and saved progress. No account, API key, or paid AI service is required.
 

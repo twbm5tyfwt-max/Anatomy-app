@@ -104,16 +104,18 @@ const systemIcons = [
 ];
 export default function App() {
   const [tab, setTab] = useState<Tab>("explorer");
-  const [ligamentsVisible, setLigamentsVisible] = useState(false);
-  const [ligamentLens, setLigamentLens] = useState(false);
+  const [layerOn, setLayerOn] = useState<Record<string, boolean>>({});
+  const [layerFocus, setLayerFocus] = useState<Record<string, boolean>>({});
   useEffect(() => {
     const f = (e: Event) => {
-      const on = !!(e as CustomEvent).detail;
-      setLigamentsVisible(on);
-      if (!on) setLigamentLens(false);
+      const next = (e as CustomEvent<Record<string, boolean>>).detail;
+      setLayerOn(next);
+      setLayerFocus((old) =>
+        Object.fromEntries(Object.entries(old).map(([k, v]) => [k, v && !!next[k]])),
+      );
     };
-    window.addEventListener("forma-ligament-state", f);
-    return () => window.removeEventListener("forma-ligament-state", f);
+    window.addEventListener("forma-layer-state", f);
+    return () => window.removeEventListener("forma-layer-state", f);
   }, []);
   const [system, setSystem] = useState("muscular");
   const [visible, setVisible] = useState(
@@ -281,7 +283,7 @@ export default function App() {
           <span className="brand-mark">
             <Flower2 size={29} />
           </span>
-          forma<span className="brand-dot">.</span>
+          Burdett’s&nbsp;<span className="brand-dot">Anatomy</span>
         </button>
         <span className="brand-tagline">ANATOMY, UNDERSTOOD.</span>
         <nav className="main-nav" aria-label="Main navigation">
@@ -435,55 +437,58 @@ export default function App() {
                   </div>
                 );
               })}
-              {explorerMode === "3d" && (
-                <div
-                  className={`system-row ligament-row ${ligamentsVisible ? "active" : ""} ${ligamentLens ? "system-highlighted" : ""}`}
-                >
-                  <button
-                    className="system-name"
-                    aria-label={`${ligamentsVisible ? "Hide" : "Show"} ligaments`}
-                    aria-pressed={ligamentsVisible}
-                    title="Show or hide every modeled ligament (male source atlas)"
-                    onClick={() => {
-                      const next = !ligamentsVisible;
-                      setLigamentsVisible(next);
-                      if (!next) setLigamentLens(false);
-                      setTab("explorer");
-                      window.dispatchEvent(
-                        new CustomEvent("forma-ligaments", { detail: next }),
-                      );
-                    }}
-                  >
-                    <span className="system-symbol" style={{ color: "#0f8b8d" }}>
-                      <Link2 size={18} />
-                    </span>
-                    <span>Ligaments</span>
-                    <span className="system-eye">
-                      {ligamentsVisible ? <Eye size={13} /> : <EyeOff size={13} />}
-                    </span>
-                  </button>
-                  <button
-                    className={`system-highlight-button ${ligamentLens ? "active" : ""}`}
-                    aria-pressed={ligamentLens}
-                    aria-label={`${ligamentLens ? "Turn off" : "Turn on"} ligament focus`}
-                    title="Focus on ligaments: fade bones and hide muscles"
-                    onClick={() => {
-                      const next = !ligamentLens;
-                      setLigamentLens(next);
-                      setLigamentsVisible(true);
-                      setTab("explorer");
-                      window.dispatchEvent(
-                        new CustomEvent("forma-ligaments", { detail: true }),
-                      );
-                      window.dispatchEvent(
-                        new CustomEvent("forma-ligament-lens", { detail: next }),
-                      );
-                    }}
-                  >
-                    <Target size={14} />
-                  </button>
-                </div>
-              )}
+              {explorerMode === "3d" &&
+                (
+                  [
+                    ["ligaments", "Ligaments", "ligament", Link2, "#18b3a0", "Show or hide every modeled ligament (male source atlas)"],
+                    ["cartilage", "Cartilage", "cartilage", Layers, "#4f9fe8", "Show or hide articular surfaces, menisci, discs and other cartilage (male source atlas)"],
+                  ] as const
+                ).map(([layer, label, single, LayerIcon, color, help]) => {
+                  const on = !!layerOn[layer],
+                    focus = !!layerFocus[layer];
+                  const fire = (name: string, detail: object) =>
+                    window.dispatchEvent(new CustomEvent(name, { detail }));
+                  return (
+                    <div
+                      key={layer}
+                      className={`system-row layer-row ${on ? "active" : ""} ${focus ? "system-highlighted" : ""}`}
+                    >
+                      <button
+                        className="system-name"
+                        aria-label={`${on ? "Hide" : "Show"} ${label.toLowerCase()}`}
+                        aria-pressed={on}
+                        title={help}
+                        onClick={() => {
+                          setTab("explorer");
+                          if (on) setLayerFocus((f) => ({ ...f, [layer]: false }));
+                          fire("forma-layer", { layer, on: !on });
+                        }}
+                      >
+                        <span className="system-symbol" style={{ color }}>
+                          <LayerIcon size={18} />
+                        </span>
+                        <span>{label}</span>
+                        <span className="system-eye">
+                          {on ? <Eye size={13} /> : <EyeOff size={13} />}
+                        </span>
+                      </button>
+                      <button
+                        className={`system-highlight-button ${focus ? "active" : ""}`}
+                        aria-pressed={focus}
+                        aria-label={`${focus ? "Turn off" : "Turn on"} ${single} focus`}
+                        title={`Focus on ${label.toLowerCase()}: fade bones and hide other tissues`}
+                        onClick={() => {
+                          setTab("explorer");
+                          setLayerFocus((f) => ({ ...f, [layer]: !focus }));
+                          fire("forma-layer", { layer, on: true });
+                          fire("forma-layer-focus", { layer, on: !focus });
+                        }}
+                      >
+                        <Target size={14} />
+                      </button>
+                    </div>
+                  );
+                })}
               {explorerMode === "3d" && (
                 <p className="system-help">
                   <Eye size={12} /> Show / hide <Target size={12} /> Highlight
@@ -927,7 +932,7 @@ export default function App() {
       )}
       {!tourSeen && !tour && (
         <aside className="tour-invite">
-          <span>New to Forma?</span>
+          <span>New to Burdett’s Anatomy?</span>
           <button
             onClick={() => {
               setTour(true);
@@ -1038,7 +1043,7 @@ export default function App() {
                     : "Sources, credits & coverage"}
                 </h2>
                 <p>
-                  Forma is an introductory study collection with{" "}
+                  Burdett’s Anatomy is an introductory study collection with{" "}
                   {structures.length} structure entries, {tissues.length} tissue
                   entries, and overviews for all 11 organ systems. It is not a
                   complete anatomical atlas.

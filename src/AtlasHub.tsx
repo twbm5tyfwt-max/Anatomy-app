@@ -1,5 +1,8 @@
 import { StudyGuide, SourceImage } from "./StudyGuide";
 import { StudyReview, RegionPicker } from "./StudyReview";
+import { landmarks as allLandmarks } from "./landmarkCatalog";
+const landmarkCount = (id: string) =>
+  allLandmarks.filter((l) => l.modelId === id).length;
 import { useEffect, useMemo, useState, type ComponentProps } from "react";
 import { Explorer3D } from "./Explorer3D";
 import { useStored, getFile, deleteFile } from "./storage";
@@ -26,10 +29,10 @@ export function AtlasHub(props: Props) {
   useEffect(() => {
     const f = () => setActive("main");
     window.addEventListener("forma-region", f);
-    window.addEventListener("forma-ligaments", f);
+    window.addEventListener("forma-layer", f);
     return () => {
       window.removeEventListener("forma-region", f);
-      window.removeEventListener("forma-ligaments", f);
+      window.removeEventListener("forma-layer", f);
     };
   }, []);
   const [editing, setEditing] = useState<StudyCollection | null | undefined>();
@@ -253,6 +256,7 @@ export function AtlasHub(props: Props) {
               Workspace name
               <input
                 aria-label="Workspace name"
+                placeholder="e.g. Head & neck lab quiz"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
@@ -302,6 +306,7 @@ export function AtlasHub(props: Props) {
                 </button>
                 <textarea
                   aria-label={`Transcription ${r.file} ${r.page}`}
+                placeholder="Text read from this file. Fix any mistakes here."
                   value={r.text}
                   onChange={(e) =>
                     setRefs((old) =>
@@ -324,6 +329,7 @@ export function AtlasHub(props: Props) {
               Manually find a source structure
               <input
                 aria-label="Add structure manually"
+                placeholder="Type a name, e.g. maxilla"
                 value={manual}
                 onChange={(e) => setManual(e.target.value)}
               />
@@ -361,8 +367,18 @@ export function AtlasHub(props: Props) {
               ))}
             </details>
             {error && <p role="alert">{error}</p>}
+            <p className="study-summary">
+              {confirmed.length} structures confirmed ·{" "}
+              {
+                confirmed.filter(
+                  (id) => allLandmarks.some((l) => l.modelId === id),
+                ).length
+              }{" "}
+              bone(s) with mapped landmark points. Every bone also has a written
+              landmark guide.
+            </p>
             <button className="primary" disabled={busy} onClick={save}>
-              Save study workspace
+              Create study model{confirmed.length ? ` (${confirmed.length})` : ""}
             </button>
           </section>
         </div>
@@ -380,8 +396,20 @@ function CollectionViewer({
       .filter((m) => m.parentId && collection.ids.includes(m.parentId))
       .map((m) => m.id),
   ];
-  const [mode, setMode] = useState<"guide" | "model">("guide");
-  const [target, setTarget] = useState({ id: "", version: 0 });
+  // Open on the 3D model, with the bone that has the most mapped landmarks isolated and
+  // its points showing, so a study model made from notes is immediately useful.
+  const firstBone = collection.ids
+    .map((id) => modelParts.find((m) => m.id === id))
+    .filter((m) => m?.layer === "bones")
+    .sort((a, b) => landmarkCount(b!.id) - landmarkCount(a!.id))[0];
+  const [mode, setMode] = useState<"guide" | "model">(
+    ids.length ? "model" : "guide",
+  );
+  const [target, setTarget] = useState(
+    firstBone && landmarkCount(firstBone.id)
+      ? { id: "model:" + firstBone.id, version: 1 }
+      : { id: "", version: 0 },
+  );
   const [visible, setVisible] = useState(
     () =>
       readAtlasState(collection.id)?.visible || [

@@ -113,7 +113,7 @@
 .pt-regions .pt-open-viewer {
   margin-left: auto;
   border-style: dashed;
-  color: var(--accent);
+  color: var(--accent-ink);
 }
 .pt-tabs {
   display: flex;
@@ -136,7 +136,7 @@
   cursor: pointer;
 }
 .pt-tabs button[aria-selected="true"] {
-  color: var(--accent);
+  color: var(--accent-ink);
   border-bottom-color: var(--accent);
 }
 .pt-anatomy {
@@ -215,7 +215,7 @@
   margin: 6px 0 0 6px;
   border: 0;
   background: none;
-  color: var(--accent);
+  color: var(--accent-ink);
   font: inherit;
   font-weight: 600;
   cursor: pointer;
@@ -291,11 +291,11 @@ button.pt-chip {
 }
 button.pt-chip:hover {
   border-color: var(--accent);
-  color: var(--accent);
+  color: var(--accent-ink);
 }
 .pt-chip.tissue {
   background: var(--accent-soft);
-  color: var(--accent);
+  color: var(--accent-ink);
   border-color: transparent;
 }
 .pt-context {
@@ -315,7 +315,7 @@ button.pt-chip:hover {
 .pt-toggle {
   border: 0;
   background: none;
-  color: var(--accent);
+  color: var(--accent-ink);
   font: inherit;
   font-weight: 600;
   padding: 6px 0;
@@ -340,7 +340,7 @@ button.pt-chip:hover {
 }
 .pt-stages em {
   font-size: 13px;
-  color: var(--accent);
+  color: var(--accent-ink);
   font-style: normal;
 }
 .pt-type {
@@ -392,7 +392,7 @@ button.pt-chip:hover {
   font-weight: 700;
 }
 .pt-cites a {
-  color: var(--accent);
+  color: var(--accent-ink);
 }
 .pt-videos {
   border: 1px dashed var(--border);
@@ -423,7 +423,7 @@ button.pt-chip:hover {
   letter-spacing: 0.05em;
 }
 .pt-table a {
-  color: var(--accent);
+  color: var(--accent-ink);
 }
 @media (max-width: 820px) {
   .pt-anatomy,
