@@ -70,6 +70,7 @@ export function regionParts(region: string, layers?: string[]) {
           (/knee|patell|menisc|cruciate|tibial collateral|fibular collateral|quadriceps.*tendon/.test(
             a + " " + n,
           ) ||
+            (m.layer === "tendons" && /rectus femoris|vastus/.test(n)) ||
             ["Right femur", "Right tibia", "Right fibula"].includes(m.name) ||
             (!!m.parentId && ["FMA24474", "FMA24477"].includes(m.parentId)))
         );
@@ -108,13 +109,27 @@ export function regionParts(region: string, layers?: string[]) {
   );
 }
 export function associatedTissue(m: ModelPart): string {
-  const n = m.name.toLowerCase();
-  if (/menisc|labrum|intervertebral disc|pubic symphysis/.test(n))
+  const n = m.name.toLowerCase().replace(/epiglotic/g, "epiglottic");
+  if (/tooth|incisor|canine|premolar|molar/.test(n) && m.layer === "bones")
+    return "dental";
+  if (/falx cerebri|tentorium cerebelli|(?:superior|inferior) tarsus/.test(n))
+    return "dense-irregular";
+  if (m.system === "cardiovascular" && /valve|leaflet/.test(n))
+    return "dense-irregular";
+  if (
+    /menisc|labrum|articular disc|articular disk|intervertebral disc|interpubic|symphys|nucleus pulposus/.test(
+      n,
+    )
+  )
     return "fibrocartilage";
-  if (/epiglott/.test(n) && m.layer === "cartilage") return "elastic-cartilage";
+  if (
+    /epiglott|corniculate|auditory tube|auricular cartilage/.test(n) &&
+    m.layer === "cartilage"
+  )
+    return "elastic-cartilage";
   if (m.layer === "cartilage") return "hyaline";
   if (
-    /valve|ligament|tendon|aponeuros|fascia|linea alba/.test(n) ||
+    /ligament|tendon|aponeuros|fascia|linea alba/.test(n) ||
     ["tendons", "ligaments", "fascia"].includes(m.layer || "")
   )
     return "dense-regular";

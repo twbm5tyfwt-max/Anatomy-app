@@ -23,11 +23,14 @@ const plates = Object.fromEntries(
   ),
 );
 
-const modelData =
+const hraModelData =
   "data:model/gltf-binary;base64," +
-  (await readFile(join(root, "public/models/anatomy.glb"))).toString(
+  (await readFile(join(root, "public/models/hra-female.glb"))).toString(
     "base64",
   );
+const modelData =
+  "data:model/gltf-binary;base64," +
+  (await readFile(join(root, "public/models/anatomy.glb"))).toString("base64");
 try {
   await build({
     root,
@@ -40,9 +43,13 @@ try {
         enforce: "pre",
         transform(source, id) {
           if (!id.includes("/src/")) return;
-          if (id.endsWith("/AnatomyScene.tsx"))
-            source = source.replaceAll("/models/anatomy.glb", modelData);
-          if(id.endsWith("/assetPaths.ts")) for(const [name,data] of Object.entries(plates))source=source.replaceAll("/anatomy/"+name,data);
+          if (id.endsWith("/assetPaths.ts")) {
+            source = source
+              .replaceAll("/models/anatomy.glb", modelData)
+              .replaceAll("/models/hra-female.glb", hraModelData);
+            for (const [name, data] of Object.entries(plates))
+              source = source.replaceAll("/anatomy/" + name, data);
+          }
           return source;
         },
       },
@@ -109,10 +116,36 @@ try {
     "LICENSE-bodyparts.txt",
     await readFile(join(root, "public/models/LICENSE-bodyparts.txt")),
   );
-  archive.file("LICENSE-z-anatomy.txt", await readFile(join(root, "public/models/LICENSE-z-anatomy.txt")));
-  archive.file("IMPLEMENTATION_CHECKLIST.md",await readFile(join(root,"IMPLEMENTATION_CHECKLIST.md")));
-  archive.file("LICENSES.md",await readFile(join(root,"LICENSES.md")));
-  archive.file("ASSET_MANIFEST.json", await readFile(join(root,"public/ASSET_MANIFEST.json")));
+  archive.file(
+    "LICENSE-z-anatomy.txt",
+    await readFile(join(root, "public/models/LICENSE-z-anatomy.txt")),
+  );
+  for (const name of [
+    "LICENSE-hra.txt",
+    "LICENSE-uberon.txt",
+    "LICENSE-wikipedia.txt",
+    "LICENSE-cc-by-sa-4.txt",
+    "LICENSE-ocr-data.txt",
+  ])
+    archive.file(name, await readFile(join(root, "public/models", name)));
+  archive.file(
+    "STUDY_DATA_COVERAGE.md",
+    await readFile(join(root, "STUDY_DATA_COVERAGE.md")),
+  );
+  archive.file(
+    "IMPLEMENTATION_CHECKLIST.md",
+    await readFile(join(root, "IMPLEMENTATION_CHECKLIST.md")),
+  );
+  archive.file("README.md", await readFile(join(root, "delivery/README.md")));
+  archive.file(
+    "VALIDATION.md",
+    await readFile(join(root, "delivery/VALIDATION.md")),
+  );
+  archive.file("LICENSES.md", await readFile(join(root, "LICENSES.md")));
+  archive.file(
+    "ASSET_MANIFEST.json",
+    await readFile(join(root, "public/ASSET_MANIFEST.json")),
+  );
   let notices = "";
   async function collectLicenses(directory) {
     for (const entry of await readdir(directory, { withFileTypes: true })) {
@@ -133,6 +166,9 @@ try {
     }
   }
   await collectLicenses(join(root, "node_modules"));
+  notices +=
+    "\n\n=== English OCR data ===\n" +
+    (await readFile(join(root, "public/models/LICENSE-ocr-data.txt"), "utf8"));
   archive.file("THIRD_PARTY_LICENSES.txt", notices);
   const zipped = await archive.generateAsync({
     type: "nodebuffer",

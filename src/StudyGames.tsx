@@ -47,14 +47,19 @@ export function StudyGames({
   const [region, setRegion] = useState(initialCollection ? "" : "Skull");
   const [system, setSystem] = useState("");
   const [collectionId, setCollectionId] = useState(initialCollection || "");
-  const [difficulty, setDifficulty] = useState("Foundations");
-  const [seconds, setSeconds] = useState("60");
+  const [checkedIds, setCheckedIds] = useState<string[]>([]);
+  const [scopeSearch, setScopeSearch] = useState("");
+  const [seconds, setSeconds] = useState("0");
   const [running, setRunning] = useState(false);
   const collection = collections.find((c) => c.id === collectionId);
   const pool = useMemo(
     () => gamePool(region, system, collection),
     [region, system, collection],
   );
+  useEffect(() => {
+    setCheckedIds(pool.slice(0, 12).map((m) => m.id));
+    setScopeSearch("");
+  }, [pool]);
   const [roster, setRoster] = useState<ModelPart[]>([]);
   const [round, setRound] = useState(0);
   const [targetId, setTargetId] = useState("");
@@ -143,13 +148,26 @@ export function StudyGames({
       finish();
   }, [paired]);
   function start(only?: string[]) {
-    const candidate = (
-      only ? pool.filter((m) => only.includes(m.id)) : pool
-    ).filter(
-      (m) =>
-        mode !== "Structure → function" ||
-        getModelStudy(m).detailLevel !== "identification",
-    );
+    if (mode === "Tissue identification") {
+      const unsupported = pool.filter(
+        (m) =>
+          (only || checkedIds).includes(m.id) &&
+          !tissues.some((t) => t.id === associatedTissue(m)),
+      );
+      if (unsupported.length) {
+        setMessage(
+          `No matched tissue entry for: ${unsupported.map((m) => m.name).join(", ")}. Uncheck these or choose a name/find activity.`,
+        );
+        return;
+      }
+    }
+    const candidate = pool
+      .filter((m) => (only || checkedIds).includes(m.id))
+      .filter(
+        (m) =>
+          mode !== "Structure → function" ||
+          getModelStudy(m).detailLevel !== "identification",
+      );
     if (candidate.length < 2) {
       setMessage(
         "Choose at least two available structures. Function matching requires reviewed functional notes.",
@@ -172,9 +190,17 @@ export function StudyGames({
       setMessage("Choose a scope with at least two associated tissue types.");
       return;
     }
-    const shuffled = [...candidate]
-      .sort(() => Math.random() - 0.5)
-      .slice(0, difficulty === "Foundations" ? 6 : 12);
+    if (candidate.length > 24) {
+      setMessage("Choose up to 24 structures for a focused session.");
+      return;
+    }
+    if (isMemory && candidate.length > 8) {
+      setMessage(
+        "Memory matching supports up to 8 checked structures. Uncheck extras or choose another activity.",
+      );
+      return;
+    }
+    const shuffled = [...candidate].sort(() => Math.random() - 0.5);
     setRoster(shuffled);
     setTargetId(shuffled[0].id);
     setRound(0);
@@ -191,7 +217,6 @@ export function StudyGames({
     setFlipped([]);
     setMemory(
       shuffled
-        .slice(0, 6)
         .flatMap((m) => [
           { id: m.id, name: m.name },
           { id: m.id, name: m.name },
@@ -215,7 +240,16 @@ export function StudyGames({
   }
   function answer(id: string) {
     if (!id || !byId.has(id)) return;
-    if (!running || finished || !ready || !pageActive || feedback || !target || (isFind && !eligible.includes(targetId))) return;
+    if (
+      !running ||
+      finished ||
+      !ready ||
+      !pageActive ||
+      feedback ||
+      !target ||
+      (isFind && !eligible.includes(targetId))
+    )
+      return;
     const model = byId.get(id);
     const selected = model?.parentId || id;
     const correct = selected === targetId;
@@ -244,6 +278,10 @@ export function StudyGames({
     <section className="learning-page games-page">
       <p className="eyebrow">PRACTICE WITH A PURPOSE</p>
       <h1>Study games</h1>
+      <p>
+        Choose a region or saved collection, check what you want to learn, then
+        practice. Start untimed to explore at your own pace.
+      </p>
       {!running || finished ? (
         <>
           <div className="learning-toolbar">
@@ -320,17 +358,6 @@ export function StudyGames({
               </select>
             </label>
             <label>
-              Difficulty
-              <select
-                aria-label="Game difficulty"
-                value={difficulty}
-                onChange={(e) => setDifficulty(e.target.value)}
-              >
-                <option>Foundations</option>
-                <option>Detailed</option>
-              </select>
-            </label>
-            <label>
               Timer
               <select
                 aria-label="Game timer"
@@ -346,6 +373,109 @@ export function StudyGames({
               Start game
             </button>
           </div>
+          <section
+            className="game-scope-checklist"
+            aria-label="Choose structures to study"
+          >
+            <div className="game-scope-heading">
+              <div>
+                <p className="eyebrow">YOUR STUDY CHECKLIST</p>
+                <h2>What do you want to practice?</h2>
+                <p>
+                  {checkedIds.length} checked · choose 2–24 structures, or 2–8
+                  for memory. Your checks define the session.
+                </p>
+              </div>
+              <button
+                onClick={() =>
+                  setCheckedIds(pool.slice(0, 24).map((m) => m.id))
+                }
+              >
+                Select first 24
+              </button>
+              <button onClick={() => setCheckedIds([])}>Clear checklist</button>
+            </div>
+            <input
+              aria-label="Search study checklist"
+              value={scopeSearch}
+              onChange={(e) => setScopeSearch(e.target.value)}
+              placeholder="Find a bone, muscle or ligament…"
+            />
+            <div className="game-checklist-groups">
+              {[
+                "Bones",
+                "Muscles",
+                "Ligaments & connective",
+                "Organs, vessels & nerves",
+              ].map((group, i) => {
+                const items = pool.filter((m) =>
+                  i === 0
+                    ? m.layer === "bones"
+                    : i === 1
+                      ? m.layer === "muscles"
+                      : i === 2
+                        ? [
+                            "ligaments",
+                            "tendons",
+                            "cartilage",
+                            "fascia",
+                            "capsules",
+                            "bursae",
+                          ].includes(m.layer || "")
+                        : ![
+                            "bones",
+                            "muscles",
+                            "ligaments",
+                            "tendons",
+                            "cartilage",
+                            "fascia",
+                            "capsules",
+                            "bursae",
+                          ].includes(m.layer || ""),
+                );
+                if (!items.length) return null;
+                const filtered = items.filter((m) =>
+                  m.name.toLowerCase().includes(scopeSearch.toLowerCase()),
+                );
+                return (
+                  <details key={group} open>
+                    <summary>
+                      {group} ·{" "}
+                      {items.filter((m) => checkedIds.includes(m.id)).length}/
+                      {items.length}
+                    </summary>
+                    <div>
+                      {filtered.slice(0, 250).map((m) => (
+                        <label key={m.id}>
+                          <input
+                            type="checkbox"
+                            checked={checkedIds.includes(m.id)}
+                            onChange={(e) =>
+                              setCheckedIds((v) =>
+                                e.target.checked
+                                  ? [...v, m.id]
+                                  : v.filter((id) => id !== m.id),
+                              )
+                            }
+                          />
+                          {m.name}
+                        </label>
+                      ))}
+                      {filtered.length > 250 && (
+                        <p>
+                          Search to narrow the remaining {filtered.length - 250}{" "}
+                          entries.
+                        </p>
+                      )}
+                    </div>
+                  </details>
+                );
+              })}
+            </div>
+            <button className="primary" onClick={() => start()}>
+              Practice checked structures
+            </button>
+          </section>
           <p>
             {pool.length} structures available in this exact scope. Function
             matching excludes identification-only entries. Timed games pause

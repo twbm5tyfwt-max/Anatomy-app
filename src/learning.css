@@ -604,3 +604,722 @@
 .landmark-pin {
   z-index: 11;
 }
+.reference-atlas {
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  overflow: hidden;
+  background: var(--panel, #fff);
+}
+.reference-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--border);
+}
+.reference-header h2 {
+  margin: 4px 0;
+  font-size: 21px;
+}
+.reference-header .eyebrow {
+  margin: 0;
+  font-size: 10px;
+  letter-spacing: 0.13em;
+}
+.reference-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  padding: 12px 20px;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.reference-toolbar label {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.reference-atlas button,
+.reference-atlas select {
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 7px 10px;
+  background: var(--panel, #fff);
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+}
+.reference-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  min-height: 660px;
+}
+.reference-stage {
+  position: relative;
+  min-width: 0;
+  height: 730px;
+  background: #101c2a;
+}
+.reference-stage .anatomy-scene {
+  height: 100%;
+}
+.reference-stage .three-canvas {
+  width: 100%;
+  height: 100%;
+}
+.reference-status {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
+  color: #fff;
+  font-size: 12px;
+  text-shadow: 0 1px 4px #000;
+}
+.reference-status button {
+  pointer-events: auto;
+  text-shadow: none;
+  color: #152335;
+}
+.reference-views {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+}
+.reference-views button {
+  padding: 6px 8px;
+  color: #243346;
+  font-size: 11px;
+}
+.reference-views button[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--accent-contrast, #fff);
+}
+.reference-inspector {
+  padding: 18px;
+  max-height: 730px;
+  overflow: auto;
+  border-left: 1px solid var(--border);
+  font-size: 12px;
+  line-height: 1.65;
+}
+.reference-inspector h3 {
+  font-size: 17px;
+  margin: 6px 0;
+}
+.reference-inspector h4 {
+  margin: 12px 0 4px;
+}
+.reference-inspector input:not([type="checkbox"]) {
+  width: 100%;
+  padding: 9px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--panel, #fff);
+  color: inherit;
+}
+.reference-detail {
+  padding-bottom: 15px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid var(--border);
+}
+.reference-detail button {
+  margin: 4px 3px 4px 0;
+}
+.reference-components {
+  max-height: 360px;
+  overflow: auto;
+  margin: 10px 0;
+}
+.reference-components > div {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  padding: 5px 0;
+}
+.reference-components button {
+  text-align: left;
+  flex: 1;
+  border: 0;
+  background: transparent;
+  font-size: 12px;
+}
+.reference-systems {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  margin: 10px 0;
+}
+.reference-systems label {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+.reference-overlap {
+  position: absolute;
+  top: 70px;
+  left: 15px;
+  max-width: 270px;
+  max-height: 250px;
+  overflow: auto;
+  padding: 8px;
+  border-radius: 8px;
+  background: #fff;
+  color: #172538;
+  font-size: 12px;
+}
+.reference-overlap button {
+  display: block;
+}
+.reference-coverage {
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+.organ-modal-backdrop {
+  z-index: 90;
+  padding: 20px;
+  overflow: auto;
+  align-items: flex-start;
+}
+.organ-modal {
+  width: min(1280px, 100%);
+  margin: auto;
+}
+.bone-landmark-guide {
+  padding: 12px;
+  margin-bottom: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+@media (max-width: 850px) {
+  .reference-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .reference-stage {
+    height: 520px;
+  }
+  .reference-inspector {
+    max-height: none;
+    border-left: 0;
+    border-top: 1px solid var(--border);
+  }
+  .reference-toolbar {
+    padding: 10px;
+  }
+  .reference-header {
+    padding: 14px;
+  }
+  .reference-header h2 {
+    font-size: 17px;
+  }
+  .organ-modal-backdrop {
+    padding: 8px;
+  }
+}
+.reference-canvas-wrap {
+  width: 100%;
+  height: 100%;
+}
+.reference-scope-note {
+  margin: 0;
+  padding: 10px 22px;
+  color: var(--text-secondary, #60708a);
+  font-size: 12px;
+  line-height: 1.7;
+  background: var(--subtle, #f5f7fb);
+}
+.organ-section-reference {
+  position: absolute;
+  inset: 0;
+  overflow: auto;
+  background: #fff;
+  padding: 18px;
+  z-index: 5;
+  color: #233148;
+}
+.published-plate-image {
+  overflow: auto;
+  max-height: 680px;
+  background: white;
+  border-radius: 10px;
+  border: 1px solid #e3e8ee;
+}
+.published-plate-image img {
+  display: block;
+  height: auto;
+  object-fit: contain;
+}
+.published-plate {
+  min-width: 0;
+  padding: 16px;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.plate-zoom {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.plate-zoom strong {
+  flex: 1;
+  min-width: 180px;
+}
+.plate-zoom button,
+.plate-explorer button,
+.game-scope-checklist button,
+.personal-study-guide button {
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--panel, #fff);
+  color: inherit;
+  padding: 7px 10px;
+  cursor: pointer;
+}
+.plate-explorer > header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+.plate-explorer > header h2 {
+  margin: 4px 0;
+}
+.plate-explorer > header p {
+  font-size: 13px;
+  color: var(--text-secondary, #60708a);
+}
+.plate-explorer-layout {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+}
+.plate-explorer-layout > aside {
+  padding: 20px;
+  border-right: 1px solid var(--border);
+  font-size: 12px;
+  line-height: 1.7;
+}
+.plate-explorer-layout label {
+  display: grid;
+  gap: 7px;
+  margin-bottom: 18px;
+}
+.plate-explorer-layout select,
+.plate-explorer-layout input {
+  max-width: 100%;
+  padding: 9px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--panel, #fff);
+  color: inherit;
+}
+.plate-explorer-layout aside > button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  margin: 6px 0;
+}
+.plate-mode {
+  margin-bottom: 12px;
+}
+.reference-definition {
+  padding: 12px;
+  border-left: 3px solid var(--accent);
+  margin: 12px 0;
+  background: var(--subtle, #f6f7fb);
+  line-height: 1.7;
+}
+.reference-definition small {
+  font-size: 10px;
+  overflow-wrap: anywhere;
+}
+.game-scope-checklist {
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--panel, #fff);
+  margin: 18px 0;
+}
+.game-scope-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.game-scope-heading > div {
+  flex: 1;
+  min-width: 200px;
+}
+.game-scope-heading h2 {
+  margin: 4px 0;
+  font-size: 21px;
+}
+.game-scope-checklist > input {
+  width: 100%;
+  margin: 15px 0;
+  padding: 11px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: transparent;
+  color: inherit;
+}
+.game-checklist-groups {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.game-checklist-groups details {
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 12px;
+}
+.game-checklist-groups summary {
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+}
+.game-checklist-groups details > div {
+  max-height: 250px;
+  overflow: auto;
+  margin-top: 10px;
+}
+.game-checklist-groups label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  line-height: 1.6;
+  padding: 6px 0;
+  border-top: 1px solid var(--border);
+}
+.game-scope-checklist > button {
+  margin-top: 15px;
+  background: var(--accent);
+  color: var(--accent-contrast, #fff);
+}
+.sidebar-ligaments {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  gap: 4px 8px;
+  margin: 10px 0;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 13px;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+.sidebar-ligaments small {
+  grid-column: 2;
+  font-size: 10px;
+  color: var(--text-secondary, #64748b);
+}
+.knee-layer-checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 11px;
+}
+.knee-layer-checks label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.cartilage-examples {
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 12px 16px;
+  margin: 10px 0;
+  font-size: 12px;
+  background: var(--panel, #fff);
+  line-height: 1.6;
+}
+.cartilage-examples > div {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 10px 0;
+}
+.cartilage-examples button {
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+}
+.pt-region-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin: 20px 0;
+}
+.pt-region-tabs button {
+  text-align: left;
+  display: grid;
+  gap: 5px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel, #fff);
+}
+.pt-region-tabs button[aria-pressed="true"] {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+.pt-region-tabs span {
+  font-size: 17px;
+  font-weight: 600;
+}
+.pt-region-tabs small {
+  font-size: 11px;
+  color: var(--text-secondary, #64748b);
+}
+.pt-anatomy-card {
+  display: grid;
+  grid-template-columns: 45% minmax(0, 1fr);
+  gap: 25px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--panel, #fff);
+  margin-bottom: 18px;
+  align-items: center;
+}
+.pt-anatomy-preview {
+  height: 330px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #101c2a;
+}
+.pt-anatomy-preview .anatomy-scene,
+.pt-anatomy-preview .three-canvas {
+  height: 100%;
+  width: 100%;
+}
+.pt-anatomy-card p {
+  font-size: 13px;
+  line-height: 1.7;
+}
+.pt-structure-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.pt-structure-links button {
+  padding: 7px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  font-size: 11px;
+}
+.pt-exercise-intro {
+  margin: 18px 0;
+  font-size: 13px;
+  line-height: 1.8;
+}
+.pt-exercise-grid .learning-card h2 {
+  font-size: 21px;
+}
+.pt-movement-kind {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  font-weight: 600;
+}
+.pt-targets {
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 12px !important;
+}
+.pt-technique {
+  padding: 14px;
+  border-radius: 9px;
+  background: var(--subtle, #f5f7fb);
+  margin: 16px 0;
+}
+.pt-exercise-grid details {
+  border-top: 1px solid var(--border);
+  padding: 14px 0;
+}
+.pt-exercise-grid summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 12px;
+}
+.personal-study-guide {
+  background: var(--panel, #fff);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  margin: 12px 0;
+  line-height: 1.8;
+  font-size: 13px;
+}
+.guide-heading,
+.guide-structure-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.guide-heading h2 {
+  font-size: 25px;
+  margin: 4px 0;
+}
+.guide-heading .eyebrow {
+  font-size: 10px;
+}
+.guide-description {
+  max-width: 760px;
+  color: var(--text-secondary, #64748b);
+}
+.guide-sources {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  margin: 18px 0;
+}
+.guide-sources article {
+  border-top: 1px solid var(--border);
+  padding: 15px 0;
+}
+.guide-sources pre {
+  white-space: pre-wrap;
+  font: inherit;
+  max-height: 320px;
+  overflow: auto;
+}
+.study-source-image {
+  display: block;
+  max-width: 100%;
+  max-height: 600px;
+  object-fit: contain;
+  border-radius: 8px;
+  margin: 10px auto;
+}
+.guide-structure {
+  border-top: 1px solid var(--border);
+  padding: 20px 0;
+}
+.guide-structure h3 {
+  font-size: 19px;
+  margin: 0;
+}
+.guide-structure label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.guide-structure textarea,
+.personal-study-guide > label input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: transparent;
+  color: inherit;
+}
+.guide-structure textarea {
+  min-height: 90px;
+}
+.guide-structure details {
+  margin: 10px 0;
+}
+.guide-structure small {
+  color: var(--text-secondary, #64748b);
+  font-size: 10px;
+}
+.collection-view-tabs {
+  margin: 10px 0;
+}
+.tissue-image .histology-figure img {
+  max-height: 550px;
+  object-fit: contain;
+  background: #fff;
+  border-radius: 10px;
+}
+.tissue-image .histology-figure figcaption {
+  padding: 15px;
+  line-height: 1.7;
+  font-size: 11px;
+}
+.tissue-view-mode {
+  margin-right: auto;
+}
+.tissue-panel .tissue-toolbar {
+  flex-wrap: wrap;
+}
+@media (max-width: 850px) {
+  .plate-explorer-layout,
+  .pt-anatomy-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .plate-explorer-layout > aside {
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .plate-explorer-layout > aside label {
+    display: inline-grid;
+    width: 48%;
+    vertical-align: top;
+    padding-right: 10px;
+  }
+  .pt-region-tabs {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .game-checklist-groups {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .personal-study-guide {
+    padding: 15px;
+  }
+  .guide-heading h2 {
+    font-size: 21px;
+  }
+}
+/* Contain the absolute-positioned scene so its canvas cannot cover PT controls. */
+.pt-anatomy-preview {
+  position: relative;
+}
+.anatomy-reading {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+  margin: 12px 0;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.anatomy-reading summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.anatomy-reading > section {
+  border-top: 1px solid var(--border);
+  padding: 8px 0;
+}
+.anatomy-reading small {
+  display: block;
+  font-size: 10px;
+  overflow-wrap: anywhere;
+}
+.matching-microscopy-unavailable {
+  padding: 20px;
+  font-size: 13px;
+  line-height: 1.7;
+  background: var(--panel, #fff);
+}

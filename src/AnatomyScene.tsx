@@ -1,3 +1,4 @@
+import { anatomyModels } from "./assetPaths";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
@@ -8,7 +9,11 @@ import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { OutlinePass } from "three/addons/postprocessing/OutlinePass.js";
 import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 import { SSAOPass } from "three/addons/postprocessing/SSAOPass.js";
-import { modelParts, type ModelPart, type AnatomyLayer } from "./modelCatalog";
+import {
+  modelParts as defaultModelParts,
+  type ModelPart,
+  type AnatomyLayer,
+} from "./modelCatalog";
 import { orderPicks } from "./interaction";
 import { muscleColor } from "./modelDisplay";
 import type { Appearance } from "./Appearance";
@@ -40,6 +45,8 @@ export type SceneApi = {
   home: () => void;
 };
 export type SceneProps = {
+  catalog?: ModelPart[];
+  assetUrl?: string;
   visible: string[];
   selected: string[];
   hidden: string[];
@@ -75,24 +82,26 @@ export type SceneProps = {
   onHover?: (text: string | null) => void;
   onReady?: (api: SceneApi) => void;
 };
-const byId = new Map(modelParts.map((m) => [m.id, m]));
-let assetPromise: Promise<THREE.Group> | null = null;
-export function anatomyAsset() {
-  if (!assetPromise)
-    assetPromise = (async () => {
-      const response = await fetch("/models/anatomy.glb");
+const assetPromises = new Map<string, Promise<THREE.Group>>();
+export function anatomyAsset(url = anatomyModels.atlas) {
+  let promise = assetPromises.get(url);
+  if (!promise) {
+    promise = (async () => {
+      const response = await fetch(url);
       if (!response.ok)
         throw new Error(
           "Anatomy files are unavailable. Open the complete downloaded app.",
         );
-      const data = await response.arrayBuffer();
       return (
         await new GLTFLoader()
           .setMeshoptDecoder(MeshoptDecoder)
-          .parseAsync(data, "")
+          .parseAsync(await response.arrayBuffer(), "")
       ).scene;
     })();
-  return assetPromise;
+    assetPromises.set(url, promise);
+    promise.catch(() => assetPromises.delete(url));
+  }
+  return promise;
 }
 const directions: Record<CameraView, THREE.Vector3> = {
   front: new THREE.Vector3(0, 0.02, 1),
@@ -102,22 +111,6 @@ const directions: Record<CameraView, THREE.Vector3> = {
   superior: new THREE.Vector3(0, 1, 0.001),
   inferior: new THREE.Vector3(0, -1, 0.001),
 };
-function union(ids: string[]) {
-  const box = new THREE.Box3();
-  for (const id of ids) {
-    const m = byId.get(id);
-    if (!m) continue;
-    box.expandByPoint(new THREE.Vector3(...m.bounds[0]));
-    box.expandByPoint(new THREE.Vector3(...m.bounds[1]));
-  }
-  return box;
-}
-const bodyBox = union(
-  modelParts
-    .filter((m) => m.layer === "bones" || m.layer === "skin")
-    .map((m) => m.id),
-);
-const bodyCenter = bodyBox.getCenter(new THREE.Vector3());
 type Projected = {
   id: string;
   name: string;
@@ -135,7 +128,27 @@ export function AnatomyScene(props: SceneProps) {
   const [ready, setReady] = useState(false);
   const [points, setPoints] = useState<Projected[]>([]);
   useEffect(() => {
+    const modelParts = props.catalog || defaultModelParts;
+    const byId = new Map(modelParts.map((m) => [m.id, m]));
+    function union(ids: string[]) {
+      const box = new THREE.Box3();
+      for (const id of ids) {
+        const m = byId.get(id);
+        if (!m) continue;
+        box.expandByPoint(new THREE.Vector3(...m.bounds[0]));
+        box.expandByPoint(new THREE.Vector3(...m.bounds[1]));
+      }
+      return box;
+    }
+    const bodyBox = union(
+      modelParts
+        .filter((m) => m.layer === "bones" || m.layer === "skin")
+        .map((m) => m.id),
+    );
+    const bodyCenter = bodyBox.getCenter(new THREE.Vector3());
     const el = host.current!;
+    setReady(false);
+    setError("");
     let cancelled = false,
       raf = 0;
     let renderer: THREE.WebGLRenderer;
@@ -322,10 +335,14 @@ export function AnatomyScene(props: SceneProps) {
       },
       restore(state) {
         tween = null;
+        const damping = controls.enableDamping;
+        controls.enableDamping = false;
+        controls.update();
         camera.position.fromArray(state.position);
         controls.target.fromArray(state.target);
         currentView = state.view;
         controls.update();
+        controls.enableDamping = damping;
         needsRender = true;
       },
       frame(ids, v, duration = 1600) {
@@ -393,7 +410,8 @@ export function AnatomyScene(props: SceneProps) {
         ),
         camera,
       );
-      ray.near=camera.near;ray.far=camera.far;
+      ray.near = camera.near;
+      ray.far = camera.far;
       root.updateMatrixWorld(true);
       const meshes = [...records.values()].flatMap((r) =>
         r.meshes.filter((m) => m.visible && m.userData.pickOpacity > 0.05),
@@ -421,7 +439,8 @@ export function AnatomyScene(props: SceneProps) {
           const px = ((point.x + 1) * rect.width) / 2,
             py = ((1 - point.y) * rect.height) / 2;
           if (
-            point.z > -1 && point.z < 1 &&
+            point.z > -1 &&
+            point.z < 1 &&
             Math.hypot(px - (x - rect.left), py - (y - rect.top)) <= 8
           ) {
             const d = center.distanceTo(camera.position),
@@ -492,7 +511,7 @@ export function AnatomyScene(props: SceneProps) {
     renderer.domElement.addEventListener("pointerup", pointerUp);
     renderer.domElement.addEventListener("pointermove", hover);
     renderer.domElement.addEventListener("pointerleave", leave);
-    anatomyAsset()
+    anatomyAsset(props.assetUrl)
       .then((asset) => {
         if (cancelled) return;
         const copy = asset.clone(true),
@@ -568,7 +587,7 @@ export function AnatomyScene(props: SceneProps) {
       if (!live.current.onPickable || tween) return;
       const rect = renderer.domElement.getBoundingClientRect(),
         found: string[] = [];
-      const pickPoints:Record<string,number[]>={};
+      const pickPoints: Record<string, number[]> = {};
       for (const [id, r] of records) {
         if (r.model.parentId || !r.meshes.some((m) => m.visible)) continue;
         let ok = false;
@@ -602,7 +621,7 @@ export function AnatomyScene(props: SceneProps) {
               rect.top + ((1 - v.y) * rect.height) / 2,
             )[0];
             if (picked === id || byId.get(picked)?.parentId === id) {
-              pickPoints[id]=[(v.x+1)/2,(1-v.y)/2];
+              pickPoints[id] = [(v.x + 1) / 2, (1 - v.y) / 2];
               ok = true;
               break;
             }
@@ -612,7 +631,7 @@ export function AnatomyScene(props: SceneProps) {
         if (ok) found.push(id);
       }
       el.dataset.pickableIds = JSON.stringify(found);
-      el.dataset.pickPoints=JSON.stringify(pickPoints);
+      el.dataset.pickPoints = JSON.stringify(pickPoints);
       const signature = found.join(",");
       if (signature !== lastPickable) {
         lastPickable = signature;
@@ -760,6 +779,7 @@ export function AnatomyScene(props: SceneProps) {
         const texture = new THREE.CanvasTexture(bg);
         texture.colorSpace = THREE.SRGBColorSpace;
         scene.background = texture;
+        const visibleLayerCounts: Record<string, number> = {};
         let count = 0,
           transparent = false;
         for (const [id, r] of records) {
@@ -850,6 +870,7 @@ export function AnatomyScene(props: SceneProps) {
             m.polygonOffsetUnits = -2;
           });
           if (show) {
+            visibleLayerCounts[l] = (visibleLayerCounts[l] || 0) + 1;
             count++;
             transparent ||= opacity < 0.999;
           }
@@ -870,6 +891,7 @@ export function AnatomyScene(props: SceneProps) {
         el.dataset.hoveredId = hoverId;
         el.dataset.selectedIds = JSON.stringify([...selected]);
         el.dataset.visibleMeshes = String(count);
+        el.dataset.visibleLayerCounts = JSON.stringify(visibleLayerCounts);
         el.dataset.selectedParts = String(selected.size);
         el.dataset.isolated = String(!!p.isolated);
         el.dataset.transparency = transparent ? "depth-tested" : "solid";
@@ -898,6 +920,10 @@ export function AnatomyScene(props: SceneProps) {
       el.dataset.animating = String(!!tween);
       el.dataset.cameraView = currentView;
       el.dataset.cameraDistance = distance.toFixed(4);
+      el.dataset.cameraPose = JSON.stringify({
+        position: camera.position.toArray().map((n) => +n.toFixed(6)),
+        target: controls.target.toArray().map((n) => +n.toFixed(6)),
+      });
       if (needsRender || changed) {
         ao.enabled = desiredAo && !tween && pointers.size === 0;
         outline.enabled =
@@ -928,7 +954,7 @@ export function AnatomyScene(props: SceneProps) {
       renderer.forceContextLoss();
       renderer.domElement.remove();
     };
-  }, []);
+  }, [props.catalog, props.assetUrl]);
   const labelProps = live.current;
   return (
     <div className={`anatomy-scene ${props.quiz ? "quiz-anatomy-scene" : ""}`}>

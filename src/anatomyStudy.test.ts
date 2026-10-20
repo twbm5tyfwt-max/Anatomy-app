@@ -20,11 +20,11 @@ const scope: QuizScope = {
   missedOnly: false,
 };
 describe("source-backed landmarks and visual learning", () => {
-  it("uses actual source positions and valid target bones for every displayed landmark", () => {
+  it("uses actual source positions and valid target bones/cartilages for every displayed landmark", () => {
     expect(landmarks.length).toBeGreaterThan(90);
     for (const l of landmarks) {
       const m = modelParts.find((m) => m.id === l.modelId)!;
-      expect(m.layer).toBe("bones");
+      expect(["bones","cartilage"]).toContain(m.layer);
       const whole = modelParts.filter(
         (p) => p.id === m.id || p.parentId === m.id,
       );

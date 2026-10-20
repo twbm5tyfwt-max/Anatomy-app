@@ -1,5 +1,14 @@
+import { PTAnatomy } from "./PTAnatomy";
 import { useState } from "react";
 export const clinicalSources = {
+  kneeMotion: {
+    name: "AAOS OrthoInfo — Total Knee Replacement Exercise Guide (post-operative context)",
+    url: "https://orthoinfo.aaos.org/en/recovery/total-knee-replacement-exercise-guide/",
+  },
+  functional: {
+    name: "NHS — Strength exercises (including sit-to-stand)",
+    url: "https://www.nhs.uk/live-well/exercise/strength-and-flex-exercise-plan/strength-exercises/",
+  },
   shoulder: {
     name: "AAOS OrthoInfo — Rotator Cuff and Shoulder Conditioning Program",
     url: "https://orthoinfo.aaos.org/en/recovery/rotator-cuff-and-shoulder-conditioning-program/",
@@ -52,7 +61,7 @@ export const exercises: Exercise[] = [
       "Post-operative flexion limits, repairs, swelling, or a locked knee require individual guidance. Do not force a block.",
     regression: "Smaller supported range or clinician-assisted movement.",
     progression: "Less assistance, then functional movement when cleared.",
-    source: "knee",
+    source: "kneeMotion",
   },
   {
     name: "Sit-to-stand",
@@ -68,7 +77,7 @@ export const exercises: Exercise[] = [
     regression: "Higher chair and arm support.",
     progression:
       "Lower chair, less support, or graded resistance after assessment.",
-    source: "knee",
+    source: "functional",
   },
   {
     name: "Supported shoulder pendulum",
@@ -136,13 +145,13 @@ export const exercises: Exercise[] = [
     source: "ankle",
   },
   {
-    name: "Small-range trunk control",
+    name: "Supine abdominal bracing",
     region: "Spine",
     targets: "Trunk muscle coordination and comfortable spinal movement",
     purpose:
       "Example of learning controlled movement; no single exercise corrects all back pain.",
     technique:
-      "Choose a supported comfortable position. Practice a small controlled pelvic/trunk movement without breath-holding.",
+      "Lie supported with knees comfortably bent. Gently tighten the abdominal wall while continuing to breathe; keep the pelvis and ribs comfortable rather than forcing the back flat.",
     mistakes:
       "Forcing a painful direction, bracing maximally, or holding the breath.",
     precautions:
@@ -202,9 +211,11 @@ const conditions = [
 export function PTLearning({
   initialRegion,
   onExplore,
+  onStructure,
 }: {
   initialRegion?: string;
   onExplore: (region: string) => void;
+  onStructure: (id: string) => void;
 }) {
   const initial = /upper|shoulder/i.test(initialRegion || "")
     ? "Shoulder"
@@ -213,6 +224,7 @@ export function PTLearning({
       : "Knee";
   const [region, setRegion] = useState(initial);
   const [view, setView] = useState("Anatomy & injuries");
+  const [exerciseFilter, setExerciseFilter] = useState("All");
   const condition = conditions.find((c) => c.region === region)!;
   return (
     <section className="learning-page">
@@ -220,9 +232,9 @@ export function PTLearning({
       <h1>Physical Therapy / Athletic Training</h1>
       <p className="education-note">
         Educational study, not a diagnosis or personalized rehabilitation plan.
-        Exercise suitability, loading, and return to activity depend on
-        assessment. A qualified clinician should evaluate an injury, persistent
-        symptoms, or post-operative restrictions.
+        Study anatomy, injury concepts and exercise technique. For an injury,
+        persistent symptoms or post-operative care, a clinician should decide
+        which movements and loads are appropriate.
       </p>
       <div className="learning-toolbar">
         <label>
@@ -252,17 +264,44 @@ export function PTLearning({
           Open anatomy
         </button>
       </div>
+      <div className="pt-region-tabs">
+        {conditions.map((c) => (
+          <button
+            key={c.region}
+            aria-pressed={region === c.region}
+            onClick={() => {
+              setRegion(c.region);
+              setExerciseFilter("All");
+            }}
+          >
+            <span>{c.region}</span>
+            <small>
+              {c.region === "Knee"
+                ? "Load & stability"
+                : c.region === "Shoulder"
+                  ? "Cuff & movement"
+                  : c.region === "Ankle"
+                    ? "Balance & push-off"
+                    : "Trunk & daily function"}
+            </small>
+          </button>
+        ))}
+      </div>
       {view === "Anatomy & injuries" ? (
-        <article className="learning-card">
-          <h2>{condition.name}</h2>
-          <h3>Structures and relationships</h3>
-          <p>{condition.anatomy}</p>
-          <h3>General rehabilitation goals</h3>
-          <p>{condition.goals}</p>
-          <h3>Assessment matters</h3>
-          <p>{condition.caution}</p>
-          <SourceLink source={condition.source} />
-        </article>
+        <>
+          <PTAnatomy region={region} onSelect={onStructure} />
+
+          <article className="learning-card">
+            <h2>{condition.name}</h2>
+            <h3>Structures and relationships</h3>
+            <p>{condition.anatomy}</p>
+            <h3>General rehabilitation goals</h3>
+            <p>{condition.goals}</p>
+            <h3>Assessment matters</h3>
+            <p>{condition.caution}</p>
+            <SourceLink source={condition.source} />
+          </article>
+        </>
       ) : view === "Healing & approaches" ? (
         <div className="learning-grid">
           <article className="learning-card">
@@ -318,43 +357,90 @@ export function PTLearning({
           </article>
         </div>
       ) : (
-        <div className="learning-grid">
-          {exercises
-            .filter((e) => e.region === region)
-            .map((e) => (
-              <article className="learning-card" key={e.name}>
-                <h2>{e.name}</h2>
-                {(
-                  [
-                    "targets",
-                    "purpose",
-                    "technique",
-                    "mistakes",
-                    "precautions",
-                    "regression",
-                    "progression",
-                  ] as const
-                ).map((k) => (
-                  <div key={k}>
-                    <h3>{k[0].toUpperCase() + k.slice(1)}</h3>
-                    <p>{e[k]}</p>
+        <>
+          <div className="pt-exercise-intro">
+            <h2>Understand the movement</h2>
+            <p>
+              Choose an example to study its target, setup and control. These
+              examples have no prescribed dose or automatic progression. Use the
+              linked clinical demonstrations and your clinician's restrictions.
+            </p>
+            <div className="segmented">
+              {["All", "Mobility", "Strength / function", "Balance"].map(
+                (f) => (
+                  <button
+                    key={f}
+                    aria-pressed={exerciseFilter === f}
+                    onClick={() => setExerciseFilter(f)}
+                  >
+                    {f}
+                  </button>
+                ),
+              )}
+            </div>
+          </div>
+          <div className="learning-grid pt-exercise-grid">
+            {exercises
+              .filter((e) => e.region === region)
+              .filter(
+                (e) =>
+                  exerciseFilter === "All" ||
+                  (exerciseFilter === "Mobility"
+                    ? /slide|pendulum|trunk|bracing/i.test(e.name)
+                    : exerciseFilter === "Balance"
+                      ? /balance/i.test(e.name)
+                      : !/slide|pendulum|balance|trunk/i.test(e.name)),
+              )
+              .map((e) => (
+                <article className="learning-card" key={e.name}>
+                  <span className="pt-movement-kind">
+                    {/slide|pendulum|trunk|bracing/i.test(e.name)
+                      ? "MOBILITY / CONTROL"
+                      : /balance/i.test(e.name)
+                        ? "BALANCE"
+                        : "STRENGTH / FUNCTION"}
+                  </span>
+                  <h2>{e.name}</h2>
+                  <p className="pt-targets">{e.targets}</p>
+                  <p>{e.purpose}</p>
+                  <div className="pt-technique">
+                    <h3>How the example works</h3>
+                    <p>{e.technique}</p>
                   </div>
-                ))}
-                <SourceLink source={e.source} />
-                <small>
-                  Source link offers clinician-authored
-                  instructions/illustrations. No video or protocol is embedded
-                  or reproduced; follow individual clinical advice.
-                </small>
-              </article>
-            ))}
-        </div>
+                  <details>
+                    <summary>
+                      Technique checks, precautions & variations
+                    </summary>
+                    {(
+                      [
+                        "mistakes",
+                        "precautions",
+                        "regression",
+                        "progression",
+                      ] as const
+                    ).map((k) => (
+                      <div key={k}>
+                        <h3>{k[0].toUpperCase() + k.slice(1)}</h3>
+                        <p>{e[k]}</p>
+                      </div>
+                    ))}
+                  </details>
+                  <SourceLink source={e.source} />
+                  <small>
+                    Source link offers clinician-authored
+                    instructions/illustrations. No video or protocol is embedded
+                    or reproduced; follow individual clinical advice.
+                  </small>
+                </article>
+              ))}
+          </div>
+        </>
       )}
       <footer className="source-review">
         <strong>Source and review status</strong>
         <p>
           General anatomy: OpenStax Anatomy and Physiology 2e, chapters 4, 9,
-          11. Educational content prepared October 19, 2026. Live AAOS/NHS
+          11. Educational content revised October 20, 2026. Live AAOS/NHS
           retrieval was blocked by this environment’s network policy, so the
           linked pages, their latest revision dates, and current clinical
           recommendations have not been verified. This section is introductory
@@ -371,8 +457,10 @@ function SourceLink({ source }: { source: keyof typeof clinicalSources }) {
   return (
     <p>
       <a href={s.url} target="_blank" rel="noreferrer">
-        {s.name} ↗
+        View clinical instructions & demonstrations ↗
       </a>
+      <br />
+      <small>{s.name}</small>
     </p>
   );
 }

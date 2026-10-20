@@ -1,0 +1,3850 @@
+{
+  "boundsToleranceMeters": 0.005,
+  "surfaceNearThresholdMeters": 0.003,
+  "method": "Original source endpoint and assigned source mesh retained. Exclude endpoints outside the complete source-object bounds plus 5 mm. Nearest triangle distance is recorded separately; openings can be marked in their lumen. This checks position, not the anatomical correctness of a label.",
+  "results": [
+    {
+      "id": "ZLb1e7c88ab12a",
+      "modelId": "FMA12519",
+      "distance": 0.0035460957549225615,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL459412212aa3",
+      "modelId": "FMA52735",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL483969cff6bf",
+      "modelId": "FMA52735",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL91fc5088043d",
+      "modelId": "FMA52748",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL1b101a91e3da",
+      "modelId": "FMA52736",
+      "distance": 0.000017661018909725103,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL811aeee9f03e",
+      "modelId": "FMA16586",
+      "distance": 0.000012642676206868481,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL97fae072d8f4",
+      "modelId": "FMA52734",
+      "distance": 2.7804734161820596e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL353a2dfde37d",
+      "modelId": "FMA52735",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL0e240c178812",
+      "modelId": "FMA52734",
+      "distance": 0.00004442096432379213,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLd03fba293a23",
+      "modelId": "FMA16586",
+      "distance": 0.000002627027460381451,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLc671525d34f2",
+      "modelId": "FMA16586",
+      "distance": 0.000020551704404902,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLbb153f89909d",
+      "modelId": "FMA16586",
+      "distance": 0.000031504933961305695,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL661a2823983d",
+      "modelId": "FMA16586",
+      "distance": 0.00001585594717156603,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLee22cfcb86c1",
+      "modelId": "FMA13395",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL8eabddb89da3",
+      "modelId": "FMA13322",
+      "distance": 0.000003659457043952,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLd5117d21b388",
+      "modelId": "FMA13322",
+      "distance": 0.0000013387534007046301,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL806fd33a0219",
+      "modelId": "FMA13395",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL2111c113c0c0",
+      "modelId": "FMA16586",
+      "distance": 0.00000919396689256229,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL3f7b8d8d50e5",
+      "modelId": "FMA16202",
+      "distance": 0.0000805801283069504,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLac0bcb8a608d",
+      "modelId": "FMA23130",
+      "distance": 0.000006636511265736778,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLd301762ce120",
+      "modelId": "FMA8175",
+      "distance": 0.000015353470125704635,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL6d8a4b7511c2",
+      "modelId": "FMA13074",
+      "distance": 9.972200442049005e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLe6ecc2f4e882",
+      "modelId": "FMA12519",
+      "distance": 0.00007389813578796993,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL363d875138f8",
+      "modelId": "FMA12520",
+      "distance": 0.0000018211376153941253,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL00c3b8b0d171",
+      "modelId": "FMA24480",
+      "distance": 0.000007484548679597403,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL299e2b0e4382",
+      "modelId": "FMA23130",
+      "distance": 0.000001467647574823675,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLe3d236f39b1a",
+      "modelId": "FMA23464",
+      "distance": 0.0007206677595411123,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL3abcd0e08720",
+      "modelId": "FMA24477",
+      "distance": 0.000020775946265532277,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL859962560c8a",
+      "modelId": "FMA23467",
+      "distance": 0.00002755286913129378,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL389cd3e0255e",
+      "modelId": "FMA52736",
+      "distance": 0.00005954458309971617,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLcd6a55d001fa",
+      "modelId": "FMA16586",
+      "distance": 0.00002203009595195437,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLdf28f659a338",
+      "modelId": "FMA16586",
+      "distance": 0.000018264153256947694,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL2e8df1b774a9",
+      "modelId": "FMA24477",
+      "distance": 4.4035191421582643e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL5c91ba5a6be2",
+      "modelId": "ZAe3ada0098be1",
+      "distance": 6.301952477953096e-8,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL108c1bec8b4e",
+      "modelId": "FMA16586",
+      "distance": 0.000007797844357117543,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL4c449e76967c",
+      "modelId": "FMA24497",
+      "distance": 5.196086502640675e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL81b52515a805",
+      "modelId": "ZA8b10b875e610",
+      "distance": 1.295250530071681e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL2e798b79aa71",
+      "modelId": "FMA16202",
+      "distance": 0.005576058815183559,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL276a466b7dd0",
+      "modelId": "FMA16586",
+      "distance": 0.000022645536928678857,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL8e7b66e85c8a",
+      "modelId": "FMA52738",
+      "distance": 0.0014977025373194984,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL8de76b6113eb",
+      "modelId": "FMA23464",
+      "distance": 0.0007717028336998192,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL4d846293a778",
+      "modelId": "FMA12519",
+      "distance": 0.0000028971866970771256,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLea18a732ecc4",
+      "modelId": "FMA12522",
+      "distance": 7.13578735227966e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLc26a0d38bff4",
+      "modelId": "ZAe373ad8237be",
+      "distance": 0.000004322297270164337,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL15a3f61f8184",
+      "modelId": "FMA23130",
+      "distance": 0.0000020336338404731406,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL542db09b4efb",
+      "modelId": "FMA24480",
+      "distance": 0.000020004264806448925,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLc4778b776872",
+      "modelId": "FMA23130",
+      "distance": 0.000009946941791671636,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL4b295af23431",
+      "modelId": "ZAe373ad8237be",
+      "distance": 0.000012846736658527349,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLb1acf7657756",
+      "modelId": "ZA4a4a3dc1013b",
+      "distance": 0.00004477924818821154,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLf18f65cd4f21",
+      "modelId": "FMA12520",
+      "distance": 0.000007854818626731577,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLec159c77bfb7",
+      "modelId": "FMA24480",
+      "distance": 0.00002824194079420305,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL5fdea7e34e64",
+      "modelId": "FMA52738",
+      "distance": 0.0002219736504227107,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLed90d6353390",
+      "modelId": "FMA16202",
+      "distance": 0.0000028953773666428833,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLa3805b30ce88",
+      "modelId": "ZA6d1f000672b1",
+      "distance": 9.147354976221646e-8,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL1edfe52b381b",
+      "modelId": "ZAe373ad8237be",
+      "distance": 0.00016240446523255533,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL65599f5f5e25",
+      "modelId": "FMA52738",
+      "distance": 0.0013215315065772109,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL79f82b4f97a4",
+      "modelId": "FMA16586",
+      "distance": 0.000010271483934177701,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL202a46310ab9",
+      "modelId": "FMA23464",
+      "distance": 0.0001238717959930771,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL419ed319999e",
+      "modelId": "FMA23467",
+      "distance": 0.00001932972859354437,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLce82e4d36ab0",
+      "modelId": "ZA5193384422db",
+      "distance": 1.4798300937443273e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL20e5c0ab1148",
+      "modelId": "ZA5193384422db",
+      "distance": 2.2651797888975154e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL1d11f81a991f",
+      "modelId": "FMA24480",
+      "distance": 0.00003773937225639901,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL805f2ab5e9a5",
+      "modelId": "ZA8b10b875e610",
+      "distance": 2.225267795522586e-10,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL15dd289dfe61",
+      "modelId": "FMA23464",
+      "distance": 0.00007244108765820968,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLc100181bb2c9",
+      "modelId": "ZAe3ada0098be1",
+      "distance": 1.7342114053200714e-8,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL79c25d2ae773",
+      "modelId": "FMA24480",
+      "distance": 0.0000022897625418064673,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLb18f87d8b5d8",
+      "modelId": "FMA24477",
+      "distance": 0.000003538763405914005,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLc0ecb8ea0330",
+      "modelId": "FMA8175",
+      "distance": 0.0000015747941449477897,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL30629f5c677e",
+      "modelId": "FMA8175",
+      "distance": 0.00001731484942677234,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL240e782cb5b1",
+      "modelId": "FMA24497",
+      "distance": 6.75303908121235e-8,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL417207815bb6",
+      "modelId": "ZAe373ad8237be",
+      "distance": 0.0000044647436936822425,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL09bb63b44745",
+      "modelId": "FMA24477",
+      "distance": 0.000033481492491307515,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLe0379a08fd26",
+      "modelId": "ZA6d1f000672b1",
+      "distance": 2.960088421577788e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLf964b0d48ca0",
+      "modelId": "FMA12519",
+      "distance": 0.00001954556751644262,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL15931b1aa4e2",
+      "modelId": "FMA16586",
+      "distance": 0.000023811291446425238,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL55efe7280c2d",
+      "modelId": "FMA16202",
+      "distance": 0.000010569861890274452,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL2b0fd9668553",
+      "modelId": "FMA12520",
+      "distance": 0.000057853655048829066,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLe91cb7cf569f",
+      "modelId": "ZAe373ad8237be",
+      "distance": 0.000020183051308206967,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL155ea6a2c6b0",
+      "modelId": "ZA4a4a3dc1013b",
+      "distance": 0.000016734761471757508,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLa73d89e31628",
+      "modelId": "FMA52748",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZLb4ff683b8dcb",
+      "modelId": "FMA24511",
+      "distance": 4.0246801125634077e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLa8a020fd9ef2",
+      "modelId": "ZA4fabbde6ed5b",
+      "distance": 5.192562847124342e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL6c76045e484c",
+      "modelId": "ZA4650e3caf199",
+      "distance": 0.0000010929552921294114,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL1fd4eb5ac09d",
+      "modelId": "FMA16202",
+      "distance": 0.000026812159654265404,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL6f426ef92d15",
+      "modelId": "ZAe3ada0098be1",
+      "distance": 1.7458768529113503e-9,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLe2647d08c54c",
+      "modelId": "FMA52735",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZLf5f2c709f173",
+      "modelId": "FMA13322",
+      "distance": 0.000004230933197664346,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL169ddb625854",
+      "modelId": "FMA24480",
+      "distance": 0.000008475126519239425,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL96a7c309221e",
+      "modelId": "FMA23130",
+      "distance": 0.00023693518020078623,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLee4ceec20f23",
+      "modelId": "FMA52749",
+      "distance": 6.189389053732675e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL226f8c9af14d",
+      "modelId": "FMA16586",
+      "distance": 0.000011291745460062514,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL1abda15c0998",
+      "modelId": "ZA5193384422db",
+      "distance": 4.615457810493492e-8,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLfba9d76170d6",
+      "modelId": "FMA16586",
+      "distance": 0.00002289186011265435,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL2dfc5f92781f",
+      "modelId": "FMA52748",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL6aec0a39d852",
+      "modelId": "FMA24468",
+      "distance": 9.059978793956312e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLde98f8454e2a",
+      "modelId": "FMA24511",
+      "distance": 9.102896773210887e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL1e8c87f45105",
+      "modelId": "ZA4fabbde6ed5b",
+      "distance": 0.000001021490888839298,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL3665865bbbcd",
+      "modelId": "ZA4650e3caf199",
+      "distance": 5.984955759522748e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL594067aa18ce",
+      "modelId": "FMA16586",
+      "distance": 0.000005637768611681218,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLab2f00204867",
+      "modelId": "FMA23464",
+      "distance": 0.0003299596717328013,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLf93f164f2d06",
+      "modelId": "FMA8175",
+      "distance": 0.000004340404960312278,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL1571cf5fdadc",
+      "modelId": "FMA52736",
+      "distance": 0.000014014339731993255,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL6d581feefcbd",
+      "modelId": "FMA24482",
+      "distance": 8.84601170071638e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLa6b66a698ee7",
+      "modelId": "FMA24477",
+      "distance": 0.000010334126776457106,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL4318c8715e24",
+      "modelId": "FMA23467",
+      "distance": 0.000017961732811960595,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLa71e68750ff3",
+      "modelId": "FMA24497",
+      "distance": 0.0000019083358165612634,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLec82b4465394",
+      "modelId": "FMA24497",
+      "distance": 9.775217395829068e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL96048d7e9bb1",
+      "modelId": "FMA24497",
+      "distance": 0.000001568459694889397,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLec28a785c632",
+      "modelId": "FMA23130",
+      "distance": 0.000007448394697112018,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL89ca6d5f8d8d",
+      "modelId": "FMA52736",
+      "distance": 0.00008577619478628659,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL278ba5176df9",
+      "modelId": "FMA23464",
+      "distance": 0.00007983716602442282,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLa6c0abb5a84c",
+      "modelId": "FMA52735",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL5529443ec501",
+      "modelId": "FMA52735",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZLd8e7d882ae86",
+      "modelId": "FMA52736",
+      "distance": 0.000167280654078334,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL6c17eb8ec9ee",
+      "modelId": "FMA12522",
+      "distance": 0.000002916732485489397,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLc38cc132c20a",
+      "modelId": "FMA52736",
+      "distance": 0.0001782212571082384,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLee55ca5ca890",
+      "modelId": "FMA13395",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZLfaaf95c5d395",
+      "modelId": "ZAe69f519bec7f",
+      "distance": 0.000006809894103644257,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL3859b3e7a1a0",
+      "modelId": "ZA4a4a3dc1013b",
+      "distance": 0.000014997541093387727,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLea16c50ce615",
+      "modelId": "ZA4a4a3dc1013b",
+      "distance": 8.804088590306228e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL3318896e55ec",
+      "modelId": "ZAe373ad8237be",
+      "distance": 0.00022351329771168348,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLbaeb328733df",
+      "modelId": "FMA52735",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL903403dce1f1",
+      "modelId": "FMA52735",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL7a826b55ef28",
+      "modelId": "FMA23130",
+      "distance": 0.0000028303245961415935,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLd328bf3b3a5d",
+      "modelId": "FMA13322",
+      "distance": 0.000002144917991739954,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLc0335f83fa38",
+      "modelId": "FMA13395",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZLabbf92b5411b",
+      "modelId": "FMA23130",
+      "distance": 3.480803798263817e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL6fd6977a819b",
+      "modelId": "FMA23467",
+      "distance": 0.000024394768455928492,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL9194a0d42fe1",
+      "modelId": "FMA8175",
+      "distance": 0.0000020827820095618467,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL2a87d14c1968",
+      "modelId": "FMA7487",
+      "distance": 0.00004813356998677213,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLde577554d598",
+      "modelId": "FMA13074",
+      "distance": 0.000005744860578449133,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL662daf4fa8b6",
+      "modelId": "FMA13395",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZLc6919360024d",
+      "modelId": "FMA23130",
+      "distance": 1.691988702613998e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL5a654ead79b6",
+      "modelId": "FMA8175",
+      "distance": 0.00004780535087145944,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLfca7a2988a85",
+      "modelId": "FMA23130",
+      "distance": 0.0000056382586134917505,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL389c3db64ed4",
+      "modelId": "FMA8175",
+      "distance": 0.00002917916747372553,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLb5949eba3e4a",
+      "modelId": "ZA792631c5f546",
+      "distance": 6.542197195061178e-8,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL7daff719b781",
+      "modelId": "FMA52735",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL86dde02aeb33",
+      "modelId": "ZA792631c5f546",
+      "distance": 1.0097399702018792e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLb06b52d046bd",
+      "modelId": "FMA13395",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZLc94b2672cc33",
+      "modelId": "FMA23130",
+      "distance": 0.000007158696955204903,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL6cd94ac233fa",
+      "modelId": "FMA12520",
+      "distance": 0.000011052636946467824,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL3489d556012a",
+      "modelId": "FMA52748",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL682a5185662a",
+      "modelId": "ZA792631c5f546",
+      "distance": 1.0793508310247667e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL2672d9fafe23",
+      "modelId": "FMA23464",
+      "distance": 0.00048825105135934813,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLc1f832dc89e9",
+      "modelId": "FMA16202",
+      "distance": 0.000002958369172927247,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL85faaa819b9c",
+      "modelId": "FMA52736",
+      "distance": 0.000010017557482124387,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL1bae61498e8d",
+      "modelId": "FMA52734",
+      "distance": 0.0043401016946032,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZLcbb414dd4e8a",
+      "modelId": "FMA52735",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL4ccd1ff8b623",
+      "modelId": "FMA52734",
+      "distance": 0.000002592812466230899,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLd804e372ca8b",
+      "modelId": "FMA52788",
+      "distance": 0.0000014285225610316,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLa5d9ccf43783",
+      "modelId": "FMA24482",
+      "distance": 7.746703688934374e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLe9ea134eec76",
+      "modelId": "FMA12519",
+      "distance": 0.00001106459454985975,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL7acc74cd001e",
+      "modelId": "FMA24482",
+      "distance": 3.550742849446928e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLe2b645726c77",
+      "modelId": "FMA24480",
+      "distance": 0.0000579226752235384,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL8ea028d840ed",
+      "modelId": "FMA24477",
+      "distance": 0.00001914701633418342,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL619b4f73134b",
+      "modelId": "FMA24477",
+      "distance": 0.000024218597633785532,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL21d072fa925f",
+      "modelId": "FMA24515",
+      "distance": 0.0000015350884387208446,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLd78036322d94",
+      "modelId": "FMA24507",
+      "distance": 8.069355168650464e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLa5c2a50ad0a5",
+      "modelId": "FMA52734",
+      "distance": 0.0004243916724111427,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL7cdf2b808c3b",
+      "modelId": "FMA52735",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZLeae49c6a65c3",
+      "modelId": "FMA52736",
+      "distance": 0.0022458865396680645,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL28481d626a3c",
+      "modelId": "FMA52736",
+      "distance": 0.0008774241261339505,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL10e1748c337a",
+      "modelId": "FMA52736",
+      "distance": 0.0007324073003952063,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL484eb6ce67e1",
+      "modelId": "FMA12522",
+      "distance": 0.002632774646339329,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL01811c7cf0b0",
+      "modelId": "FMA52734",
+      "distance": 1.8843707187141643e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL94a851fa3c27",
+      "modelId": "FMA24474",
+      "distance": 0.00000992179686235931,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL4fdf7b4e8277",
+      "modelId": "FMA52788",
+      "distance": 0.000001994783650321726,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLeb0e5378759c",
+      "modelId": "FMA52788",
+      "distance": 0.0000011172054230164216,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL0f16a08a163b",
+      "modelId": "FMA52734",
+      "distance": 0.000001032900535990885,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL9d2bb6f9329c",
+      "modelId": "FMA52734",
+      "distance": 0.0000017003075990304252,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLb6ef786b4ed1",
+      "modelId": "FMA52736",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZLdbed815b3952",
+      "modelId": "FMA52748",
+      "distance": 0.0000011336235055732535,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLea887d3695d6",
+      "modelId": "FMA52734",
+      "distance": 0.00008390071100879728,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLc97ea9585934",
+      "modelId": "FMA13395",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL56d00dc47638",
+      "modelId": "FMA13395",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZLf4e527313aa1",
+      "modelId": "FMA16586",
+      "distance": 0.000042922342213687726,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL4bb1d6d55d82",
+      "modelId": "FMA52748",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL498dbd7b716a",
+      "modelId": "FMA52749",
+      "distance": 8.505486536704071e-8,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL819d850f36d1",
+      "modelId": "FMA16586",
+      "distance": 0.01363646871069132,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZLa1952e635f54",
+      "modelId": "FMA16586",
+      "distance": 0.000060674598022606474,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL20d3e3ad952d",
+      "modelId": "FMA24474",
+      "distance": 0.000019510554988556476,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLced3eeb4c337",
+      "modelId": "FMA23130",
+      "distance": 0.000003000889101916865,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL8a16c167cbba",
+      "modelId": "FMA52736",
+      "distance": 0.00012756647617619552,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL10a803a4eed3",
+      "modelId": "FMA52735",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZLe8776927269f",
+      "modelId": "FMA52788",
+      "distance": 0.0000014773452762963588,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL056b6000fe40",
+      "modelId": "FMA52735",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL9f91edfceb15",
+      "modelId": "FMA12522",
+      "distance": 0.00001634071749630869,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLce794c298dd5",
+      "modelId": "FMA13322",
+      "distance": 0.0000031659809045876575,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL682c0ecbb7c2",
+      "modelId": "FMA24528",
+      "distance": 3.788392679342849e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL5a323b70262e",
+      "modelId": "FMA24497",
+      "distance": 5.933476048297313e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL6522e2d6ed5a",
+      "modelId": "FMA24482",
+      "distance": 0.0000012669763072541186,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL624d7fddca60",
+      "modelId": "FMA52735",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL7ef76290b778",
+      "modelId": "FMA23130",
+      "distance": 0.0000032259692056437007,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL7080868d2b90",
+      "modelId": "FMA12519",
+      "distance": 0.00009661765166977907,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL66e65e30c8ed",
+      "modelId": "FMA52736",
+      "distance": 0.000018156659475325494,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLa2b92ee2380e",
+      "modelId": "FMA23464",
+      "distance": 0.0008553058111369189,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLae19c8fa0605",
+      "modelId": "ZA8b10b875e610",
+      "distance": 1.6532525990389987e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL3ccceade2e0b",
+      "modelId": "FMA24474",
+      "distance": 6.409689236490358e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLcf3b433a53d7",
+      "modelId": "FMA24480",
+      "distance": 0.00004150604285761608,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLc430544d994e",
+      "modelId": "FMA23130",
+      "distance": 0.000006752442472074441,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLe4c81c854823",
+      "modelId": "ZA8b10b875e610",
+      "distance": 1.2605183010673345e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL98be1955de6f",
+      "modelId": "FMA24468",
+      "distance": 9.329277968122108e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL528345dc8873",
+      "modelId": "FMA24511",
+      "distance": 0.0000013474850593834496,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLf4d71de983a4",
+      "modelId": "ZA4fabbde6ed5b",
+      "distance": 2.3947411250577375e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL397f01dc38e1",
+      "modelId": "ZA4650e3caf199",
+      "distance": 9.432680633289802e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL1468e18b50dd",
+      "modelId": "FMA23464",
+      "distance": 0.00004340601918894253,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL23e3b94aee9d",
+      "modelId": "FMA8175",
+      "distance": 0.000012520914213124124,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL8b8be8f13366",
+      "modelId": "FMA24482",
+      "distance": 0.0000013403281260457045,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL23b7ca491ba2",
+      "modelId": "FMA23467",
+      "distance": 0.000016527249644101086,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL7d32dd277734",
+      "modelId": "FMA16586",
+      "distance": 0.000010525503939944465,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL9015dc8f57f1",
+      "modelId": "ZA7770f8542e6a",
+      "distance": 2.1143212415381526e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL0f5e8584be19",
+      "modelId": "FMA23130",
+      "distance": 0.00000824916086665682,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLd5dd354ebec7",
+      "modelId": "FMA52735",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL9f15f9903d23",
+      "modelId": "FMA52736",
+      "distance": 4.992320830153355e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL1e4ce49c759b",
+      "modelId": "FMA16586",
+      "distance": 0.00001459410182447213,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLc2fef9cb59cb",
+      "modelId": "FMA16586",
+      "distance": 0.000025652701485803572,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL075606625cac",
+      "modelId": "FMA16586",
+      "distance": 0.000002985826160118284,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLcc2f47fe1fe9",
+      "modelId": "FMA16586",
+      "distance": 0.000002405465316969697,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLbdfa6c0c275c",
+      "modelId": "FMA16586",
+      "distance": 0.00006765202212393284,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLd357ffdca2d5",
+      "modelId": "FMA16586",
+      "distance": 0.0000023828492282326293,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL90a1cb22db95",
+      "modelId": "FMA13322",
+      "distance": 9.672885030814172e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLd61e56cfceeb",
+      "modelId": "FMA13395",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZLa2331c4150cc",
+      "modelId": "FMA13074",
+      "distance": 7.307287061270858e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL6fc0f2730d64",
+      "modelId": "FMA12519",
+      "distance": 0.000027821685824298977,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLb7c264c97aaf",
+      "modelId": "FMA24477",
+      "distance": 0.000021523171346095648,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL82d520e3a915",
+      "modelId": "FMA9991",
+      "distance": 0.00014213815426754008,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLecdb6345fb75",
+      "modelId": "FMA16586",
+      "distance": 0.000011711315947428132,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL8a6ecf465257",
+      "modelId": "FMA55099",
+      "distance": 0.000001296423780520031,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL1efde70fe80f",
+      "modelId": "FMA52748",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZLa339103bf637",
+      "modelId": "FMA52735",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL0ff43502120e",
+      "modelId": "FMA16586",
+      "distance": 0.0000313523110718177,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLe082ab1616a3",
+      "modelId": "FMA52788",
+      "distance": 1.8098769980351936e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLb12ebb02c1f3",
+      "modelId": "FMA55099",
+      "distance": 2.1153676316624995e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLeea4bbbfa055",
+      "modelId": "FMA55099",
+      "distance": 3.232757586952216e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL6ce1ee443214",
+      "modelId": "FMA13074",
+      "distance": 0.0000341038935889682,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLc1db83061d57",
+      "modelId": "FMA13395",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZLe750430c2779",
+      "modelId": "FMA13395",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL177225028758",
+      "modelId": "FMA52736",
+      "distance": 0.00009724265789740004,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL97f4ae99d2ac",
+      "modelId": "FMA16586",
+      "distance": 0.0000036288016323088946,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL588f6199e602",
+      "modelId": "FMA24477",
+      "distance": 0.00003212394673249794,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLc690824afa3a",
+      "modelId": "FMA24477",
+      "distance": 0.000035935630277278625,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL13eef2021daf",
+      "modelId": "FMA24474",
+      "distance": 0.00004892310400230976,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL4cc0e7b61f69",
+      "modelId": "FMA16202",
+      "distance": 0.0000032898918155192648,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL315cef89062f",
+      "modelId": "FMA16586",
+      "distance": 0.000020401014694126443,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL857aa88cff27",
+      "modelId": "FMA52735",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL629a308e8bb8",
+      "modelId": "FMA52788",
+      "distance": 0.000004843188027809619,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL8c60499c84a6",
+      "modelId": "FMA52734",
+      "distance": 0.0000012820555977563104,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL180ecae885ff",
+      "modelId": "FMA23464",
+      "distance": 0.00004992143616029861,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL042cd904bb7f",
+      "modelId": "FMA24477",
+      "distance": 0.000022112670528550664,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL9bab4008ad0a",
+      "modelId": "FMA23467",
+      "distance": 0.000002195734535650651,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL0cfb8c21010a",
+      "modelId": "FMA24480",
+      "distance": 0.000010430908328294616,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL1d3455d121b8",
+      "modelId": "FMA13074",
+      "distance": 0.003610956966931454,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL6f2b9d223d6d",
+      "modelId": "FMA16202",
+      "distance": 0.002943990841681041,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL7ab7fda6796e",
+      "modelId": "FMA13074",
+      "distance": 0.000013632069590681568,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL3a41a93ea6b1",
+      "modelId": "FMA52735",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL6f4d447554e2",
+      "modelId": "FMA16586",
+      "distance": 0.00004389585148522412,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLab8b8f41396f",
+      "modelId": "FMA16586",
+      "distance": 0.000011222398069252362,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL33a5dc92f8c7",
+      "modelId": "FMA16586",
+      "distance": 0.00007143442666536857,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL7ec91468eb21",
+      "modelId": "FMA16586",
+      "distance": 0.0000040383470448052996,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLd48fe539239b",
+      "modelId": "FMA52735",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL9f7962b69db5",
+      "modelId": "FMA52735",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL4df799922a62",
+      "modelId": "ZA6d1f000672b1",
+      "distance": 1.246068228862074e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL61e177f8d43a",
+      "modelId": "FMA55099",
+      "distance": 1.6064241356412215e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL817cde853ebb",
+      "modelId": "FMA13074",
+      "distance": 0.0000317121959072124,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLd205cc2d80a6",
+      "modelId": "FMA55099",
+      "distance": 2.8262098769527435e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLade5f358f611",
+      "modelId": "FMA13395",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL8c5caed25383",
+      "modelId": "FMA23130",
+      "distance": 0.00000630192473758832,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLac92b6bf6535",
+      "modelId": "FMA13395",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL304785fefc76",
+      "modelId": "FMA24474",
+      "distance": 0.00001620869124667074,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL3bd23025ef4e",
+      "modelId": "FMA24477",
+      "distance": 0.000006781687756931036,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLd322d41c183a",
+      "modelId": "FMA24474",
+      "distance": 0.00003197896618099825,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL180bc88977a2",
+      "modelId": "FMA23130",
+      "distance": 0.000006553709590799799,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL59f9790c4973",
+      "modelId": "FMA24477",
+      "distance": 0.0000031443935626001555,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLe31a0d9c7239",
+      "modelId": "FMA24482",
+      "distance": 8.978733754292242e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLd9991e1f200f",
+      "modelId": "FMA24480",
+      "distance": 0.00002248727244364531,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL0a5fe5be461a",
+      "modelId": "FMA12519",
+      "distance": 0.000010590979780666601,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL12385528f647",
+      "modelId": "FMA24497",
+      "distance": 0.0000011845058031219455,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL1766b771b509",
+      "modelId": "ZA8b10b875e610",
+      "distance": 8.543380457010427e-8,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL7f4a5c64f705",
+      "modelId": "FMA24482",
+      "distance": 0.0000011283268107114282,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLc2fde726db69",
+      "modelId": "FMA52736",
+      "distance": 0.00009123770866395683,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLe05fc4e3702e",
+      "modelId": "FMA16202",
+      "distance": 0.00002501578024413104,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLd65fdb644b5e",
+      "modelId": "FMA23130",
+      "distance": 0.000003515638978576928,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL4b3319bb0111",
+      "modelId": "FMA24480",
+      "distance": 0.0000028370926791797617,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLb7cdeff1fcb5",
+      "modelId": "FMA23464",
+      "distance": 0.00005201037528078874,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLfd32bc01e1ae",
+      "modelId": "FMA24477",
+      "distance": 0.000008592249298408128,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL9c0f210644f2",
+      "modelId": "FMA24482",
+      "distance": 4.7402075489850305e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL5e2b6d5ed006",
+      "modelId": "ZA5193384422db",
+      "distance": 1.225229555527398e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL21caa38bd54d",
+      "modelId": "FMA52749",
+      "distance": 7.415159944058263e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL55518f865c83",
+      "modelId": "FMA16586",
+      "distance": 0.015519867741746116,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL38a54e70a19a",
+      "modelId": "FMA16586",
+      "distance": 0.00003187797796502339,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL54bea3920a40",
+      "modelId": "FMA24474",
+      "distance": 5.6293503126960304e-8,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL975d15e9f3bc",
+      "modelId": "FMA23130",
+      "distance": 0.000006960843348974764,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLf1742a7a1875",
+      "modelId": "FMA52736",
+      "distance": 0.000010834689215609905,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL54c330e6b46c",
+      "modelId": "FMA52736",
+      "distance": 0.0006486970900629101,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL6b1807613ef3",
+      "modelId": "FMA24474",
+      "distance": 0.000027494183917998603,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLfb5aa9729423",
+      "modelId": "ZA792631c5f546",
+      "distance": 1.481491809528116e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLb3447c7a7844",
+      "modelId": "ZA5193384422db",
+      "distance": 8.859808434484878e-9,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL26c326f89590",
+      "modelId": "FMA16586",
+      "distance": 0.00001858780608254835,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL69d0598c1048",
+      "modelId": "FMA24480",
+      "distance": 0.00004808165202887708,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL60410132a29a",
+      "modelId": "FMA52748",
+      "distance": 0.0000016651016703935113,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLa68670a70bd9",
+      "modelId": "ZAe69f519bec7f",
+      "distance": 0.00003959763410859731,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLdb9aa7aa78e3",
+      "modelId": "FMA52788",
+      "distance": 8.141857788235346e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLc334c3c1b8f5",
+      "modelId": "FMA52738",
+      "distance": 0.0000011325005303057367,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLce8b45f5ea0e",
+      "modelId": "FMA52738",
+      "distance": 0.000002676766422105546,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL1d39af7c069b",
+      "modelId": "FMA53649",
+      "distance": 3.29818123110029e-8,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL320d9e9c3b3c",
+      "modelId": "FMA52736",
+      "distance": 0.00012316565742230215,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL32ac90cb8554",
+      "modelId": "FMA24480",
+      "distance": 0.00002697737380399349,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL0b95ed619124",
+      "modelId": "FMA24474",
+      "distance": 0.000014193431547516785,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL6cc872b57cd2",
+      "modelId": "FMA24477",
+      "distance": 0.000026012546007495497,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLc88f7bd1c0f0",
+      "modelId": "FMA24474",
+      "distance": 0.00003463206934027048,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLed15e8ea3276",
+      "modelId": "FMA23130",
+      "distance": 0.0000021570696986267345,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL94b3d6192bcf",
+      "modelId": "FMA24477",
+      "distance": 0.000003089467998195148,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL6627108a4b6d",
+      "modelId": "FMA24482",
+      "distance": 8.60213828629112e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL9c8a3fae2545",
+      "modelId": "FMA24477",
+      "distance": 0.0000033861036283818536,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL2af220c911c0",
+      "modelId": "FMA24497",
+      "distance": 0.000001353431371620587,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL452500350815",
+      "modelId": "FMA52736",
+      "distance": 0.0000710823828897229,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL8afca4b71f94",
+      "modelId": "FMA23130",
+      "distance": 0.0000055269623162314855,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLcafe46af010f",
+      "modelId": "ZAe373ad8237be",
+      "distance": 0.0000030040590798371892,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL652efcf8e139",
+      "modelId": "FMA24480",
+      "distance": 0.00005218892469648947,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL35b2cd0ce628",
+      "modelId": "FMA24477",
+      "distance": 0.000006060855804840651,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL1000e6848608",
+      "modelId": "FMA23467",
+      "distance": 0.000010301574721744877,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL9898858b7111",
+      "modelId": "FMA24482",
+      "distance": 7.334031381952919e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL282d5f376b45",
+      "modelId": "FMA16202",
+      "distance": 0.0000018773635281787416,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL324d7625bb65",
+      "modelId": "FMA52748",
+      "distance": 0.0005443878727980072,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL314aa49c772d",
+      "modelId": "FMA52748",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL0a895fd8e977",
+      "modelId": "FMA52748",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL9b716ba5428c",
+      "modelId": "ZA792631c5f546",
+      "distance": 8.084108658646923e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLb40c6e7686d7",
+      "modelId": "ZAe373ad8237be",
+      "distance": 0.00004721815835238257,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLac51ed65fb15",
+      "modelId": "FMA52748",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL5b1381f84c94",
+      "modelId": "FMA52734",
+      "distance": 0.00014053376800361378,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLb4112afa6f35",
+      "modelId": "FMA24474",
+      "distance": 0.0000037914348101452468,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL7ea94d9bc300",
+      "modelId": "FMA24480",
+      "distance": 0.000014268142060250275,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLf93cbeda477a",
+      "modelId": "ZA8b10b875e610",
+      "distance": 2.0306826881778047e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL16dbdd09e760",
+      "modelId": "FMA23464",
+      "distance": 0.000027881071098074737,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL7a26ea164736",
+      "modelId": "FMA8175",
+      "distance": 0.000034032633443827226,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLec71935616be",
+      "modelId": "FMA13395",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL4e4c36cff91e",
+      "modelId": "FMA24482",
+      "distance": 1.6949902587218984e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL767daf9bccb9",
+      "modelId": "ZA792631c5f546",
+      "distance": 5.133567361939346e-8,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL6a772c81b3bc",
+      "modelId": "FMA52748",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL1d2080daf87b",
+      "modelId": "FMA55099",
+      "distance": 3.022895200143535e-8,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL134506795a18",
+      "modelId": "ZAe373ad8237be",
+      "distance": 0.0000485505440940931,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL03c5b6e37e85",
+      "modelId": "FMA16586",
+      "distance": 0.000014478002876283283,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL58b17e9cc412",
+      "modelId": "FMA16586",
+      "distance": 0.015676525399647034,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL2f970fb5e20f",
+      "modelId": "FMA52788",
+      "distance": 5.697961932434129e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL14f40caab846",
+      "modelId": "FMA52735",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL098c58a1f3e5",
+      "modelId": "FMA52735",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL04b9742c0890",
+      "modelId": "ZA792631c5f546",
+      "distance": 6.891932049295419e-8,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLd581f0b74a9c",
+      "modelId": "FMA23130",
+      "distance": 0.000008375259152017146,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLe3ed765666bb",
+      "modelId": "FMA23467",
+      "distance": 0.00002650958946608653,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL87e8bc31db7a",
+      "modelId": "FMA52734",
+      "distance": 0.0015398757930525115,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL3c769858ca32",
+      "modelId": "FMA52736",
+      "distance": 0.0021467365411829784,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLad5f4e89584d",
+      "modelId": "FMA52734",
+      "distance": 0.000002768300109086335,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL69d5dce00e12",
+      "modelId": "FMA52734",
+      "distance": 8.077850102576903e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL32f7a614513e",
+      "modelId": "FMA52736",
+      "distance": 0.00021488803416980898,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL692ba33c99a6",
+      "modelId": "FMA52788",
+      "distance": 7.162708909167276e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLc08678ef86b0",
+      "modelId": "FMA52788",
+      "distance": 0.0000032955290411148833,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL81baf57448e6",
+      "modelId": "FMA24474",
+      "distance": 0.00001068997818274874,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL87784dd9553c",
+      "modelId": "FMA13074",
+      "distance": 6.163292472727387e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLe537856ef417",
+      "modelId": "FMA52735",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZLf2bedcde8d83",
+      "modelId": "FMA12519",
+      "distance": 0.0000028298251807161272,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLfc375bdc3400",
+      "modelId": "FMA52736",
+      "distance": 0.00011741686334573921,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL20bbc7596bd3",
+      "modelId": "FMA16586",
+      "distance": 0.000007800223534678286,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLc81bc261459b",
+      "modelId": "FMA16586",
+      "distance": 0.0000052339811100698,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL85089159ed0c",
+      "modelId": "FMA24477",
+      "distance": 0.0000028450781808607533,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLb8f2962dba4b",
+      "modelId": "ZAe3ada0098be1",
+      "distance": 2.0976662908111162e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLfae960e67e18",
+      "modelId": "FMA24477",
+      "distance": 0.000034551719523486956,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL468b5d704a1c",
+      "modelId": "FMA16202",
+      "distance": 0.00563619159226753,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZLfd30d8818222",
+      "modelId": "FMA16586",
+      "distance": 0.00005941847179714432,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLa3a925de4e70",
+      "modelId": "ZAe373ad8237be",
+      "distance": 0.000017539138861073172,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL861c2f921eb2",
+      "modelId": "FMA24480",
+      "distance": 0.00003417897390618876,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL4ef048b7d197",
+      "modelId": "FMA52738",
+      "distance": 0.000607943990759963,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL46b7a42eaf06",
+      "modelId": "FMA13395",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZLd6c1a42af0d8",
+      "modelId": "FMA12519",
+      "distance": 0.00003087286106136208,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLcb44ef7ccf1f",
+      "modelId": "FMA12522",
+      "distance": 7.13578735227966e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL35146e3653e1",
+      "modelId": "FMA23464",
+      "distance": 0.00002771502968166313,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLd7bb522dba46",
+      "modelId": "FMA52736",
+      "distance": 0.000842809787970038,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLdba26091c54d",
+      "modelId": "FMA52736",
+      "distance": 0.00010182906414288064,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL656e6b7bf99a",
+      "modelId": "FMA52736",
+      "distance": 0.000026974234579739036,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL05bdc30f7688",
+      "modelId": "FMA52736",
+      "distance": 0.0008759991216396309,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLfd544f7f58fd",
+      "modelId": "FMA16586",
+      "distance": 0.000008418857912703788,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL902e2bb226af",
+      "modelId": "FMA16586",
+      "distance": 0.000023414084988819344,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL82a619e273ce",
+      "modelId": "FMA23130",
+      "distance": 0.0000038087848939644906,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL6e0829cd7dcf",
+      "modelId": "FMA23467",
+      "distance": 0.00005155158342483411,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL4c41b9a875b0",
+      "modelId": "FMA16586",
+      "distance": 0.00003165205569344536,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL8393bc4b9226",
+      "modelId": "FMA8175",
+      "distance": 0.000002906377856882274,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL9c5a96250756",
+      "modelId": "ZA792631c5f546",
+      "distance": 6.835293027600369e-8,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL303a220b4c48",
+      "modelId": "FMA16202",
+      "distance": 0.002429342279787881,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL6ced00b119b4",
+      "modelId": "FMA16202",
+      "distance": 0.007175655989614254,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZLc7235d4b48c3",
+      "modelId": "FMA16202",
+      "distance": 3.1355636577991966e-8,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLaf95a5137f97",
+      "modelId": "FMA52736",
+      "distance": 0.00003747922631117744,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLdf9ae316470b",
+      "modelId": "FMA13395",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZLe1785b6cf00d",
+      "modelId": "FMA24477",
+      "distance": 0.000005610108384058837,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL906fe5d8764a",
+      "modelId": "FMA52788",
+      "distance": 8.590821615782251e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLa0b2004fee9e",
+      "modelId": "FMA52736",
+      "distance": 0.00006982608375646238,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL5c243f495567",
+      "modelId": "FMA52736",
+      "distance": 0.00002553612471024285,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL01403143d2a8",
+      "modelId": "FMA52736",
+      "distance": 0.00033560220321196516,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL33c7532762da",
+      "modelId": "FMA52734",
+      "distance": 6.058424122497315e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL167b9a345b95",
+      "modelId": "FMA23130",
+      "distance": 0.0000014933133137309404,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLa99c63a43263",
+      "modelId": "FMA52735",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL83277983369d",
+      "modelId": "FMA16202",
+      "distance": 0.00002202272579186859,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLa44e791da218",
+      "modelId": "FMA13074",
+      "distance": 0.00003429116135556562,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL30ba5e5775aa",
+      "modelId": "FMA24480",
+      "distance": 0.000024762067613301894,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL29cf098961e6",
+      "modelId": "FMA24477",
+      "distance": 0.000012311925991407168,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLd54502959de9",
+      "modelId": "FMA52735",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL524c8cb7594e",
+      "modelId": "FMA23130",
+      "distance": 0.0000053792912488738465,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLcff346d61c71",
+      "modelId": "FMA13395",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZLb9f1545be3a0",
+      "modelId": "FMA24477",
+      "distance": 0.000007463006172311041,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL369bb7255a08",
+      "modelId": "FMA24468",
+      "distance": 7.114466328998204e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL9e68cbcfd0dd",
+      "modelId": "FMA24482",
+      "distance": 7.531255248609104e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL68d61676dbb6",
+      "modelId": "FMA52734",
+      "distance": 0.002340996828755136,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL290387c40604",
+      "modelId": "FMA52734",
+      "distance": 0.0015535381823498088,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL149c7dc09090",
+      "modelId": "FMA24482",
+      "distance": 7.169909266563011e-8,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLa5fb70b6d173",
+      "modelId": "FMA16586",
+      "distance": 0.00002328435229709496,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL75d6ee95bdbc",
+      "modelId": "FMA52788",
+      "distance": 0.000001730723236679232,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL1020b73f458e",
+      "modelId": "FMA52738",
+      "distance": 3.3429699656200046e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL208a038e2d0f",
+      "modelId": "FMA52734",
+      "distance": 9.878437458547383e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL96c8a2e4b29b",
+      "modelId": "FMA52734",
+      "distance": 3.2697728268499424e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL4d3772016d6c",
+      "modelId": "FMA52736",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL8a02edb04312",
+      "modelId": "FMA13074",
+      "distance": 0.0000021089662415662325,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL75a3221e8485",
+      "modelId": "FMA16586",
+      "distance": 0.00001585677991022601,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLc4e587942760",
+      "modelId": "FMA16202",
+      "distance": 0.000002558867585016051,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLc661d61e4508",
+      "modelId": "FMA52738",
+      "distance": 0.0010469158778614394,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL448e749701d9",
+      "modelId": "FMA12520",
+      "distance": 0.000021522530127199525,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLa539dd10cdd5",
+      "modelId": "FMA24480",
+      "distance": 0.000006503700346424614,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL087824fc8a77",
+      "modelId": "FMA23464",
+      "distance": 0.0006899403982289717,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLd821993ca890",
+      "modelId": "FMA23467",
+      "distance": 0.00003294426137873739,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL7eb14622b400",
+      "modelId": "FMA24482",
+      "distance": 0.0000014837207152650306,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL97ec0317cbe5",
+      "modelId": "FMA24482",
+      "distance": 0.0000010118344890690504,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLf5a51ee1d04e",
+      "modelId": "FMA23130",
+      "distance": 0.000011620265883859755,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL5044c1b98b61",
+      "modelId": "FMA23464",
+      "distance": 0.0007630718034380415,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL0ec4a9fa460a",
+      "modelId": "FMA24477",
+      "distance": 0.00003230453267210754,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL8c31709d9046",
+      "modelId": "FMA23467",
+      "distance": 0.000011757520150595292,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLcf9b4e46cf39",
+      "modelId": "FMA24480",
+      "distance": 0.000017501954816796517,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLb92e8e86e34f",
+      "modelId": "FMA16202",
+      "distance": 0.0000010699119835333835,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL1a4c913a6884",
+      "modelId": "FMA52736",
+      "distance": 0.00010953313567573793,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLe6507008d9cd",
+      "modelId": "FMA52736",
+      "distance": 0.00010693264867304781,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL0ab759f9d8bc",
+      "modelId": "FMA16586",
+      "distance": 0.0000023754688745930606,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLa3d3e4feceb9",
+      "modelId": "FMA23130",
+      "distance": 0.000005273031565946825,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLfb49f70ad185",
+      "modelId": "FMA23464",
+      "distance": 0.00008711986311201822,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLf5509b7b747d",
+      "modelId": "FMA23464",
+      "distance": 0.0006075623639125668,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLdaeafee10b55",
+      "modelId": "FMA23464",
+      "distance": 0.00013730787321796628,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL8e1e6bee2e80",
+      "modelId": "FMA16586",
+      "distance": 0.000019092241495699533,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL80fa189a24aa",
+      "modelId": "ZA792631c5f546",
+      "distance": 1.593046409094678e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL9ac46beb50c2",
+      "modelId": "FMA16202",
+      "distance": 6.202104132574268e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLb49dd19156a7",
+      "modelId": "FMA16586",
+      "distance": 0.000005774369827993805,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL5b0428b71a76",
+      "modelId": "FMA16202",
+      "distance": 0.00001972875802350205,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL3d80e6d6a5b4",
+      "modelId": "FMA52788",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL351f83d65320",
+      "modelId": "FMA13395",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZLe744c8c14189",
+      "modelId": "FMA52736",
+      "distance": 0.0000027913062037299468,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLf818f07f9dbd",
+      "modelId": "ZAf14e9d77d596",
+      "distance": 4.5957326006802426e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLc7a361655567",
+      "modelId": "ZA4c2db3ea84cb",
+      "distance": 5.600513607655804e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL2c97b8f83323",
+      "modelId": "FMA52734",
+      "distance": 0.000004547195262955604,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL10a657baa787",
+      "modelId": "FMA13395",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL7cea7aec50eb",
+      "modelId": "FMA52736",
+      "distance": 0.000034648598292445,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLaf7acd22bd35",
+      "modelId": "FMA13395",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL1c093fb92fe5",
+      "modelId": "FMA13074",
+      "distance": 0.000008601750457155873,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL5e9262f329e8",
+      "modelId": "FMA52788",
+      "distance": 0.0000021974295307267014,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLbc5d5e26eb5f",
+      "modelId": "FMA52736",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL3e6903785e02",
+      "modelId": "FMA52734",
+      "distance": 0.0000030247888742526207,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL5d0d86ff2d77",
+      "modelId": "FMA52735",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL9060e296295c",
+      "modelId": "FMA52738",
+      "distance": 7.488996661667689e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLfb364d1b5914",
+      "modelId": "ZAe3ada0098be1",
+      "distance": 1.1901018817799855e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL7e1956b05e02",
+      "modelId": "FMA7487",
+      "distance": 0.000003396670566185606,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLf6bc43c20790",
+      "modelId": "FMA13322",
+      "distance": 0.0000028195770623897157,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLef8b7cd46499",
+      "modelId": "FMA13322",
+      "distance": 0.0000019960566135398796,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL6c04f29fd246",
+      "modelId": "FMA52738",
+      "distance": 7.368014660918139e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL76e7630f6d56",
+      "modelId": "FMA24468",
+      "distance": 2.3077023933060158e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL8904eb377910",
+      "modelId": "FMA23467",
+      "distance": 0.000036618701925029894,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLf1f385a64564",
+      "modelId": "FMA52748",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL1180ad89b34f",
+      "modelId": "FMA13395",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL80648ca4797d",
+      "modelId": "FMA52736",
+      "distance": 0.00020949716116208672,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL09b0c905b43a",
+      "modelId": "FMA52734",
+      "distance": 0.0000010205689083133705,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLa333c0af000b",
+      "modelId": "FMA13395",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZLfc78e69134a2",
+      "modelId": "FMA13074",
+      "distance": 0.00005025616794447862,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL4fe92c9a13b3",
+      "modelId": "FMA16202",
+      "distance": 0.000029577003010147583,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL32276fc786b2",
+      "modelId": "FMA13074",
+      "distance": 0.00004052767496365934,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL2913f0d49bc3",
+      "modelId": "FMA12519",
+      "distance": 0.000004546384718565842,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLc5375dddb3a0",
+      "modelId": "FMA24477",
+      "distance": 0.000005910945058127767,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL02d29e59fe8d",
+      "modelId": "FMA24477",
+      "distance": 0.000041950631956321315,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL98040efb8d02",
+      "modelId": "FMA13395",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL30ebfbac7323",
+      "modelId": "FMA9991",
+      "distance": 0.0000015060353355023746,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLbb515b14bf02",
+      "modelId": "FMA24482",
+      "distance": 7.894475426179162e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL9b2bb49700a0",
+      "modelId": "FMA55099",
+      "distance": 1.2338702833403503e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL0c49179fab7b",
+      "modelId": "FMA52748",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZLdfac4ebcdd46",
+      "modelId": "FMA52735",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL1b56e40fc46c",
+      "modelId": "FMA16586",
+      "distance": 0.000010372152280347588,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL1fe5e123264c",
+      "modelId": "FMA52788",
+      "distance": 0.000003785720960364906,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLa344113e7e69",
+      "modelId": "FMA55099",
+      "distance": 2.5596376753304824e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL21e4be6cb04c",
+      "modelId": "FMA55099",
+      "distance": 3.8062341502652873e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL76d5576ea9e8",
+      "modelId": "FMA13074",
+      "distance": 0.000043518765206876296,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL464f66a61d63",
+      "modelId": "FMA23467",
+      "distance": 0.00004360938561971595,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL8eb230f4c6e9",
+      "modelId": "FMA16586",
+      "distance": 0.00001837732545598993,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLa274eb7b58bc",
+      "modelId": "FMA13395",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL8dd44f59ea0e",
+      "modelId": "FMA13395",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZLb0426a50f620",
+      "modelId": "FMA23464",
+      "distance": 0.0005915565704457635,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLc8e0db0658ad",
+      "modelId": "FMA52735",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL4d2954c8eb68",
+      "modelId": "FMA23130",
+      "distance": 0.000011757691017182327,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLc5174703cc39",
+      "modelId": "FMA24497",
+      "distance": 0.000002329347356293272,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLe096ec05bfdc",
+      "modelId": "FMA16586",
+      "distance": 0.00002445449823954611,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL28645bd9ebf7",
+      "modelId": "FMA24482",
+      "distance": 0.000001437822605706646,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLd16600df2f9a",
+      "modelId": "FMA24497",
+      "distance": 0.0000021490905606013383,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL8015952afa98",
+      "modelId": "FMA52738",
+      "distance": 0.000001908570825163785,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL151d0b5a1af0",
+      "modelId": "FMA52734",
+      "distance": 0.000002356505511644797,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL2385b2ddb945",
+      "modelId": "FMA52734",
+      "distance": 0.0000060627237126763186,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL710aff9b5f54",
+      "modelId": "FMA52736",
+      "distance": 0.00011245741478784754,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL6e5f6661a3d1",
+      "modelId": "FMA9991",
+      "distance": 0.00008061820762191278,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLdd4cb52bf136",
+      "modelId": "ZA6d1f000672b1",
+      "distance": 2.446803688353143e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL8ea5bc66b61f",
+      "modelId": "FMA24477",
+      "distance": 0.000015245982781190368,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL5a1fa478caee",
+      "modelId": "FMA24477",
+      "distance": 0.0000023890415114736293,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLbc7d8ae9d204",
+      "modelId": "FMA24477",
+      "distance": 0.000022306952000055237,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL44391eff83db",
+      "modelId": "FMA9991",
+      "distance": 0.000001027803941948951,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL6ce4c3736f56",
+      "modelId": "FMA12519",
+      "distance": 0.00002528280081343955,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL78440b7f86dc",
+      "modelId": "FMA13074",
+      "distance": 0.000003525762378561691,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLe3234dc271c8",
+      "modelId": "FMA16202",
+      "distance": 8.030529605988447e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL43c171f0265f",
+      "modelId": "FMA13322",
+      "distance": 0.000004025498725545743,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL24c08f9ff0e8",
+      "modelId": "ZAe373ad8237be",
+      "distance": 0.00003637897974365644,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL265393e97968",
+      "modelId": "FMA23130",
+      "distance": 0.000008099150019380358,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLa2e641e2cc5b",
+      "modelId": "ZA4fabbde6ed5b",
+      "distance": 9.238790342685046e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL9d8e2026664a",
+      "modelId": "ZA4650e3caf199",
+      "distance": 3.7634965253771474e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLfcf80562a38e",
+      "modelId": "FMA24482",
+      "distance": 6.519211252851314e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLd71f8d22fdf3",
+      "modelId": "FMA52734",
+      "distance": 0.00011033780041712915,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL3ac9996895e2",
+      "modelId": "FMA23467",
+      "distance": 0.000029272807172516848,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL8a02c21c5136",
+      "modelId": "FMA24477",
+      "distance": 0.000010413045639048869,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLd30c921ce39e",
+      "modelId": "FMA8175",
+      "distance": 0.000016355449263503066,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL2807177fb0e3",
+      "modelId": "ZAeca0a58b48d7",
+      "distance": 7.984398367886219e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL581ad4e8a20e",
+      "modelId": "ZA6ccae0502f6f",
+      "distance": 8.608689070155054e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL8f41d9a3bea8",
+      "modelId": "FMA52736",
+      "distance": 8.43223615604336e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL5df1c0903594",
+      "modelId": "FMA13322",
+      "distance": 0.0000022504769397203085,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL6ef4ac9809bc",
+      "modelId": "FMA24528",
+      "distance": 2.92421303404952e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLc72f00b4e5bd",
+      "modelId": "ZA044479dee74f",
+      "distance": 3.001613477501104e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL6be5f3620cc4",
+      "modelId": "ZAaf4f61697bf1",
+      "distance": 4.102946148231082e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLfe1bd2840085",
+      "modelId": "ZA2c8f8a06e724",
+      "distance": 7.551209939403618e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL00f8ed778010",
+      "modelId": "FMA23467",
+      "distance": 0.000021375174954940436,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLb470badea16f",
+      "modelId": "FMA52738",
+      "distance": 7.280650913818796e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLab786f0c741f",
+      "modelId": "FMA23467",
+      "distance": 0.000011083645892167115,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLf5ad05f6da97",
+      "modelId": "FMA23464",
+      "distance": 0.00017643802043834723,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL6986862d6490",
+      "modelId": "FMA9165",
+      "distance": 0.12051151417663195,
+      "valid": false,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL803b04f808de",
+      "modelId": "FMA12522",
+      "distance": 0.000013182093875344059,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL64ad13d2a6db",
+      "modelId": "FMA52736",
+      "distance": 0.00006679854342215617,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL07f8576ccfad",
+      "modelId": "FMA13074",
+      "distance": 0.0000034774094451771533,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL306e5599c047",
+      "modelId": "FMA13074",
+      "distance": 0.000018645767949409547,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL55e406138858",
+      "modelId": "FMA13074",
+      "distance": 0.000002148895507106619,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZLda91d0c37e09",
+      "modelId": "FMA13074",
+      "distance": 0.007533381840469794,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZLc8f7a2b4fee2",
+      "modelId": "ZA792631c5f546",
+      "distance": 1.7277812514038302e-7,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL68d4932119cc",
+      "modelId": "ZAe373ad8237be",
+      "distance": 0.000023974020314012274,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL0af852d433d2",
+      "modelId": "FMA7488",
+      "distance": 0.00012163808453216347,
+      "valid": true,
+      "surfaceNear": true
+    },
+    {
+      "id": "ZL4f38cee78889",
+      "modelId": "FMA52736",
+      "distance": null,
+      "valid": true,
+      "surfaceNear": false
+    },
+    {
+      "id": "ZL1dbd15b64097",
+      "modelId": "FMA52734",
+      "distance": 7.141217864863287e-7,
+      "valid": true,
+      "surfaceNear": true
+    }
+  ]
+}

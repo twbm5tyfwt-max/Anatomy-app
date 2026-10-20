@@ -1,0 +1,178 @@
+[
+  {
+    "region": "Heart",
+    "file": "2008_Internal_Anatomy_of_the_HeartN.jpg",
+    "title": "Internal Structures of the Heart",
+    "caption": "This anterior view of the heart shows the four chambers, the major vessels and their early branches, as well as the valves. The presence of the pulmonary trunk and aorta covers the interatrial septum, and the atrioventricular septum is cut away to show the atrioventricular valves.",
+    "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46676/index.cnxml",
+    "module": "m46676",
+    "revision": "5ae32b3f4bc24ed003e91dc38bf47dba80751044",
+    "sha256": "5d962a658cab2538378fa846e2276c67389902c51968d64950873b9850938437",
+    "license": "OpenStax / Rice University, CC BY-NC-SA 4.0; original captions and credits retained."
+  },
+  {
+    "region": "Lungs",
+    "file": "2312_Gross_Anatomy_of_the_Lungs.jpg",
+    "title": "Gross Anatomy of the Lungs",
+    "caption": "Published labeled gross anatomy of the lungs illustration. The source figure supplies no separate prose caption; original embedded labels are retained.",
+    "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46551/index.cnxml",
+    "module": "m46551",
+    "revision": "5ae32b3f4bc24ed003e91dc38bf47dba80751044",
+    "sha256": "67a7b18d0ec991f5295d1295a40080b2a356989af995fbd43d985137c1023985",
+    "license": "OpenStax / Rice University, CC BY-NC-SA 4.0; original captions and credits retained."
+  },
+  {
+    "region": "Kidneys",
+    "file": "2610_The_Kidney.jpg",
+    "title": "Left Kidney",
+    "caption": "Published labeled left kidney illustration. The source figure supplies no separate prose caption; original embedded labels are retained.",
+    "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46429/index.cnxml",
+    "module": "m46429",
+    "revision": "5ae32b3f4bc24ed003e91dc38bf47dba80751044",
+    "sha256": "30d15988386d61f74039dee64bb63f7d13556173058bb4d1d42ac97c12546654",
+    "license": "OpenStax / Rice University, CC BY-NC-SA 4.0; original captions and credits retained."
+  },
+  {
+    "region": "Stomach",
+    "file": "2414_Stomach.jpg",
+    "title": "Stomach",
+    "caption": "The stomach has four major regions: the cardia, fundus, body, and pylorus. The addition of an inner oblique smooth muscle layer gives the muscularis the ability to vigorously churn and mix food.",
+    "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46517/index.cnxml",
+    "module": "m46517",
+    "revision": "5ae32b3f4bc24ed003e91dc38bf47dba80751044",
+    "sha256": "32c814b50a8d86b9d416e8eeadab5270ae1c57405b141db4dd8eecf23de55fdf",
+    "license": "OpenStax / Rice University, CC BY-NC-SA 4.0; original captions and credits retained."
+  },
+  {
+    "region": "Liver",
+    "file": "2423_Microscopic_Anatomy_of_Liver.jpg",
+    "title": "Microscopic Anatomy of the Liver",
+    "caption": "The liver receives oxygenated blood from the hepatic artery and nutrient-rich deoxygenated blood from the hepatic portal vein.",
+    "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46496/index.cnxml",
+    "module": "m46496",
+    "revision": "5ae32b3f4bc24ed003e91dc38bf47dba80751044",
+    "sha256": "fcda18a635dc699f7e05f4880e22d8c1d24f04f1bc73a88340e09778367dd277",
+    "license": "OpenStax / Rice University, CC BY-NC-SA 4.0; original captions and credits retained."
+  },
+  {
+    "region": "Pancreas",
+    "file": "2424_Exocrine_and_Endocrine_Pancreas.jpg",
+    "title": "Exocrine and Endocrine Pancreas",
+    "caption": "The pancreas has a head, a body, and a tail. It delivers pancreatic juice to the duodenum through the pancreatic duct.",
+    "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46496/index.cnxml",
+    "module": "m46496",
+    "revision": "5ae32b3f4bc24ed003e91dc38bf47dba80751044",
+    "sha256": "dc6fd2bf1ea8c4a72067a60ec729c3a5577b4915a5cadcabb2140bb991204e93",
+    "license": "OpenStax / Rice University, CC BY-NC-SA 4.0; original captions and credits retained."
+  },
+  {
+    "region": "Spleen",
+    "file": "2208_Spleen.jpg",
+    "title": "Spleen",
+    "caption": "(a) The spleen is attached to the stomach. (b) A micrograph of spleen tissue shows the germinal center. The marginal zone is the region between the red pulp and white pulp, which sequesters particulate antigens from the circulation and presents these antigens to lymphocytes in the white pulp. EM \u00d7 660. (Micrograph provided by the Regents of the University of Michigan Medical School \u00a9 2012)",
+    "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46563/index.cnxml",
+    "module": "m46563",
+    "revision": "5ae32b3f4bc24ed003e91dc38bf47dba80751044",
+    "sha256": "01fd6818d8a293745b7c6632c0bb7ed3a174bb24c3749dd18286fc9969adbcbc",
+    "license": "OpenStax / Rice University, CC BY-NC-SA 4.0; original captions and credits retained."
+  },
+  {
+    "region": "Bladder",
+    "file": "2605_The_Bladder.jpg",
+    "title": "Bladder",
+    "caption": "(a) Anterior cross section of the bladder. (b) The detrusor muscle of the bladder (source: monkey tissue) LM \u00d7 448. (Micrograph provided by the Regents of the University of Michigan Medical School \u00a9 2012)",
+    "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46427/index.cnxml",
+    "module": "m46427",
+    "revision": "5ae32b3f4bc24ed003e91dc38bf47dba80751044",
+    "sha256": "8eb1f9f8dd50d06135882095f5a4568d05f8716c3d41d675fa508a2fa2a20db7",
+    "license": "OpenStax / Rice University, CC BY-NC-SA 4.0; original captions and credits retained."
+  },
+  {
+    "region": "Eye",
+    "file": "1413_Structure_of_the_Eye.jpg",
+    "title": "Structure of the Eye",
+    "caption": "The sphere of the eye can be divided into anterior and posterior chambers. The wall of the eye is composed of three layers: the fibrous tunic, vascular tunic, and neural tunic. Within the neural tunic is the retina, with three layers of cells and two synaptic layers in between. The center of the retina has a small indentation known as the fovea.",
+    "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46577/index.cnxml",
+    "module": "m46577",
+    "revision": "5ae32b3f4bc24ed003e91dc38bf47dba80751044",
+    "sha256": "f8b98bdfa2bd68b17fb2c1e975ede1d571269348f49cdaca6d0851712d377dff",
+    "license": "OpenStax / Rice University, CC BY-NC-SA 4.0; original captions and credits retained."
+  },
+  {
+    "region": "Brain",
+    "file": "1311_Brain_Stem.jpg",
+    "title": "The Brain Stem",
+    "caption": "The brain stem comprises three regions: the midbrain, the pons, and the medulla.",
+    "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46533/index.cnxml",
+    "module": "m46533",
+    "revision": "5ae32b3f4bc24ed003e91dc38bf47dba80751044",
+    "sha256": "9da8c3dbbdb6240c923d1325e4f6f740765e41d625a5e3d28e6be97cf1e374e4",
+    "license": "OpenStax / Rice University, CC BY-NC-SA 4.0; original captions and credits retained."
+  },
+  {
+    "region": "Thyroid",
+    "file": "1811_The_Thyroid_Gland.jpg",
+    "title": "Thyroid Gland",
+    "caption": "The thyroid gland is located in the neck where it wraps around the trachea. (a) Anterior view of the thyroid gland. (b) Posterior view of the thyroid gland. (c) The glandular tissue is composed primarily of thyroid follicles. The larger parafollicular cells often appear within the matrix of follicle cells. LM \u00d7 1332. (Micrograph provided by the Regents of University of Michigan Medical School \u00a9 2012)",
+    "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46700/index.cnxml",
+    "module": "m46700",
+    "revision": "5ae32b3f4bc24ed003e91dc38bf47dba80751044",
+    "sha256": "f956a9fc58ca589ebfd91ee889a9686ddaaac32001b53fa03f6b7ed5b4640138",
+    "license": "OpenStax / Rice University, CC BY-NC-SA 4.0; original captions and credits retained."
+  },
+  {
+    "region": "Adrenal",
+    "file": "1818_The_Adrenal_Glands.jpg",
+    "title": "Adrenal Glands",
+    "caption": "Both adrenal glands sit atop the kidneys and are composed of an outer cortex and an inner medulla, all surrounded by a connective tissue capsule. The cortex can be subdivided into additional zones, all of which produce different types of hormones. LM \u00d7 204. (Micrograph provided by the Regents of University of Michigan Medical School \u00a9 2012)",
+    "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46684/index.cnxml",
+    "module": "m46684",
+    "revision": "5ae32b3f4bc24ed003e91dc38bf47dba80751044",
+    "sha256": "0e133ab3278e87efffcf1f580f85e0c279bdfbdc9f85c61909596b045dbfb8f0",
+    "license": "OpenStax / Rice University, CC BY-NC-SA 4.0; original captions and credits retained."
+  },
+  {
+    "region": "Pituitary",
+    "file": "1806_The_Hypothalamus-Pituitary_Complex.jpg",
+    "title": "Hypothalamus\u2013Pituitary Complex",
+    "caption": "The hypothalamus region lies inferior and anterior to the thalamus. It connects to the pituitary gland by the stalk-like infundibulum. The pituitary gland consists of an anterior and posterior lobe, with each lobe secreting different hormones in response to signals from the hypothalamus.",
+    "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46699/index.cnxml",
+    "module": "m46699",
+    "revision": "5ae32b3f4bc24ed003e91dc38bf47dba80751044",
+    "sha256": "2c44dfbbad90124e0971494b1da017f3ac7ee4488d6503575d44736a5e8564f3",
+    "license": "OpenStax / Rice University, CC BY-NC-SA 4.0; original captions and credits retained."
+  },
+  {
+    "region": "Intestines",
+    "file": "2417_Small_IntestineN.jpg",
+    "title": "Small Intestine",
+    "caption": "The three regions of the small intestine are the duodenum, jejunum, and ileum.",
+    "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46512/index.cnxml",
+    "module": "m46512",
+    "revision": "5ae32b3f4bc24ed003e91dc38bf47dba80751044",
+    "sha256": "78f2da45cafc2ba2d038f8b2f39b9c3e1a964c34ff3eb1331ec3514edd303aa2",
+    "license": "OpenStax / Rice University, CC BY-NC-SA 4.0; original captions and credits retained."
+  },
+  {
+    "region": "Testis",
+    "file": "Figure_28_01_03.jpg",
+    "title": "Anatomy of the Testis",
+    "caption": "This sagittal view shows the seminiferous tubules, the site of sperm production. Formed sperm are transferred to the epididymis, where they mature. They leave the epididymis during an ejaculation via the ductus deferens.",
+    "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46400/index.cnxml",
+    "module": "m46400",
+    "revision": "5ae32b3f4bc24ed003e91dc38bf47dba80751044",
+    "sha256": "0b3a72c39e1c1c745b8895bb236a587cecd957e0d32f235409a6b19a9660a6c1",
+    "license": "OpenStax / Rice University, CC BY-NC-SA 4.0; original captions and credits retained."
+  },
+  {
+    "region": "Female pelvis",
+    "file": "Figure_28_02_06.jpg",
+    "title": "Ovaries, Uterine Tubes, and Uterus",
+    "caption": "This anterior view shows the relationship of the ovaries, uterine tubes (oviducts), and uterus. Sperm enter through the vagina, and fertilization of an ovulated oocyte usually occurs in the distal uterine tube. From left to right, LM \u00d7 400, LM \u00d7 20. (Micrographs provided by the Regents of University of Michigan Medical School \u00a9 2012)",
+    "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46392/index.cnxml",
+    "module": "m46392",
+    "revision": "5ae32b3f4bc24ed003e91dc38bf47dba80751044",
+    "sha256": "28650c4df939a434fac565abd73672b1ec7ebb2c4603db5f89028985aa9cfea4",
+    "license": "OpenStax / Rice University, CC BY-NC-SA 4.0; original captions and credits retained."
+  }
+]

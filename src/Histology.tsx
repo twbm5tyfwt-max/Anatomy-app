@@ -6,7 +6,12 @@ import sources from "./generated/histology.json";
 const plates = anatomyImages;
 export function HistologyFigure({ tissue }: { tissue: Tissue }) {
   const exact: Record<string, string> = {
-    pseudostratified:"2304_Pseudostratified_Epithelium.jpg",
+    pseudostratified: "2304_Pseudostratified_Epithelium.jpg",
+    "simple-squamous": "2310_Structures_of_the_Respiratory_Zone.jpg",
+    "simple-cuboidal": "2615_Juxtaglomerular_Apparatus.jpg",
+    "simple-columnar": "2421_Histology_of_the_Large_IntestineN.jpg",
+    keratinized: "503_Epidermis.jpg",
+    nonkeratinized: "401_Types_of_Tissue.jpg",
     areolar: "408_Connective_Tissue.jpg",
     adipose: "409_Adipose_Tissue.jpg",
     reticular: "410_Reticular_Tissue.jpg",
@@ -24,6 +29,27 @@ export function HistologyFigure({ tissue }: { tissue: Tissue }) {
         : /cartilage|hyaline/.test(tissue.id)
           ? "412_Types_of_Cartilage-new.jpg"
           : "401_Types_of_Tissue.jpg");
+  if (
+    [
+      "stratified-cuboidal",
+      "stratified-columnar",
+      "transitional",
+      "elastic",
+      "compact-bone",
+    ].includes(tissue.id)
+  )
+    return (
+      <section className="matching-microscopy-unavailable">
+        <h3>{tissue.name} · identification diagram</h3>
+        <p>
+          A matched published specimen is not bundled for this subtype. This
+          labeled educational diagram shows the relevant features; it is not a
+          micrograph.
+        </p>
+        <TissueDiagram tissue={tissue} labels />
+        <p>Source: OpenStax Anatomy and Physiology 2e, chapter 4 / §6.3.</p>
+      </section>
+    );
   const source = sources.find((s) => s.file === file);
   return (
     <figure className="histology-figure">
@@ -35,6 +61,13 @@ export function HistologyFigure({ tissue }: { tissue: Tissue }) {
         <strong>
           Published microscopy reference plate · embedded labels remain visible
         </strong>
+        {tissue.id === "simple-cuboidal" && (
+          <p>
+            This renal reference includes a glomerulus and surrounding tubules.
+            It contains several tissue types; compare the tubular epithelium
+            with the selected tissue's diagram.
+          </p>
+        )}
         {file === "401_Types_of_Tissue.jpg" && (
           <p>
             This is an overview plate; its epithelial micrograph is stratified

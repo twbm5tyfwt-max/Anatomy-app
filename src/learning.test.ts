@@ -1,3 +1,4 @@
+import organPlates from "./generated/organ-plates.json";
 import {anatomyImages} from "./assetPaths";
 import microscopy from "./generated/histology.json";
 import { describe, it, expect } from "vitest";
@@ -101,6 +102,6 @@ describe("consistent picking and study scope", () => {
 
 it('keeps a source caption and license record for every added microscopy image',()=>{
  const baseline=['1105_Anterior_and_Posterior_Views_of_Muscles.jpg','403_Epithelial_Tissue.jpg','701_Axial_Skeleton-01.jpg'];
- const records=new Set(microscopy.map(x=>x.file));
- for(const filename of Object.keys(anatomyImages).filter(n=>!baseline.includes(n))){expect(records.has(filename)).toBe(true);const source=microscopy.find(x=>x.file===filename)!;expect(source.caption.length).toBeGreaterThan(30);expect(source.license).toContain('CC BY-NC-SA');expect(source.sha256).toMatch(/^[a-f0-9]{64}$/);}
+ const records=new Set([...microscopy,...organPlates].map(x=>x.file));
+ for(const filename of Object.keys(anatomyImages).filter(n=>!baseline.includes(n))){expect(records.has(filename)).toBe(true);const source=[...microscopy,...organPlates].find(x=>x.file===filename)!;expect(source.caption.length).toBeGreaterThan(30);expect(source.license).toContain('CC BY-NC-SA');expect(source.sha256).toMatch(/^[a-f0-9]{64}$/);}
 });

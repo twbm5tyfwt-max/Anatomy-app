@@ -5,16 +5,22 @@
     "source": "https://github.com/Z-Anatomy/Models-of-human-anatomy",
     "revision": "0189e82e4dc5c6a4ebc1d2558b78580665e9b0ef",
     "sha256": "4ec89d3374ad9e4fb057133e1970db073bccce4d8c062f1087365b2cea77ed43",
-    "credit": "Z-Anatomy \u2014 The libre 3D atlas of anatomy \u2014 CC BY-SA 4.0. BodyParts3D \u2014 The Database Center for Life Science \u2014 CC BY-SA 2.1 Japan. Authors: Gauthier Kervyn, Marcin Zielinski, Kousaku Okubo.",
+    "credit": "Z-Anatomy — The libre 3D atlas of anatomy — CC BY-SA 4.0. BodyParts3D — The Database Center for Life Science — CC BY-SA 2.1 Japan. Authors: Gauthier Kervyn, Marcin Zielinski, Kousaku Okubo.",
     "licenseStatement": "models/LICENSE-z-anatomy.txt",
     "conditions": "Retain upstream credits/exceptions including noncommercial inner-ear/kidney content; overall bundle is not commercial-ready.",
-    "changes": "Browser coordinate conversion, tissue segmentation, compression and bounded neural/vascular optimization; source bones and registration retained. Exploded knee is an explicitly displaced teaching presentation."
+    "changes": "Browser coordinate conversion, tissue segmentation, compression and bounded neural/vascular optimization; source bones and registration retained. Exploded knee is an explicitly displaced teaching presentation.",
+    "metadataCorrections": {
+      "records": 39,
+      "additionalLayerChanges": 33,
+      "record": "src/generated/tissue-corrections.json",
+      "changes": "Correct cardiac valve leaflets, dural folds, eyelid tarsal plates and nucleus pulposus tissue/layer descriptions; distinguish teeth from bone. Source geometry and IDs unchanged."
+    }
   },
   "newMicroscopyPlates": [
     {
       "file": "408_Connective_Tissue.jpg",
       "title": "Connective Tissue Proper ",
-      "caption": "Fibroblasts produce this fibrous tissue. Connective tissue proper includes the fixed cells fibrocytes, adipocytes, and mesenchymal cells. LM \u00d7 400. (Micrograph provided by the Regents of University of Michigan Medical School \u00a9 2012)",
+      "caption": "Fibroblasts produce this fibrous tissue. Connective tissue proper includes the fixed cells fibrocytes, adipocytes, and mesenchymal cells. LM × 400. (Micrograph provided by the Regents of University of Michigan Medical School © 2012)",
       "module": "m46049",
       "sha256": "e05e4940a766a561542ea9233fe9f86227fe31299de0a1912fde49ec6cb0ad60",
       "license": "OpenStax CC BY-NC-SA 4.0; retain the specific micrograph credits in the caption",
@@ -23,7 +29,7 @@
     {
       "file": "409_Adipose_Tissue.jpg",
       "title": "Adipose Tissue ",
-      "caption": "This is a loose connective tissue that consists of fat cells with little extracellular matrix. It stores fat for energy and provides insulation. LM \u00d7 800. (Micrograph provided by the Regents of University of Michigan Medical School \u00a9 2012)",
+      "caption": "This is a loose connective tissue that consists of fat cells with little extracellular matrix. It stores fat for energy and provides insulation. LM × 800. (Micrograph provided by the Regents of University of Michigan Medical School © 2012)",
       "module": "m46049",
       "sha256": "873ab0a6133cfb85bf731f7f1cdabc57441c21ba6a222223451ca0db1d20d8ea",
       "license": "OpenStax CC BY-NC-SA 4.0; retain the specific micrograph credits in the caption",
@@ -32,7 +38,7 @@
     {
       "file": "410_Reticular_Tissue.jpg",
       "title": "Reticular Tissue ",
-      "caption": "This is a loose connective tissue made up of a network of reticular fibers that provides a supportive framework for soft organs. LM \u00d7 1600. (Micrograph provided by the Regents of University of Michigan Medical School \u00a9 2012)",
+      "caption": "This is a loose connective tissue made up of a network of reticular fibers that provides a supportive framework for soft organs. LM × 1600. (Micrograph provided by the Regents of University of Michigan Medical School © 2012)",
       "module": "m46049",
       "sha256": "b3da70a9dd3ed14ac88faf1199c980bb80e54e70ab72a73660cf2ec4f38efcc2",
       "license": "OpenStax CC BY-NC-SA 4.0; retain the specific micrograph credits in the caption",
@@ -50,7 +56,7 @@
     {
       "file": "424_Blood_A_Fluid_Connective_Tissue-new.jpg",
       "title": "Blood: A Fluid Connective Tissue",
-      "caption": "Blood is a fluid connective tissue containing erythrocytes and various types of leukocytes that circulate in a liquid extracellular matrix. LM \u00d7 1600. (Micrograph provided by the Regents of University of Michigan Medical School \u00a9 2012)",
+      "caption": "Blood is a fluid connective tissue containing erythrocytes and various types of leukocytes that circulate in a liquid extracellular matrix. LM × 1600. (Micrograph provided by the Regents of University of Michigan Medical School © 2012)",
       "module": "m46049",
       "sha256": "35d5b28d152fec94f8ee73051af270f8655d59b6e0fa9b0332c6f23f7981dfc8",
       "license": "OpenStax CC BY-NC-SA 4.0; retain the specific micrograph credits in the caption",
@@ -59,7 +65,7 @@
     {
       "file": "2304_Pseudostratified_Epithelium.jpg",
       "title": "Pseudostratified Ciliated Columnar Epithelium ",
-      "caption": "Respiratory epithelium is pseudostratified ciliated columnar epithelium. Seromucous glands provide lubricating mucus. LM \u00d7 680. (Micrograph provided by the Regents of University of Michigan Medical School \u00a9 2012)",
+      "caption": "Respiratory epithelium is pseudostratified ciliated columnar epithelium. Seromucous glands provide lubricating mucus. LM × 680. (Micrograph provided by the Regents of University of Michigan Medical School © 2012)",
       "module": "m46548",
       "sha256": "23c6600fa8ee5203a3572f4f5ccda90fea253ea2e05698bae2cd3a0d20bde08e",
       "license": "OpenStax CC BY-NC-SA 4.0; retain the specific micrograph credits in the caption",
@@ -68,7 +74,7 @@
     {
       "file": "401_Types_of_Tissue.jpg",
       "title": "Four Types of Tissue: Body",
-      "caption": "The four types of tissues are exemplified in nervous tissue, stratified squamous epithelial tissue, cardiac muscle tissue, and connective tissue. (Micrographs provided by the Regents of University of Michigan Medical School \u00a9 2012)",
+      "caption": "The four types of tissues are exemplified in nervous tissue, stratified squamous epithelial tissue, cardiac muscle tissue, and connective tissue. (Micrographs provided by the Regents of University of Michigan Medical School © 2012)",
       "module": "m46046",
       "sha256": "8c1070ee0898da2ecc849932126b74349cd0b21023dd15ef404de61f595263b0",
       "license": "OpenStax CC BY-NC-SA 4.0; retain the specific micrograph credits in the caption",
@@ -77,7 +83,7 @@
     {
       "file": "412_Types_of_Cartilage-new.jpg",
       "title": "Types of Cartilage ",
-      "caption": "Cartilage is a connective tissue consisting of collagenous fibers embedded in a firm matrix of chondroitin sulfates. (a) Hyaline cartilage provides support with some flexibility. The example is from dog tissue. (b) Fibrocartilage provides some compressibility and can absorb pressure. (c) Elastic cartilage provides firm but elastic support. From top, LM \u00d7 300, LM \u00d7 1200, LM \u00d7 1016. (Micrographs provided by the Regents of University of Michigan Medical School \u00a9 2012)",
+      "caption": "Cartilage is a connective tissue consisting of collagenous fibers embedded in a firm matrix of chondroitin sulfates. (a) Hyaline cartilage provides support with some flexibility. The example is from dog tissue. (b) Fibrocartilage provides some compressibility and can absorb pressure. (c) Elastic cartilage provides firm but elastic support. From top, LM × 300, LM × 1200, LM × 1016. (Micrographs provided by the Regents of University of Michigan Medical School © 2012)",
       "module": "m46049",
       "sha256": "25e6e4b4d81353cef9847e71b75a70035ad5101a19cb4223eb016d229fd7f57e",
       "license": "OpenStax CC BY-NC-SA 4.0; retain the specific micrograph credits in the caption",
@@ -85,8 +91,17 @@
     },
     {
       "file": "414_Skeletal_Smooth_Cardiac.jpg",
+      "title": "The Three Types of Muscle Tissue ",
+      "caption": "The body contains three types of muscle tissue: (a) skeletal muscle, (b) smooth muscle, and (c) cardiac muscle. (Micrographs provided by the Regents of University of Michigan Medical School © 2012)",
+      "module": "m46473",
+      "sha256": "f3f98e7f67f13fb890a173475630db029586e16527215ee30ba280397f5db66e",
+      "license": "OpenStax CC BY-NC-SA 4.0; retain the specific micrograph credits in the caption",
+      "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/media/414_Skeletal_Smooth_Cardiac.jpg"
+    },
+    {
+      "file": "414_Skeletal_Smooth_Cardiac.jpg",
       "title": "Muscle Tissue",
-      "caption": "(a) Skeletal muscle cells have prominent striation and nuclei on their periphery. (b) Smooth muscle cells have a single nucleus and no visible striations. (c) Cardiac muscle cells appear striated and have a single nucleus. (Micrographs provided by the Regents of University of Michigan Medical School \u00a9 2012)",
+      "caption": "(a) Skeletal muscle cells have prominent striation and nuclei on their periphery. (b) Smooth muscle cells have a single nucleus and no visible striations. (c) Cardiac muscle cells appear striated and have a single nucleus. (Micrographs provided by the Regents of University of Michigan Medical School © 2012)",
       "module": "m46055",
       "sha256": "f3f98e7f67f13fb890a173475630db029586e16527215ee30ba280397f5db66e",
       "license": "OpenStax CC BY-NC-SA 4.0; retain the specific micrograph credits in the caption",
@@ -95,7 +110,7 @@
     {
       "file": "416_Nervous_Tissue-new.jpg",
       "title": "Nervous Tissue",
-      "caption": "Nervous tissue is made up of neurons and neuroglia. The cells of nervous tissue are specialized to transmit and receive impulses. LM \u00d7 872. (Micrograph provided by the Regents of University of Michigan Medical School \u00a9 2012)",
+      "caption": "Nervous tissue is made up of neurons and neuroglia. The cells of nervous tissue are specialized to transmit and receive impulses. LM × 872. (Micrograph provided by the Regents of University of Michigan Medical School © 2012)",
       "module": "m46057",
       "sha256": "f9a9a5b0c160d9f7656f801866796d6695fa0870046fdaa51e5be384daaaa6bf",
       "license": "OpenStax CC BY-NC-SA 4.0; retain the specific micrograph credits in the caption",
@@ -104,14 +119,283 @@
     {
       "file": "411_Reg_Dense-Irregular_Dense.jpg",
       "title": "Dense Connective Tissue ",
-      "caption": "(a) Dense regular connective tissue consists of collagenous fibers packed into parallel bundles. (b) Dense irregular connective tissue consists of collagenous fibers interwoven into a mesh-like network. From top, LM \u00d7 1000, LM \u00d7 200. (Micrographs provided by the Regents of University of Michigan Medical School \u00a9 2012)",
+      "caption": "(a) Dense regular connective tissue consists of collagenous fibers packed into parallel bundles. (b) Dense irregular connective tissue consists of collagenous fibers interwoven into a mesh-like network. From top, LM × 1000, LM × 200. (Micrographs provided by the Regents of University of Michigan Medical School © 2012)",
       "module": "m46049",
       "sha256": "0b7256898dc43b2200e05725609d8215c14d6a3531f58ef9e399e29d087fb399",
       "license": "OpenStax CC BY-NC-SA 4.0; retain the specific micrograph credits in the caption",
       "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/media/411_Reg_Dense-Irregular_Dense.jpg"
+    },
+    {
+      "file": "2310_Structures_of_the_Respiratory_Zone.jpg",
+      "title": "Structures of the Respiratory Zone",
+      "caption": "(a) The alveolus is responsible for gas exchange. (b) A micrograph shows the alveolar structures within lung tissue. LM × 178. (Micrograph provided by the Regents of University of Michigan Medical School © 2012)",
+      "module": "m46548",
+      "sha256": "1198546c2181baccded04f6da52f051e2461360b8628ef4b493d04417dbb1169",
+      "license": "OpenStax CC BY-NC-SA 4.0; retain the specific micrograph credits in the caption",
+      "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/media/2310_Structures_of_the_Respiratory_Zone.jpg"
+    },
+    {
+      "file": "2421_Histology_of_the_Large_IntestineN.jpg",
+      "title": "Histology of the large Intestine",
+      "caption": "(a) The histologies of the large intestine and small intestine (not shown) are adapted for the digestive functions of each organ. (b) This micrograph shows the colon’s simple columnar epithelium and goblet cells. LM x 464. (credit b: Micrograph provided by the Regents of University of Michigan Medical School © 2012)",
+      "module": "m46512",
+      "sha256": "1684737ba76983bff2f4dedba115910b5cd0d794201f724e149168e3c6cf3792",
+      "license": "OpenStax CC BY-NC-SA 4.0; retain the specific micrograph credits in the caption",
+      "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/media/2421_Histology_of_the_Large_IntestineN.jpg"
+    },
+    {
+      "file": "503_Epidermis.jpg",
+      "title": "Epidermis",
+      "caption": "The epidermis is epithelium composed of multiple layers of cells. The basal layer consists of cuboidal cells, whereas the outer layers are squamous, keratinized cells, so the whole epithelium is often described as being keratinized stratified squamous epithelium. LM × 40. (Micrograph provided by the Regents of University of Michigan Medical School © 2012)",
+      "module": "m46060",
+      "sha256": "45e6e5d7fbb85ae5f7d67e6179356bbd1487150fa040b46ad8eaad7992a25f82",
+      "license": "OpenStax CC BY-NC-SA 4.0; retain the specific micrograph credits in the caption",
+      "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/media/503_Epidermis.jpg"
+    },
+    {
+      "file": "2615_Juxtaglomerular_Apparatus.jpg",
+      "title": "Juxtaglomerular Apparatus and Glomerulus",
+      "caption": "(a) The JGA allows specialized cells to monitor the composition of the fluid in the DCT and adjust the glomerular filtration rate. (b) This micrograph shows the glomerulus and surrounding structures. LM × 1540. (Micrograph provided by the Regents of University of Michigan Medical School © 2012)",
+      "module": "m46431",
+      "sha256": "596d8046f8121c397701d26659373631f5edf2a9b2d3713d94b34d6ff43a845a",
+      "license": "OpenStax CC BY-NC-SA 4.0; retain the specific micrograph credits in the caption",
+      "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/media/2615_Juxtaglomerular_Apparatus.jpg"
     }
   ],
   "existingPlates": "See ASSET_CREDITS.md and anatomy/LICENSE-openstax.txt.",
   "software": "See THIRD_PARTY_LICENSES.txt in the ZIP.",
-  "notIncluded": "No proprietary Complete Anatomy assets, unlicensed videos, generated patient anatomy, or a complete female model."
+  "notIncluded": "No proprietary Complete Anatomy assets, unlicensed videos, generated patient anatomy, or a complete female model.",
+  "organReferencePlates": [
+    {
+      "region": "Heart",
+      "file": "2008_Internal_Anatomy_of_the_HeartN.jpg",
+      "title": "Internal Structures of the Heart",
+      "caption": "This anterior view of the heart shows the four chambers, the major vessels and their early branches, as well as the valves. The presence of the pulmonary trunk and aorta covers the interatrial septum, and the atrioventricular septum is cut away to show the atrioventricular valves.",
+      "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46676/index.cnxml",
+      "module": "m46676",
+      "revision": "5ae32b3f4bc24ed003e91dc38bf47dba80751044",
+      "sha256": "5d962a658cab2538378fa846e2276c67389902c51968d64950873b9850938437",
+      "license": "OpenStax / Rice University, CC BY-NC-SA 4.0; original captions and credits retained."
+    },
+    {
+      "region": "Lungs",
+      "file": "2312_Gross_Anatomy_of_the_Lungs.jpg",
+      "title": "Gross Anatomy of the Lungs",
+      "caption": "Published labeled gross anatomy of the lungs illustration. The source figure supplies no separate prose caption; original embedded labels are retained.",
+      "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46551/index.cnxml",
+      "module": "m46551",
+      "revision": "5ae32b3f4bc24ed003e91dc38bf47dba80751044",
+      "sha256": "67a7b18d0ec991f5295d1295a40080b2a356989af995fbd43d985137c1023985",
+      "license": "OpenStax / Rice University, CC BY-NC-SA 4.0; original captions and credits retained."
+    },
+    {
+      "region": "Kidneys",
+      "file": "2610_The_Kidney.jpg",
+      "title": "Left Kidney",
+      "caption": "Published labeled left kidney illustration. The source figure supplies no separate prose caption; original embedded labels are retained.",
+      "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46429/index.cnxml",
+      "module": "m46429",
+      "revision": "5ae32b3f4bc24ed003e91dc38bf47dba80751044",
+      "sha256": "30d15988386d61f74039dee64bb63f7d13556173058bb4d1d42ac97c12546654",
+      "license": "OpenStax / Rice University, CC BY-NC-SA 4.0; original captions and credits retained."
+    },
+    {
+      "region": "Stomach",
+      "file": "2414_Stomach.jpg",
+      "title": "Stomach",
+      "caption": "The stomach has four major regions: the cardia, fundus, body, and pylorus. The addition of an inner oblique smooth muscle layer gives the muscularis the ability to vigorously churn and mix food.",
+      "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46517/index.cnxml",
+      "module": "m46517",
+      "revision": "5ae32b3f4bc24ed003e91dc38bf47dba80751044",
+      "sha256": "32c814b50a8d86b9d416e8eeadab5270ae1c57405b141db4dd8eecf23de55fdf",
+      "license": "OpenStax / Rice University, CC BY-NC-SA 4.0; original captions and credits retained."
+    },
+    {
+      "region": "Liver",
+      "file": "2423_Microscopic_Anatomy_of_Liver.jpg",
+      "title": "Microscopic Anatomy of the Liver",
+      "caption": "The liver receives oxygenated blood from the hepatic artery and nutrient-rich deoxygenated blood from the hepatic portal vein.",
+      "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46496/index.cnxml",
+      "module": "m46496",
+      "revision": "5ae32b3f4bc24ed003e91dc38bf47dba80751044",
+      "sha256": "fcda18a635dc699f7e05f4880e22d8c1d24f04f1bc73a88340e09778367dd277",
+      "license": "OpenStax / Rice University, CC BY-NC-SA 4.0; original captions and credits retained."
+    },
+    {
+      "region": "Pancreas",
+      "file": "2424_Exocrine_and_Endocrine_Pancreas.jpg",
+      "title": "Exocrine and Endocrine Pancreas",
+      "caption": "The pancreas has a head, a body, and a tail. It delivers pancreatic juice to the duodenum through the pancreatic duct.",
+      "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46496/index.cnxml",
+      "module": "m46496",
+      "revision": "5ae32b3f4bc24ed003e91dc38bf47dba80751044",
+      "sha256": "dc6fd2bf1ea8c4a72067a60ec729c3a5577b4915a5cadcabb2140bb991204e93",
+      "license": "OpenStax / Rice University, CC BY-NC-SA 4.0; original captions and credits retained."
+    },
+    {
+      "region": "Spleen",
+      "file": "2208_Spleen.jpg",
+      "title": "Spleen",
+      "caption": "(a) The spleen is attached to the stomach. (b) A micrograph of spleen tissue shows the germinal center. The marginal zone is the region between the red pulp and white pulp, which sequesters particulate antigens from the circulation and presents these antigens to lymphocytes in the white pulp. EM × 660. (Micrograph provided by the Regents of the University of Michigan Medical School © 2012)",
+      "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46563/index.cnxml",
+      "module": "m46563",
+      "revision": "5ae32b3f4bc24ed003e91dc38bf47dba80751044",
+      "sha256": "01fd6818d8a293745b7c6632c0bb7ed3a174bb24c3749dd18286fc9969adbcbc",
+      "license": "OpenStax / Rice University, CC BY-NC-SA 4.0; original captions and credits retained."
+    },
+    {
+      "region": "Bladder",
+      "file": "2605_The_Bladder.jpg",
+      "title": "Bladder",
+      "caption": "(a) Anterior cross section of the bladder. (b) The detrusor muscle of the bladder (source: monkey tissue) LM × 448. (Micrograph provided by the Regents of the University of Michigan Medical School © 2012)",
+      "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46427/index.cnxml",
+      "module": "m46427",
+      "revision": "5ae32b3f4bc24ed003e91dc38bf47dba80751044",
+      "sha256": "8eb1f9f8dd50d06135882095f5a4568d05f8716c3d41d675fa508a2fa2a20db7",
+      "license": "OpenStax / Rice University, CC BY-NC-SA 4.0; original captions and credits retained."
+    },
+    {
+      "region": "Eye",
+      "file": "1413_Structure_of_the_Eye.jpg",
+      "title": "Structure of the Eye",
+      "caption": "The sphere of the eye can be divided into anterior and posterior chambers. The wall of the eye is composed of three layers: the fibrous tunic, vascular tunic, and neural tunic. Within the neural tunic is the retina, with three layers of cells and two synaptic layers in between. The center of the retina has a small indentation known as the fovea.",
+      "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46577/index.cnxml",
+      "module": "m46577",
+      "revision": "5ae32b3f4bc24ed003e91dc38bf47dba80751044",
+      "sha256": "f8b98bdfa2bd68b17fb2c1e975ede1d571269348f49cdaca6d0851712d377dff",
+      "license": "OpenStax / Rice University, CC BY-NC-SA 4.0; original captions and credits retained."
+    },
+    {
+      "region": "Brain",
+      "file": "1311_Brain_Stem.jpg",
+      "title": "The Brain Stem",
+      "caption": "The brain stem comprises three regions: the midbrain, the pons, and the medulla.",
+      "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46533/index.cnxml",
+      "module": "m46533",
+      "revision": "5ae32b3f4bc24ed003e91dc38bf47dba80751044",
+      "sha256": "9da8c3dbbdb6240c923d1325e4f6f740765e41d625a5e3d28e6be97cf1e374e4",
+      "license": "OpenStax / Rice University, CC BY-NC-SA 4.0; original captions and credits retained."
+    },
+    {
+      "region": "Thyroid",
+      "file": "1811_The_Thyroid_Gland.jpg",
+      "title": "Thyroid Gland",
+      "caption": "The thyroid gland is located in the neck where it wraps around the trachea. (a) Anterior view of the thyroid gland. (b) Posterior view of the thyroid gland. (c) The glandular tissue is composed primarily of thyroid follicles. The larger parafollicular cells often appear within the matrix of follicle cells. LM × 1332. (Micrograph provided by the Regents of University of Michigan Medical School © 2012)",
+      "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46700/index.cnxml",
+      "module": "m46700",
+      "revision": "5ae32b3f4bc24ed003e91dc38bf47dba80751044",
+      "sha256": "f956a9fc58ca589ebfd91ee889a9686ddaaac32001b53fa03f6b7ed5b4640138",
+      "license": "OpenStax / Rice University, CC BY-NC-SA 4.0; original captions and credits retained."
+    },
+    {
+      "region": "Adrenal",
+      "file": "1818_The_Adrenal_Glands.jpg",
+      "title": "Adrenal Glands",
+      "caption": "Both adrenal glands sit atop the kidneys and are composed of an outer cortex and an inner medulla, all surrounded by a connective tissue capsule. The cortex can be subdivided into additional zones, all of which produce different types of hormones. LM × 204. (Micrograph provided by the Regents of University of Michigan Medical School © 2012)",
+      "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46684/index.cnxml",
+      "module": "m46684",
+      "revision": "5ae32b3f4bc24ed003e91dc38bf47dba80751044",
+      "sha256": "0e133ab3278e87efffcf1f580f85e0c279bdfbdc9f85c61909596b045dbfb8f0",
+      "license": "OpenStax / Rice University, CC BY-NC-SA 4.0; original captions and credits retained."
+    },
+    {
+      "region": "Pituitary",
+      "file": "1806_The_Hypothalamus-Pituitary_Complex.jpg",
+      "title": "Hypothalamus–Pituitary Complex",
+      "caption": "The hypothalamus region lies inferior and anterior to the thalamus. It connects to the pituitary gland by the stalk-like infundibulum. The pituitary gland consists of an anterior and posterior lobe, with each lobe secreting different hormones in response to signals from the hypothalamus.",
+      "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46699/index.cnxml",
+      "module": "m46699",
+      "revision": "5ae32b3f4bc24ed003e91dc38bf47dba80751044",
+      "sha256": "2c44dfbbad90124e0971494b1da017f3ac7ee4488d6503575d44736a5e8564f3",
+      "license": "OpenStax / Rice University, CC BY-NC-SA 4.0; original captions and credits retained."
+    },
+    {
+      "region": "Intestines",
+      "file": "2417_Small_IntestineN.jpg",
+      "title": "Small Intestine",
+      "caption": "The three regions of the small intestine are the duodenum, jejunum, and ileum.",
+      "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46512/index.cnxml",
+      "module": "m46512",
+      "revision": "5ae32b3f4bc24ed003e91dc38bf47dba80751044",
+      "sha256": "78f2da45cafc2ba2d038f8b2f39b9c3e1a964c34ff3eb1331ec3514edd303aa2",
+      "license": "OpenStax / Rice University, CC BY-NC-SA 4.0; original captions and credits retained."
+    },
+    {
+      "region": "Testis",
+      "file": "Figure_28_01_03.jpg",
+      "title": "Anatomy of the Testis",
+      "caption": "This sagittal view shows the seminiferous tubules, the site of sperm production. Formed sperm are transferred to the epididymis, where they mature. They leave the epididymis during an ejaculation via the ductus deferens.",
+      "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46400/index.cnxml",
+      "module": "m46400",
+      "revision": "5ae32b3f4bc24ed003e91dc38bf47dba80751044",
+      "sha256": "0b3a72c39e1c1c745b8895bb236a587cecd957e0d32f235409a6b19a9660a6c1",
+      "license": "OpenStax / Rice University, CC BY-NC-SA 4.0; original captions and credits retained."
+    },
+    {
+      "region": "Female pelvis",
+      "file": "Figure_28_02_06.jpg",
+      "title": "Ovaries, Uterine Tubes, and Uterus",
+      "caption": "This anterior view shows the relationship of the ovaries, uterine tubes (oviducts), and uterus. Sperm enter through the vagina, and fertilization of an ovulated oocyte usually occurs in the distal uterine tube. From left to right, LM × 400, LM × 20. (Micrographs provided by the Regents of University of Michigan Medical School © 2012)",
+      "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46392/index.cnxml",
+      "module": "m46392",
+      "revision": "5ae32b3f4bc24ed003e91dc38bf47dba80751044",
+      "sha256": "28650c4df939a434fac565abd73672b1ec7ebb2c4603db5f89028985aa9cfea4",
+      "license": "OpenStax / Rice University, CC BY-NC-SA 4.0; original captions and credits retained."
+    }
+  ],
+  "hraFemale": {
+    "revision": "b036a91aaf7234f462b1249d4a5f4fb0e982f412",
+    "version": "1.5",
+    "source": "https://github.com/hubmapconsortium/ccf-releases",
+    "license": "CC BY 4.0",
+    "originalSha256": "472567a56896b9b7890508da6501fbf858e56aaa30745365f7a71ade782b529c",
+    "sha256": "700cfcb10e91a7dc128fb0ecc2d880c90b9c6fd8a249dfbfce1aaa198919e0fb",
+    "file": "models/hra-female.glb",
+    "parts": 888,
+    "triangles": 5557599,
+    "credit": "Kristen Browne; Heidi Schlehlein. 3D Reference Organ Set for Female, v1.5 (2023), Human Reference Atlas / HuBMAP. DOI 10.48539/HBM352.BTSQ.586. CC BY 4.0. Underlying Visible Human imagery: US National Library of Medicine.",
+    "originalFile": "v2.0/models/3d-vh-f-united.glb.7z",
+    "licenseStatement": "models/LICENSE-hra.txt",
+    "changes": "Source geometry, node transforms and original hierarchy retained; browser tissue classification, IDs, compression and illustrative colors. No male-derived bones or generated reproductive anatomy. Pregnancy-reference components excluded from default general body.",
+    "brainCredit": "Allen Human Reference Atlas; source mirrored/resized reference assembly, not a complete single-person brain scan. HRA brain v1.3 licensing: CC BY 4.0.",
+    "lymphNodeCredit": "NIH Ce3D comparative lymph node, based on mouse data; HRA DOI 10.48539/HBM463.LFHF.874; Li et al., PNAS 114(35), E7321 (2017). Not a patient-specific human node location.",
+    "originalArchiveSha256": "b84f820009075c154edcf1491539516ef475e788528cdc0cd670c04ee151b99d"
+  },
+  "referenceDefinitions": {
+    "source": "https://github.com/obophenotype/uberon",
+    "revision": "76b965742a97393a4c567b1accf012f163a520a5",
+    "version": "releases/2026-10-01",
+    "sha256": "d4751a15d7551a8414caee2628c62bf68301d567caf54ccfa3eef383ae7cbb61",
+    "license": "CC BY 3.0",
+    "terms": 799,
+    "matchedParts": 1240,
+    "method": "Only exact names/synonyms or unique FMA IDs; no ambiguous merges. Explicitly unvetted and nonhuman/comparative examples excluded. Term definitions do not establish complete human attachment/innervation coverage."
+  },
+  "atlasReadings": {
+    "source": "https://github.com/Z-Anatomy/Models-of-human-anatomy",
+    "revision": "0189e82e4dc5c6a4ebc1d2558b78580665e9b0ef",
+    "modifications": "Anatomical identification, structure, function and relationship sections selected from archived plaintext. Clinical, treatment, variation and comparative-animal sections omitted. Original text is not a current clinical guideline. Parent muscle references are marked explicitly. Live Wikipedia revision dates were not reconstructed.",
+    "file": "src/generated/atlas-readings.json",
+    "license": "Archived adaptations by Z-Anatomy authors: CC BY-SA 4.0. Wikipedia contributors legacy CC BY-SA 3.0 notice retained.",
+    "readings": 1393,
+    "matchedParts": 2434,
+    "sourceLandmarksWithReading": 270,
+    "attribution": "Each entry retains its original Wikipedia article URL, contributor-history URL, and credit. No Blender add-on code executed."
+  },
+  "annotationValidation": {
+    "file": "src/generated/anchor-validation.json",
+    "recorded": 549,
+    "displayed": 548,
+    "method": "Original source endpoint and assigned source mesh retained. Exclude endpoints outside the complete source-object bounds plus 5 mm. Nearest triangle distance is recorded separately; openings can be marked in their lumen. This checks position, not the anatomical correctness of a label.",
+    "excluded": [
+      "Uncinate process of first thoracic vertebra"
+    ]
+  },
+  "ocr": {
+    "package": "tesseract.js 6.0.1",
+    "license": "Tesseract.js/core: Apache-2.0. English package declaration: MIT; upstream trained-data Apache-2.0 notice retained additionally.",
+    "language": "English, @tesseract.js-data/eng 1.0.0 (4.0.0_best_int)",
+    "processing": "Bundled local worker/core/language; user image/text never sent to a recognition service. OCR requires review and does not reconstruct hidden 3D anatomy.",
+    "licenseStatement": "models/LICENSE-ocr-data.txt"
+  }
 }

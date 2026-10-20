@@ -1,3 +1,4 @@
+import { StudyGuide, SourceImage } from "./StudyGuide";
 import { useEffect, useMemo, useState, type ComponentProps } from "react";
 import { Explorer3D } from "./Explorer3D";
 import { useStored, getFile, deleteFile } from "./storage";
@@ -18,11 +19,17 @@ export function AtlasHub(props: Props) {
     [],
   );
   const [active, setActive] = useState("main");
-  useEffect(()=>{setActive("main")},[props.visible,props.region,props.request.version]);
+  useEffect(() => {
+    setActive("main");
+  }, [props.visible, props.region, props.request.version]);
   useEffect(() => {
     const f = () => setActive("main");
     window.addEventListener("forma-region", f);
-    return () => window.removeEventListener("forma-region", f);
+    window.addEventListener("forma-ligaments", f);
+    return () => {
+      window.removeEventListener("forma-region", f);
+      window.removeEventListener("forma-ligaments", f);
+    };
   }, []);
   const [editing, setEditing] = useState<StudyCollection | null | undefined>();
   const [draft, setDraft] = useState("");
@@ -31,6 +38,7 @@ export function AtlasHub(props: Props) {
   const [confirmed, setConfirmed] = useState<string[]>([]);
   const [manual, setManual] = useState("");
   const [busy, setBusy] = useState(false);
+  const [progress, setProgress] = useState("");
   const [error, setError] = useState("");
   const review = useMemo(
     () =>
@@ -71,7 +79,7 @@ export function AtlasHub(props: Props) {
       const { importReferences } = await import("./documentImport");
       let additions: Reference[] = [];
       for (const file of Array.from(files))
-        additions.push(...(await importReferences(file)));
+        additions.push(...(await importReferences(file, setProgress)));
       setRefs((v) => [...v, ...additions]);
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
@@ -92,9 +100,9 @@ export function AtlasHub(props: Props) {
     }
   }
   function save() {
-    if (!name.trim() || !confirmed.length) {
+    if (!name.trim() || (!confirmed.length && !refs.length && !draft.trim())) {
       setError(
-        "Name the workspace and confirm at least one available structure.",
+        "Name the workspace and add an image, notes or confirmed structure.",
       );
       return;
     }
@@ -194,6 +202,8 @@ export function AtlasHub(props: Props) {
                       )
                         void deleteFile(r.fileId);
                     localStorage.removeItem("forma-atlas-v2-" + c.id);
+                    localStorage.removeItem("forma-guide-known-" + c.id);
+                    localStorage.removeItem("forma-guide-notes-" + c.id);
                   }}
                 >
                   Delete workspace
@@ -224,13 +234,13 @@ export function AtlasHub(props: Props) {
             >
               ×
             </button>
-            <h2 id="study-editor-title">
-              Create a study model from your notes
-            </h2>
+            <h2 id="study-editor-title">Create a study guide & linked model</h2>
             <p>
               Files stay in this browser: originals in IndexedDB, reviewed text
-              and collections in localStorage. No external service, AI, or OCR
-              receives your material. Clearing browser data removes it.
+              and collections in localStorage. Images and scanned PDF pages are
+              read with local English OCR. No external service receives your
+              material. Review OCR against the original; clearing browser data
+              removes it.
             </p>
             <label>
               Workspace name
@@ -251,7 +261,7 @@ export function AtlasHub(props: Props) {
                 onChange={(e) => void upload(e.target.files)}
               />
             </label>
-            {busy && <p role="status">Extracting locally…</p>}
+            {busy && <p role="status">{progress || "Extracting locally…"}</p>}
             <label>
               Paste notes
               <textarea
@@ -268,6 +278,13 @@ export function AtlasHub(props: Props) {
                   {r.file} · {r.kind} {r.page}{" "}
                   {r.text.trim() ? "" : "— transcription required"}
                 </summary>
+                {r.kind === "image" && <SourceImage reference={r} />}
+                <p>
+                  {r.extraction}
+                  {r.confidence !== undefined
+                    ? ` · OCR confidence ${Math.round(r.confidence)}%`
+                    : ""}
+                </p>
                 <button onClick={() => void open(r)}>Open original</button>
                 <button
                   onClick={() =>
@@ -331,12 +348,13 @@ export function AtlasHub(props: Props) {
                   <p key={i}>
                     {r.file} {r.kind} {r.page}:{" "}
                     {r.text ||
-                      "Image or scanned page: enter a transcription. No 3D geometry can be extracted from an image."}
+                      "No readable labels were found. Add a topic or transcription, then review matching structures."}
                   </p>
                 ))}
                 <p>
                   Alveoli/bronchioles have a teaching diagram only;
-                  female-specific organs are not in the bundled 3D source.
+                  female-specific organs are available in the separate HRA
+                  reference; this collection uses the male source atlas.
                   Unmatched text is never converted into invented anatomy.
                 </p>
               </details>
@@ -401,6 +419,8 @@ function CollectionViewer({
       .filter((m) => m.parentId && collection.ids.includes(m.parentId))
       .map((m) => m.id),
   ];
+  const [mode, setMode] = useState<"guide" | "model">("guide");
+  const [target, setTarget] = useState({ id: "", version: 0 });
   const [visible, setVisible] = useState(
     () =>
       readAtlasState(collection.id)?.visible || [
@@ -410,19 +430,49 @@ function CollectionViewer({
       ],
   );
   return (
-    <Explorer3D
-      {...props}
-      workspaceId={collection.id}
-      highlightedSystems={[]}
-      onClearHighlights={() => {}}
-      onSelect={() => {}}
-      allowedIds={ids}
-      visible={visible}
-      onVisibleChange={setVisible}
-      region=""
-      onRegionChange={() => {}}
-      request={{ id: "", version: 0 }}
-      onQuiz={() => props.onCollectionQuiz(collection)}
-    />
+    <>
+      <div className="segmented collection-view-tabs">
+        <button
+          aria-pressed={mode === "guide"}
+          onClick={() => setMode("guide")}
+        >
+          Study guide
+        </button>
+        <button
+          aria-pressed={mode === "model"}
+          onClick={() => setMode("model")}
+          disabled={!ids.length}
+        >
+          3D study model
+        </button>
+      </div>
+      <div hidden={mode !== "guide"}>
+        <StudyGuide
+          collection={collection}
+          onStudy={(id) => {
+            setTarget((v) => ({ id: "model:" + id, version: v.version + 1 }));
+            setMode("model");
+          }}
+        />
+      </div>
+      {!!ids.length && (
+        <div hidden={mode !== "model"}>
+          <Explorer3D
+            {...props}
+            workspaceId={collection.id}
+            highlightedSystems={[]}
+            onClearHighlights={() => {}}
+            onSelect={() => {}}
+            allowedIds={ids}
+            visible={visible}
+            onVisibleChange={setVisible}
+            region=""
+            onRegionChange={() => {}}
+            request={target}
+            onQuiz={() => props.onCollectionQuiz(collection)}
+          />
+        </div>
+      )}
+    </>
   );
 }

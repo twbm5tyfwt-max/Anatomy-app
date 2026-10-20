@@ -1,15 +1,17 @@
-# Open Forma — Anatomy + PT/AT study
+# Open Forma
 
-Download `forma-preview.zip`, extract it, and open `forma-preview.html` in a browser with WebGL. No installation, account or server is required. The original 2D reference library is still available.
+Download `forma-preview.zip`, extract it, then open `forma-preview.html` in Chrome, Edge or Firefox. No installation, Node server, account or API key is required. The file is large because it includes both reference atlases, microscopy/section plates, fonts, document parsers and local English OCR.
 
-Click/tap to select; hover is temporary. Empty space clears selection. Drag to rotate. Hidden structures do not receive pointer hits. The overlap chooser helps with layered anatomy; surfaces below 45% opacity allow deeper opaque structures to be picked first. Reset clears old selection, labels and region state. Choose graphite, ivory or midnight in Studio.
+Click/tap anatomy to isolate it with a slow close-up; Back to body restores context. Isolated bones/muscles have contextual options. Dissect organ opens modeled components and available published section references. The sidebar has a ligament switch; Knee has tissue, staged-removal and exploded controls.
 
-Explore provides regional filters, knee dissection and an explicitly displaced exploded teaching view. A structure's tissue link opens diagrams, published microscope reference plates and comparisons while retaining the body camera. Prepared heart/airway diagrams are educational schematics, not cuts through a validated internal model.
+Use + beside Body/Explore to upload pictures, PDFs, slides or notes. Review OCR and structure matches. Your saved tab includes a written study guide, original image, personal notes, a printable/downloadable guide and the available confirmed 3D anatomy. OCR reads labels; it does not reconstruct hidden structures from a photograph.
 
-Use + beside Body/Explore to review structures extracted locally from PDF/PPTX/text or transcribed images. Confirm sides/components before saving an independent study model. Uploads stay in this browser; no AI/OCR service receives them. Quizzes and games can be restricted to confirmed collections. Help replays the contextual tutorial.
+The 2D atlas offers source plates and zoom; Interactive overview retains the previous selectable overview. Tissue views distinguish microscopy, diagrams and specimens without a matched reference. Games use an exact study checklist. PT/AT adds source anatomy, technique examples and external clinical instruction links.
 
-PT / AT offers introductory anatomy/injury concepts, healing stages and exercise examples with precautions and source links. It is not individualized care. AAOS/NHS retrieval was blocked by the environment, so latest clinical source dates/recommendations are not verified. A complete female model, seamless skin/fiber textures and validated organ cutaways remain unavailable. See the included implementation checklist.
+The HRA female reference is an organ assembly with selected bones/muscles, not a complete female musculoskeletal atlas. Some organs have only surface geometry and use available published section plates. Body-source imperfections and missing fiber textures remain identified. Clinical source revisions could not be retrieved here; the PT section does not claim current guideline validation or prescribe care.
 
-This distribution is for **noncommercial educational website/app use** under the separate source licenses. Credit does not waive restrictions. Keep LICENSES.md, ASSET_CREDITS.md, ASSET_MANIFEST.json, the original license statements and THIRD_PARTY_LICENSES.txt with distributions. The website build also prepares a legal/ folder; retain it when hosting. Published microscopy captions, specimen information and original labels remain visible.
+The bundle is for noncommercial educational use under each asset's terms. Keep LICENSES.md, ASSET_CREDITS.md, ASSET_MANIFEST.json, all original license statements and THIRD_PARTY_LICENSES.txt. When hosting the normal build, retain dist/legal/ and the model/anatomy license files.
 
-Saved data is browser-local and depends on the same browser/origin. Keep the same hosted origin or local file location when replacing an earlier copy; clearing browser storage or moving to a different origin does not transfer progress or uploaded originals.
+Saved data stays in this browser's localStorage/IndexedDB. Keep the same browser and hosted origin or local file location when replacing an earlier version; changing origin or clearing storage does not transfer progress or uploaded files.
+
+Validation note: the generated self-contained HTML is browser-tested over HTTP. Direct file:// testing is blocked by this environment’s administrator policy, so local-file opening is not independently verified here.

@@ -106,5 +106,41 @@
     "sha256": "0b7256898dc43b2200e05725609d8215c14d6a3531f58ef9e399e29d087fb399",
     "license": "OpenStax CC BY-NC-SA 4.0; retain the specific micrograph credits in the caption",
     "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/media/411_Reg_Dense-Irregular_Dense.jpg"
+  },
+  {
+    "file": "2310_Structures_of_the_Respiratory_Zone.jpg",
+    "title": "Structures of the Respiratory Zone",
+    "caption": "(a) The alveolus is responsible for gas exchange. (b) A micrograph shows the alveolar structures within lung tissue. LM \u00d7 178. (Micrograph provided by the Regents of University of Michigan Medical School \u00a9 2012)",
+    "module": "m46548",
+    "sha256": "1198546c2181baccded04f6da52f051e2461360b8628ef4b493d04417dbb1169",
+    "license": "OpenStax CC BY-NC-SA 4.0; retain the specific micrograph credits in the caption",
+    "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/media/2310_Structures_of_the_Respiratory_Zone.jpg"
+  },
+  {
+    "file": "2421_Histology_of_the_Large_IntestineN.jpg",
+    "title": "Histology of the large Intestine",
+    "caption": "(a) The histologies of the large intestine and small intestine (not shown) are adapted for the digestive functions of each organ. (b) This micrograph shows the colon\u2019s simple columnar epithelium and goblet cells. LM x 464. (credit b: Micrograph provided by the Regents of University of Michigan Medical School \u00a9 2012)",
+    "module": "m46512",
+    "sha256": "1684737ba76983bff2f4dedba115910b5cd0d794201f724e149168e3c6cf3792",
+    "license": "OpenStax CC BY-NC-SA 4.0; retain the specific micrograph credits in the caption",
+    "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/media/2421_Histology_of_the_Large_IntestineN.jpg"
+  },
+  {
+    "file": "503_Epidermis.jpg",
+    "title": "Epidermis",
+    "caption": "The epidermis is epithelium composed of multiple layers of cells. The basal layer consists of cuboidal cells, whereas the outer layers are squamous, keratinized cells, so the whole epithelium is often described as being keratinized stratified squamous epithelium. LM \u00d7 40. (Micrograph provided by the Regents of University of Michigan Medical School \u00a9 2012)",
+    "module": "m46060",
+    "sha256": "45e6e5d7fbb85ae5f7d67e6179356bbd1487150fa040b46ad8eaad7992a25f82",
+    "license": "OpenStax CC BY-NC-SA 4.0; retain the specific micrograph credits in the caption",
+    "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/media/503_Epidermis.jpg"
+  },
+  {
+    "file": "2615_Juxtaglomerular_Apparatus.jpg",
+    "title": "Juxtaglomerular Apparatus and Glomerulus",
+    "caption": "(a) The JGA allows specialized cells to monitor the composition of the fluid in the DCT and adjust the glomerular filtration rate. (b) This micrograph shows the glomerulus and surrounding structures. LM \u00d7 1540. (Micrograph provided by the Regents of University of Michigan Medical School \u00a9 2012)",
+    "module": "m46431",
+    "sha256": "596d8046f8121c397701d26659373631f5edf2a9b2d3713d94b34d6ff43a845a",
+    "license": "OpenStax CC BY-NC-SA 4.0; retain the specific micrograph credits in the caption",
+    "source": "https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/media/2615_Juxtaglomerular_Apparatus.jpg"
   }
 ]

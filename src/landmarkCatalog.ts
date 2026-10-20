@@ -1,3 +1,6 @@
+import validation from "./generated/anchor-validation.json";
+import definitions from "./generated/reference-definitions.json";
+import { readingFor } from "./AnatomyReading";
 import anchorData from "./generated/landmark-anchors.json";
 import manifest from "./model-manifest.json";
 import type { CameraView } from "./AnatomyScene";
@@ -872,9 +875,37 @@ add(
 const sourceModels = manifest.models;
 const sourceId = (name: string) =>
   sourceModels.find((m) => m.sourceName === name && !("parentId" in m))?.id;
+const validatedIds = new Set(
+  validation.results.filter((r) => r.valid).map((r) => r.id),
+);
 export const landmarks: AnatomyLandmark[] = anchorData.flatMap((a) => {
-  const n = notes[a.name.toLowerCase()];
-  if (!n) return [];
+  if (!validatedIds.has(a.id)) return [];
+  const curated = notes[a.name.toLowerCase()];
+  const reference = readingFor(a.id);
+  const termId = (definitions.landmarks as Record<string, string>)[a.id];
+  const term = termId
+    ? (definitions.terms as Record<string, { definition: string }>)[termId]
+    : undefined;
+  const parent = manifest.models.find((m) => m.id === a.modelId);
+  const n: Note = curated || {
+    name: a.name.replace(/^\(|\)$/g, ""),
+    view:
+      a.anchor[2] >=
+      ((parent?.bounds[0][2] || 0) + (parent?.bounds[1][2] || 0)) / 2
+        ? "front"
+        : "back",
+    location:
+      term?.definition ||
+      reference?.sections.find((s) => s.heading === "Identification")?.text ||
+      `Source-marked feature of ${parent?.name || a.sourceTarget}. Read it with the parent bone's landmark and relationship guide.`,
+    function:
+      reference?.sections.find((s) => /function|action/i.test(s.heading))
+        ?.text ||
+      "This is a source identification point. A separate landmark-specific function has not been reviewed; consult the anatomical reference and parent-bone guide.",
+    features:
+      "Original source annotation endpoint and bone association retained. This point identifies a feature; it is not a separately segmented tissue volume.",
+    quiz: false,
+  };
   const context = [a.modelId];
   if (a.name === "Intervertebral foramen")
     for (const name of ["Vertebra L2", "Intervertebral disc L2-L3"]) {
@@ -895,6 +926,9 @@ export const landmarks: AnatomyLandmark[] = anchorData.flatMap((a) => {
       contents: n.contents,
       contextIds: context,
       source:
+        (reference
+          ? `Anatomical reference: ${reference.url}; archived Wikipedia/Z-Anatomy attribution retained. `
+          : "") +
         "Anchor: Z-Anatomy source annotation endpoint and bone association (Hook or validated static line). Explanatory notes: OpenStax Anatomy and Physiology 2e, chapters 7–9; introductory anatomy review.",
       quiz: !!n.quiz,
     },

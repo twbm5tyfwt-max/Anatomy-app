@@ -51,7 +51,7 @@ Fonts: DM Sans and Manrope, bundled from @fontsource; font packages include thei
 - **Z-Anatomy — The libre 3D atlas of anatomy — CC BY-SA 4.0.** Authors: Gauthier Kervyn (design/3D/anatomy), Marcin Zielinski (Blender add-on), Kousaku Okubo (original BodyParts3D).
 - **BodyParts3D — The Database Center for Life Science — CC BY-SA 2.1 Japan.** Original license retained in `public/models/LICENSE-bodyparts.txt`. Citation: Mitsuhashi et al., Nucleic Acids Research (2009), https://doi.org/10.1093/nar/gkn613.
 - Upstream asset-specific credits/conditions: Brainder and White matter, University of Washington; Cranial Nerves and Foramina, University of Dundee CAHID, CC BY 4.0; Anatomy of the Inner Ear, University of Dundee School of Medicine, CC BY-NC-SA 4.0; Kidney, Lissie Cowley, CC BY-NC 4.0. The full original statement is in `public/models/LICENSE-z-anatomy.txt` and the ZIP. These exceptions are retained, not blanket relicensed. This educational app is distributed for noncommercial use.
-- The upstream Wikipedia definitions and application/add-on code were not imported or executed. Study notes are separately authored/paraphrased from the OpenStax references above, not copied source definitions.
+- Blender add-on/application code was not executed or imported. OpenStax study summaries remain separate from the newly included, attributed archived Wikipedia/Z-Anatomy readings described below.
 
 ### Geometry adaptation
 
@@ -59,7 +59,7 @@ Fonts: DM Sans and Manrope, bundled from @fontsource; font packages include thei
 
 GLB SHA-256: `4ec89d3374ad9e4fb057133e1970db073bccce4d8c062f1087365b2cea77ed43`.
 
-549 skeletal annotation endpoints are retained: 537 target-linked source Hook annotations and 12 original static femur annotation endpoints independently checked against source triangles (distance under 0.05 mm). Only the manually curated subset in `src/landmarkCatalog.ts` is shown with specific explanations or eligible for quizzes. Anchors are never transplanted to another bone. Source-authored origin/insertion patches are illustrations, not modeled tendons; only verified muscle-family associations are selectable as attachment overlays. An illustrated patch does not establish a complete origin/insertion map.
+549 skeletal annotation endpoints are retained: 537 target-linked source Hook annotations and 12 original static femur annotation endpoints independently checked against source triangles (distance under 0.05 mm). 548 original endpoints pass the assigned-source-object bounds check and are available for identification. One misplaced source annotation, “Uncinate process of first thoracic vertebra,” is excluded. Nearest-surface distances are recorded separately; openings can be marked within their lumen. Only the explicitly curated subset is eligible for graded quizzes; the remaining points retain source names/readings and distinguish unreviewed landmark-specific roles. Anchors are never transplanted to another bone. Source-authored origin/insertion patches are illustrations, not modeled tendons; only verified muscle-family associations are selectable as attachment overlays. An illustrated patch does not establish a complete origin/insertion map.
 
 Selected structures stay registered; camera focus animates instead of moving anatomy apart. Transparency uses depth-tested multisample coverage (hashed coverage fallback). Colors are customizable illustrations. This source has no photorealistic skin or fiber textures. Source anatomy and tissue coverage can contain imperfections and are not a surgical model.
 
@@ -170,3 +170,181 @@ The airway magnification and prepared heart section are original simplified educ
 - SHA-256: `23c6600fa8ee5203a3572f4f5ccda90fea253ea2e05698bae2cd3a0d20bde08e`
 - License: OpenStax / Rice University, CC BY-NC-SA 4.0.
 - Original caption and credit: Respiratory epithelium is pseudostratified ciliated columnar epithelium. Seromucous glands provide lubricating mucus. LM × 680. (Micrograph provided by the Regents of University of Michigan Medical School © 2012)
+
+## Human Reference Atlas / HuBMAP female organ reference
+
+Kristen Browne and Heidi Schlehlein. *3D Reference Organ Set for Female, v1.5* (2023). HuBMAP / Human Reference Atlas. DOI: https://doi.org/10.48539/HBM352.BTSQ.586. CC BY 4.0: https://creativecommons.org/licenses/by/4.0/. Original license text: `public/models/LICENSE-hra.txt`. Underlying Visible Human imagery: U.S. National Library of Medicine. Overall library contributors: Kristen Browne, Heidi Schlehlein, Bruce W. Herr II, Ellen Quardokus, Andreas Bueckle and Katy Börner.
+
+Original public release repository: https://github.com/hubmapconsortium/ccf-releases, revision `b036a91aaf7234f462b1249d4a5f4fb0e982f412`, `v2.0/models/3d-vh-f-united.glb.7z`. Official release metadata: `v2.0/markdown/ref-organs/3d-vh-f-united.md`. Retrieved October 20, 2026.
+
+Original GLB SHA-256: `472567a56896b9b7890508da6501fbf858e56aaa30745365f7a71ade782b529c`. Browser GLB: `public/models/hra-female.glb`, 888 source mesh components, 5,557,599 triangles, SHA-256 `700cfcb10e91a7dc128fb0ecc2d880c90b9c6fd8a249dfbfce1aaa198919e0fb`. Geometry, node transforms and source segmentation are retained. Browser adaptations: IDs, display names/classification, compression and illustrative colors. No generated or borrowed male musculoskeletal geometry was added.
+
+This is an organ-reference assembly with a female body surface, reproductive organs, selected bones and limited muscle coverage. It is not a complete female musculoskeletal atlas or a single-person scan. Pregnancy-reference components are excluded from the default body scope. The source includes a sixth lumbar segment; anatomical counts vary.
+
+The brain incorporates the Allen Human Reference Atlas; source hemispheres are mirrored/resized in the HRA assembly. HRA brain v1.3 release metadata explicitly records CC BY 4.0: https://github.com/hubmapconsortium/ccf-releases/blob/b036a91aaf7234f462b1249d4a5f4fb0e982f412/v2.0/markdown/ref-organs/3d-f-brain.md.
+
+The reference lymph node uses mouse data and the NIH Ce3D method developed by Dr. Weizhe Li, Laboratory of Immune System Biology, NIAID. Li et al., PNAS 114(35), E7321 (2017). It is a comparative teaching object, not a patient-specific human node at the rendered location. HRA reference DOI: https://doi.org/10.48539/HBM463.LFHF.874. This distinction is visible in the app; the node is excluded from the general-body scope.
+
+Heart dissection removes named source components (chambers, septum, valves and papillary muscles). Kidney and lymph-node controls likewise remove actual components. These operations do not create new histologically valid cut planes. Published 2D section references provide clearly labeled alternatives for organs lacking a detailed 3D interior.
+
+## Archived anatomy readings
+
+Wikipedia contributors, as adapted/archived by Z-Anatomy authors in the pinned source blend. Z-Anatomy adaptations: CC BY-SA 4.0; legacy Wikipedia CC BY-SA 3.0 attribution/license notice retained. Full texts are bundled in `LICENSE-cc-by-sa-4.txt` and `LICENSE-wikipedia.txt`. Every reading in `src/generated/atlas-readings.json` retains its original Wikipedia article URL, contributor-history URL and credit; these links are also visible in the app and exported study guides.
+
+1,393 readings link to 2,434 source parts and 270 source landmark names. Anatomical identification, structure, function and relationship sections were selected. Clinical, variation and comparative-animal sections, and explicit treatment/animal paragraphs, were omitted. The source's prose is not treated as a current clinical guideline. Parent-muscle references are identified; an article does not establish a reviewed 3D attachment point. The archive revision is pinned; original live Wikipedia revision dates were not reconstructed. No source add-on code ran.
+
+## Uberon anatomical definitions
+
+Uberon contributors, https://github.com/obophenotype/uberon, revision `76b965742a97393a4c567b1accf012f163a520a5`, release `2026-10-01`, CC BY 3.0: https://creativecommons.org/licenses/by/3.0/. Full text: `LICENSE-uberon.txt`. Only unique exact labels/synonyms or FMA identifiers were matched. Ambiguous terms and explicitly unvetted/nonhuman comparative definitions were excluded. Each displayed term retains its identifier, definition citations and persistent source URL. These are term definitions, not complete human attachment/innervation records.
+
+## Local image reading
+
+Tesseract.js 6.0.1 and Tesseract.js-core retain their Apache-2.0 notices. The @tesseract.js-data/eng 1.0.0 package declares MIT, credits Balearica and jeromewu, and retains its terms plus the upstream Tesseract trained-data Apache-2.0 notice in LICENSE-ocr-data.txt and THIRD_PARTY_LICENSES.txt. Worker, engine and English language data are bundled; images and scanned pages are processed locally. OCR confidence measures recognition, not anatomical correctness. Uploaded originals stay in browser storage and are excluded from the distributed app.
+
+## Additional source figures
+
+The following originals are bundled unchanged (some `.JPG` filename extensions normalized to `.jpg`), retaining embedded labels, captions and specimen credits. Display layout/zoom differ. All are OpenStax / Rice University A&P 2e, CC BY-NC-SA 4.0, from the pinned revision above. A source figure without a separate prose caption is identified as such; no specimen is invented.
+
+### Internal Structures of the Heart
+
+- File: `public/anatomy/2008_Internal_Anatomy_of_the_HeartN.jpg`
+- Source: https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46676/index.cnxml
+- SHA-256: `5d962a658cab2538378fa846e2276c67389902c51968d64950873b9850938437`
+- Caption/credit: This anterior view of the heart shows the four chambers, the major vessels and their early branches, as well as the valves. The presence of the pulmonary trunk and aorta covers the interatrial septum, and the atrioventricular septum is cut away to show the atrioventricular valves.
+
+### Gross Anatomy of the Lungs
+
+- File: `public/anatomy/2312_Gross_Anatomy_of_the_Lungs.jpg`
+- Source: https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46551/index.cnxml
+- SHA-256: `67a7b18d0ec991f5295d1295a40080b2a356989af995fbd43d985137c1023985`
+- Caption/credit: Published labeled gross anatomy of the lungs illustration. The source figure supplies no separate prose caption; original embedded labels are retained.
+
+### Left Kidney
+
+- File: `public/anatomy/2610_The_Kidney.jpg`
+- Source: https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46429/index.cnxml
+- SHA-256: `30d15988386d61f74039dee64bb63f7d13556173058bb4d1d42ac97c12546654`
+- Caption/credit: Published labeled left kidney illustration. The source figure supplies no separate prose caption; original embedded labels are retained.
+
+### Stomach
+
+- File: `public/anatomy/2414_Stomach.jpg`
+- Source: https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46517/index.cnxml
+- SHA-256: `32c814b50a8d86b9d416e8eeadab5270ae1c57405b141db4dd8eecf23de55fdf`
+- Caption/credit: The stomach has four major regions: the cardia, fundus, body, and pylorus. The addition of an inner oblique smooth muscle layer gives the muscularis the ability to vigorously churn and mix food.
+
+### Microscopic Anatomy of the Liver
+
+- File: `public/anatomy/2423_Microscopic_Anatomy_of_Liver.jpg`
+- Source: https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46496/index.cnxml
+- SHA-256: `fcda18a635dc699f7e05f4880e22d8c1d24f04f1bc73a88340e09778367dd277`
+- Caption/credit: The liver receives oxygenated blood from the hepatic artery and nutrient-rich deoxygenated blood from the hepatic portal vein.
+
+### Exocrine and Endocrine Pancreas
+
+- File: `public/anatomy/2424_Exocrine_and_Endocrine_Pancreas.jpg`
+- Source: https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46496/index.cnxml
+- SHA-256: `dc6fd2bf1ea8c4a72067a60ec729c3a5577b4915a5cadcabb2140bb991204e93`
+- Caption/credit: The pancreas has a head, a body, and a tail. It delivers pancreatic juice to the duodenum through the pancreatic duct.
+
+### Spleen
+
+- File: `public/anatomy/2208_Spleen.jpg`
+- Source: https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46563/index.cnxml
+- SHA-256: `01fd6818d8a293745b7c6632c0bb7ed3a174bb24c3749dd18286fc9969adbcbc`
+- Caption/credit: (a) The spleen is attached to the stomach. (b) A micrograph of spleen tissue shows the germinal center. The marginal zone is the region between the red pulp and white pulp, which sequesters particulate antigens from the circulation and presents these antigens to lymphocytes in the white pulp. EM × 660. (Micrograph provided by the Regents of the University of Michigan Medical School © 2012)
+
+### Bladder
+
+- File: `public/anatomy/2605_The_Bladder.jpg`
+- Source: https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46427/index.cnxml
+- SHA-256: `8eb1f9f8dd50d06135882095f5a4568d05f8716c3d41d675fa508a2fa2a20db7`
+- Caption/credit: (a) Anterior cross section of the bladder. (b) The detrusor muscle of the bladder (source: monkey tissue) LM × 448. (Micrograph provided by the Regents of the University of Michigan Medical School © 2012)
+
+### Structure of the Eye
+
+- File: `public/anatomy/1413_Structure_of_the_Eye.jpg`
+- Source: https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46577/index.cnxml
+- SHA-256: `f8b98bdfa2bd68b17fb2c1e975ede1d571269348f49cdaca6d0851712d377dff`
+- Caption/credit: The sphere of the eye can be divided into anterior and posterior chambers. The wall of the eye is composed of three layers: the fibrous tunic, vascular tunic, and neural tunic. Within the neural tunic is the retina, with three layers of cells and two synaptic layers in between. The center of the retina has a small indentation known as the fovea.
+
+### The Brain Stem
+
+- File: `public/anatomy/1311_Brain_Stem.jpg`
+- Source: https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46533/index.cnxml
+- SHA-256: `9da8c3dbbdb6240c923d1325e4f6f740765e41d625a5e3d28e6be97cf1e374e4`
+- Caption/credit: The brain stem comprises three regions: the midbrain, the pons, and the medulla.
+
+### Thyroid Gland
+
+- File: `public/anatomy/1811_The_Thyroid_Gland.jpg`
+- Source: https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46700/index.cnxml
+- SHA-256: `f956a9fc58ca589ebfd91ee889a9686ddaaac32001b53fa03f6b7ed5b4640138`
+- Caption/credit: The thyroid gland is located in the neck where it wraps around the trachea. (a) Anterior view of the thyroid gland. (b) Posterior view of the thyroid gland. (c) The glandular tissue is composed primarily of thyroid follicles. The larger parafollicular cells often appear within the matrix of follicle cells. LM × 1332. (Micrograph provided by the Regents of University of Michigan Medical School © 2012)
+
+### Adrenal Glands
+
+- File: `public/anatomy/1818_The_Adrenal_Glands.jpg`
+- Source: https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46684/index.cnxml
+- SHA-256: `0e133ab3278e87efffcf1f580f85e0c279bdfbdc9f85c61909596b045dbfb8f0`
+- Caption/credit: Both adrenal glands sit atop the kidneys and are composed of an outer cortex and an inner medulla, all surrounded by a connective tissue capsule. The cortex can be subdivided into additional zones, all of which produce different types of hormones. LM × 204. (Micrograph provided by the Regents of University of Michigan Medical School © 2012)
+
+### Hypothalamus–Pituitary Complex
+
+- File: `public/anatomy/1806_The_Hypothalamus-Pituitary_Complex.jpg`
+- Source: https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46699/index.cnxml
+- SHA-256: `2c44dfbbad90124e0971494b1da017f3ac7ee4488d6503575d44736a5e8564f3`
+- Caption/credit: The hypothalamus region lies inferior and anterior to the thalamus. It connects to the pituitary gland by the stalk-like infundibulum. The pituitary gland consists of an anterior and posterior lobe, with each lobe secreting different hormones in response to signals from the hypothalamus.
+
+### Small Intestine
+
+- File: `public/anatomy/2417_Small_IntestineN.jpg`
+- Source: https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46512/index.cnxml
+- SHA-256: `78f2da45cafc2ba2d038f8b2f39b9c3e1a964c34ff3eb1331ec3514edd303aa2`
+- Caption/credit: The three regions of the small intestine are the duodenum, jejunum, and ileum.
+
+### Anatomy of the Testis
+
+- File: `public/anatomy/Figure_28_01_03.jpg`
+- Source: https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46400/index.cnxml
+- SHA-256: `0b3a72c39e1c1c745b8895bb236a587cecd957e0d32f235409a6b19a9660a6c1`
+- Caption/credit: This sagittal view shows the seminiferous tubules, the site of sperm production. Formed sperm are transferred to the epididymis, where they mature. They leave the epididymis during an ejaculation via the ductus deferens.
+
+### Ovaries, Uterine Tubes, and Uterus
+
+- File: `public/anatomy/Figure_28_02_06.jpg`
+- Source: https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/modules/m46392/index.cnxml
+- SHA-256: `28650c4df939a434fac565abd73672b1ec7ebb2c4603db5f89028985aa9cfea4`
+- Caption/credit: This anterior view shows the relationship of the ovaries, uterine tubes (oviducts), and uterus. Sperm enter through the vagina, and fertilization of an ovulated oocyte usually occurs in the distal uterine tube. From left to right, LM × 400, LM × 20. (Micrographs provided by the Regents of University of Michigan Medical School © 2012)
+
+### Structures of the Respiratory Zone
+
+- File: `public/anatomy/2310_Structures_of_the_Respiratory_Zone.jpg`
+- Source: https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/media/2310_Structures_of_the_Respiratory_Zone.jpg
+- SHA-256: `1198546c2181baccded04f6da52f051e2461360b8628ef4b493d04417dbb1169`
+- Caption/credit: (a) The alveolus is responsible for gas exchange. (b) A micrograph shows the alveolar structures within lung tissue. LM × 178. (Micrograph provided by the Regents of University of Michigan Medical School © 2012)
+
+### Histology of the large Intestine
+
+- File: `public/anatomy/2421_Histology_of_the_Large_IntestineN.jpg`
+- Source: https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/media/2421_Histology_of_the_Large_IntestineN.jpg
+- SHA-256: `1684737ba76983bff2f4dedba115910b5cd0d794201f724e149168e3c6cf3792`
+- Caption/credit: (a) The histologies of the large intestine and small intestine (not shown) are adapted for the digestive functions of each organ. (b) This micrograph shows the colon’s simple columnar epithelium and goblet cells. LM x 464. (credit b: Micrograph provided by the Regents of University of Michigan Medical School © 2012)
+
+### Epidermis
+
+- File: `public/anatomy/503_Epidermis.jpg`
+- Source: https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/media/503_Epidermis.jpg
+- SHA-256: `45e6e5d7fbb85ae5f7d67e6179356bbd1487150fa040b46ad8eaad7992a25f82`
+- Caption/credit: The epidermis is epithelium composed of multiple layers of cells. The basal layer consists of cuboidal cells, whereas the outer layers are squamous, keratinized cells, so the whole epithelium is often described as being keratinized stratified squamous epithelium. LM × 40. (Micrograph provided by the Regents of University of Michigan Medical School © 2012)
+
+### Juxtaglomerular Apparatus and Glomerulus
+
+- File: `public/anatomy/2615_Juxtaglomerular_Apparatus.jpg`
+- Source: https://github.com/openstax/osbooks-anatomy-physiology/blob/5ae32b3f4bc24ed003e91dc38bf47dba80751044/media/2615_Juxtaglomerular_Apparatus.jpg
+- SHA-256: `596d8046f8121c397701d26659373631f5edf2a9b2d3713d94b34d6ff43a845a`
+- Caption/credit: (a) The JGA allows specialized cells to monitor the composition of the fluid in the DCT and adjust the glomerular filtration rate. (b) This micrograph shows the glomerulus and surrounding structures. LM × 1540. (Micrograph provided by the Regents of University of Michigan Medical School © 2012)
+
+### Tissue metadata corrections
+
+The atlas display material named Cartilage is not a tissue diagnosis. Thirty-nine metadata records identify cardiac valve leaflets, dural folds, eyelid tarsal plates and nucleus pulposus correctly; 33 require additional layer changes. See `src/generated/tissue-corrections.json`. Source geometry and identifiers are unchanged. Teeth are identified separately from bone and have no fabricated compact-bone histology link.

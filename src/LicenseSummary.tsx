@@ -46,6 +46,32 @@ export function LicenseSummary() {
           in the download.
         </li>
         <li>
+          Human Reference Atlas / HuBMAP — Kristen Browne and Heidi Schlehlein,
+          Female Reference Organ Set v1.5 (2023),{" "}
+          <a
+            href="https://doi.org/10.48539/HBM352.BTSQ.586"
+            target="_blank"
+            rel="noreferrer"
+          >
+            source DOI
+          </a>
+          , CC BY 4.0. Original Visible Human / National Library of Medicine and
+          Allen Brain reference credits retained. Comparative Ce3D lymph-node
+          reference is based on mouse data, not a patient-specific human node.
+        </li>
+        <li>
+          Uberon anatomy definitions — CC BY 3.0, recorded October 2026 release.
+          Only exact terms/identifiers are linked. Definition citations and
+          source URLs are retained.
+        </li>
+        <li>
+          Archived anatomy readings — Wikipedia contributors, as
+          adapted/archived by Z-Anatomy authors, CC BY-SA 4.0; legacy Wikipedia
+          CC BY-SA 3.0 notice retained. Every reading links its article and
+          contributor history. Anatomical excerpts are not a current clinical
+          guideline.
+        </li>
+        <li>
           Third-party code and fonts retain their own licenses. Collected
           package notices are in THIRD_PARTY_LICENSES.txt. The anatomy/media
           licenses are separate from software licenses.
@@ -53,10 +79,11 @@ export function LicenseSummary() {
       </ul>
       <p>
         The download includes LICENSE-openstax.txt, LICENSE-z-anatomy.txt,
-        LICENSE-bodyparts.txt, ASSET_CREDITS.md, ASSET_MANIFEST.json, and
-        THIRD_PARTY_LICENSES.txt. No Complete Anatomy assets or branding are
-        included. Clinical source pages are links, not reproduced videos or
-        licensed treatment protocols.
+        LICENSE-bodyparts.txt, LICENSE-hra.txt, LICENSE-uberon.txt,
+        LICENSE-wikipedia.txt, LICENSE-cc-by-sa-4.txt, ASSET_CREDITS.md,
+        ASSET_MANIFEST.json, and THIRD_PARTY_LICENSES.txt. No Complete Anatomy
+        assets or branding are included. Clinical source pages are links, not
+        reproduced videos or licensed treatment protocols.
       </p>
       <h3>New microscopy references</h3>
       {unique.map((p) => (

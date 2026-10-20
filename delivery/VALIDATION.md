@@ -1,23 +1,24 @@
-# Combined learning update validation
+# Anatomy and PT/AT update validation
 
-The automated commands and detailed outcomes are recorded for the final committed package below. Source-specific asset limitations are in IMPLEMENTATION_CHECKLIST.md and LICENSES.md.
+Checked October 20, 2026. The requirement-by-requirement status and remaining limitations are in IMPLEMENTATION_CHECKLIST.md; the source inventory is in STUDY_DATA_COVERAGE.md.
 
-- TypeScript and production build checked.
-- Unit coverage includes source registration/bounds, anatomy roles, landmarks, grading, opacity/picking policy, region membership, note ambiguity, strict collection scope, and provenance for every added microscope figure.
-- Original study browser suite covers 2D references, tissue diagrams, quizzes/exams, saved progress/bookmarks, course imports, timing and mobile layout.
-- 3D suite covers actual source-surface picking and hover independence, gradual focus, hide/isolate/undo/reset, contextual vertebral labels, transparency, regional geometry, comparison and mobile controls.
-- Combined-learning suite covers repeated reset/reselection, knee menisci/dissection, microscope-image loading and camera return, saved independent workspaces, scoped quizzes/games, game-history reload, PT links and Help.
-- Game/touch suite checks that the timer waits for source geometry and an unoccluded target, a real pointer click scores correctly, feedback pauses timing, and a physical touch tap selects the humerus after clearing selection.
-- ZIP integrity, embedded HTML equality, attribution/license files, and every added image's SHA-256 are checked before publication.
+- **44 unit tests passed** across six files. Coverage includes pinned source geometry/identities, original study grading, strict collection scope, bone guides, cartilage/valve/dental distinctions, metadata migration, attributed readings, HRA heart/lobe membership, source annotation bounds and reference-plate provenance.
+- **36 distinct browser workflows passed:** 10 original study workflows, 8 source 3D workflows, 5 combined learning workflows, 3 game/touch/resource workflows and 10 requested-upgrade workflows. Final targeted upgrade checks were repeated against the production build after the knee corrections, with no page errors.
+- The **self-contained HTML passed all 10 upgrade workflows over HTTP**, including both embedded atlases, progressive click isolation, whole-muscle persistence, skin-free knee defaults and modeled tendon surfaces, heart component removal, lung/lobe/bronchial exploration, camera-preserving tissue return, real PNG OCR, written image guides, downloadable guide output, reload persistence, scoped 3D/game checklists, 2D reference zoom, tissue comparisons, PT links and Help. OCR made no external HTTP requests.
+- Original workflows retain PDF/PPTX extraction, source references, practice/exam grading, optional timing, bookmark/result reload and mobile layout. Source 3D checks exercise actual pointer raycasts, independent hover/selection, repeated reset, hide/restore/undo, overlap/transparency policy, registered joints, regional framing and comparison. Physical touch-tap simulation selects the humerus. A 20-round game transition check retains the main viewer WebGL context.
+- TypeScript and production builds passed. Source preparation Python helpers parse successfully. A final breadcrumb-label correction is checked against the built and standalone pages.
+- Visual review caught a knee skin patch obscuring the joint; the corrected default excludes covering skin and small vascular/neural structures while retaining selectable bones, cartilage, ligaments and available quadriceps tendon regions. Explicit layer/system controls can reveal additional anatomy.
+- Both model GLBs match the recorded SHA-256 hashes. **31 unique reference figure originals** match their hashes (including 15 microscopy plates and explicitly identified illustrations). Original captions, animal/mixed-specimen notes, author credits and licenses remain included. HRA's pinned source archive was separately downloaded and checksum-verified.
+- The standalone ZIP is below GitHub's 100 MiB per-file limit. ZIP CRCs, exact embedded-HTML equality, current manifest/checklist/coverage, attribution and required original/software licenses are verified before publication. The published download is independently fetched and compared with the local ZIP hash.
 
-Some imported reference plates show animal tissue and have embedded labels; the app retains captions and identifies overview plates without a matching specimen. Images are not inferred histology from the selected 3D object. The skin is visibly segmented; advanced female and internal-heart assets are not supplied. The PT/AT page explicitly reports blocked current clinical-source verification; its resource links are not an assertion that a current guideline was validated.
+## Practical limits
 
-## Final outcomes — October 20, 2026
+The browser administrator policy rejects file:// navigation with ERR_BLOCKED_BY_ADMINISTRATOR. Direct local-file opening cannot be tested here; the embedded HTML was tested over HTTP. No external model, image or OCR service is needed by that HTML. Physical-device performance and every browser's local-file storage policy are not established by desktop Chromium touch/viewport simulation.
 
-- Production build and TypeScript passed; hosting notices prepared in `dist/legal/`.
-- **36 unit tests passed.**
-- Standalone browser suites: **10 original + 8 3D + 5 combined-learning + 3 game/touch/resource workflows passed (26 total)**. The game/touch suite was rerun after fixing a variable-name collision in its test script; the real pointer answer, feedback pause and touch tap passed.
-- The successful original/3D/combined suites reported no JavaScript runtime errors.
-- ZIP integrity and embedded HTML equality passed; all original license statements, software notices, asset manifest and implementation checklist are present. **11 added microscopy originals** match their recorded SHA-256 checksums. A figure without a verified source caption was omitted.
+Source geometry is educational reference anatomy, not patient-specific or clinically validated in every detail. HRA's female model is an organ assembly with selected bones/muscles, not a complete female musculoskeletal atlas. Some organs have only surfaces and use clearly labeled published section references; no arbitrary hollow mesh is presented as a validated dissection. Fine chordae, complete organ microanatomy, skin thickness, fiber textures, continuous lymphatic vessels and complete point-mapped attachments remain unavailable. The comparative lymph node is mouse-based and labeled accordingly.
 
-A 20-round game transition stress check passed: temporary model viewers release their WebGL contexts and the main body context remains available afterward.
+548 of 549 source annotation endpoints pass assigned-object bounds checks; one misplaced marker is excluded. Bounds checks do not establish exact surface or semantic correctness, and only explicitly curated landmarks enter graded quizzes. All 246 source-classified bone parts have introductory text guides, with detailed coverage limits retained. Teeth have no fabricated compact-bone microscopy link.
+
+Image OCR reads printed labels and requires review; it does not recognize unlabeled anatomy or reconstruct hidden 3D geometry. Scanned PDF OCR is capped at the first 20 pages. Uploaded originals and progress remain browser-local; changing origin/file location or clearing browser storage does not transfer that data.
+
+AAOS/NHS live requests remain blocked by the environment's HTTP tunnel policy (403). The PT/AT section discloses that current external revisions and guideline conformance are unverified, links to the named clinical instructions, gives educational technique examples and does not prescribe personalized care. The bundle retains its noncommercial and source-specific share-alike conditions.

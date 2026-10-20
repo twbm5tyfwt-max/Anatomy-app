@@ -1,0 +1,314 @@
+[
+  {
+    "id": "ZA435000f5a616",
+    "name": "Anterior semilunar leaflet of pulmonary valve",
+    "sourceMaterial": "Cartilage",
+    "originalLayer": "organs",
+    "layer": "organs",
+    "reason": "Cardiac valve leaflets are fibrous connective tissue, not cartilage."
+  },
+  {
+    "id": "ZA414aeabd1b0a",
+    "name": "Falx cerebri",
+    "sourceMaterial": "Cartilage",
+    "originalLayer": "cartilage",
+    "layer": "organs",
+    "reason": "Cranial dural folds are dense connective tissue, not cartilage or neurons."
+  },
+  {
+    "id": "ZA302baa155f7b",
+    "name": "Inferior leaflet of right atrioventricular valve",
+    "sourceMaterial": "Ligament",
+    "originalLayer": "organs",
+    "layer": "organs",
+    "reason": "Cardiac valve leaflets are fibrous connective tissue, not cartilage."
+  },
+  {
+    "id": "ZA765cd2e0479f",
+    "name": "Left inferior tarsus",
+    "sourceMaterial": "Cartilage",
+    "originalLayer": "cartilage",
+    "layer": "organs",
+    "reason": "Eyelid tarsal plates are dense connective tissue, not cartilage or skeletal muscle."
+  },
+  {
+    "id": "ZAfe89cdb1e135",
+    "name": "Right inferior tarsus",
+    "sourceMaterial": "Cartilage",
+    "originalLayer": "cartilage",
+    "layer": "organs",
+    "reason": "Eyelid tarsal plates are dense connective tissue, not cartilage or skeletal muscle."
+  },
+  {
+    "id": "ZA4a7aec4856f4",
+    "name": "Left coronary leaflet",
+    "sourceMaterial": "Cartilage",
+    "originalLayer": "cartilage",
+    "layer": "organs",
+    "reason": "Cardiac valve leaflets are fibrous connective tissue, not cartilage."
+  },
+  {
+    "id": "ZAaeea3d5c8d70",
+    "name": "Left semilunar leaflet of pulmonary valve",
+    "sourceMaterial": "Cartilage",
+    "originalLayer": "organs",
+    "layer": "organs",
+    "reason": "Cardiac valve leaflets are fibrous connective tissue, not cartilage."
+  },
+  {
+    "id": "ZA934cc9334585",
+    "name": "Non-coronary leaflet",
+    "sourceMaterial": "Cartilage",
+    "originalLayer": "cartilage",
+    "layer": "organs",
+    "reason": "Cardiac valve leaflets are fibrous connective tissue, not cartilage."
+  },
+  {
+    "id": "ZAf85421503f33",
+    "name": "Nucleus pulposus C2-C3",
+    "sourceMaterial": "Cartilage",
+    "originalLayer": "cartilage",
+    "layer": "organs",
+    "reason": "Gelatinous intervertebral-disc core, distinct from the surrounding fibrocartilaginous annulus."
+  },
+  {
+    "id": "ZAefdf9d3a7c69",
+    "name": "Nucleus pulposus C3-C4",
+    "sourceMaterial": "Cartilage",
+    "originalLayer": "cartilage",
+    "layer": "organs",
+    "reason": "Gelatinous intervertebral-disc core, distinct from the surrounding fibrocartilaginous annulus."
+  },
+  {
+    "id": "ZA7b3db05db409",
+    "name": "Nucleus pulposus C4-C5",
+    "sourceMaterial": "Cartilage",
+    "originalLayer": "cartilage",
+    "layer": "organs",
+    "reason": "Gelatinous intervertebral-disc core, distinct from the surrounding fibrocartilaginous annulus."
+  },
+  {
+    "id": "ZA663eb73269ac",
+    "name": "Nucleus pulposus C5-C6",
+    "sourceMaterial": "Cartilage",
+    "originalLayer": "cartilage",
+    "layer": "organs",
+    "reason": "Gelatinous intervertebral-disc core, distinct from the surrounding fibrocartilaginous annulus."
+  },
+  {
+    "id": "ZAd15be22616f6",
+    "name": "Nucleus pulposus C6-C7",
+    "sourceMaterial": "Cartilage",
+    "originalLayer": "cartilage",
+    "layer": "organs",
+    "reason": "Gelatinous intervertebral-disc core, distinct from the surrounding fibrocartilaginous annulus."
+  },
+  {
+    "id": "ZAaf8650655bed",
+    "name": "Nucleus pulposus C7-T1",
+    "sourceMaterial": "Cartilage",
+    "originalLayer": "cartilage",
+    "layer": "organs",
+    "reason": "Gelatinous intervertebral-disc core, distinct from the surrounding fibrocartilaginous annulus."
+  },
+  {
+    "id": "ZA582ae3c7d1aa",
+    "name": "Nucleus pulposus L1-L2",
+    "sourceMaterial": "Cartilage",
+    "originalLayer": "cartilage",
+    "layer": "organs",
+    "reason": "Gelatinous intervertebral-disc core, distinct from the surrounding fibrocartilaginous annulus."
+  },
+  {
+    "id": "ZA3478ec5d3172",
+    "name": "Nucleus pulposus L2-L3",
+    "sourceMaterial": "Cartilage",
+    "originalLayer": "cartilage",
+    "layer": "organs",
+    "reason": "Gelatinous intervertebral-disc core, distinct from the surrounding fibrocartilaginous annulus."
+  },
+  {
+    "id": "ZA8ea7f78dd569",
+    "name": "Nucleus pulposus L3-L4",
+    "sourceMaterial": "Cartilage",
+    "originalLayer": "cartilage",
+    "layer": "organs",
+    "reason": "Gelatinous intervertebral-disc core, distinct from the surrounding fibrocartilaginous annulus."
+  },
+  {
+    "id": "ZAe059b2657c12",
+    "name": "Nucleus pulposus L4-L5",
+    "sourceMaterial": "Cartilage",
+    "originalLayer": "cartilage",
+    "layer": "organs",
+    "reason": "Gelatinous intervertebral-disc core, distinct from the surrounding fibrocartilaginous annulus."
+  },
+  {
+    "id": "ZAc236410c18bb",
+    "name": "Nucleus pulposus L5-S1",
+    "sourceMaterial": "Cartilage",
+    "originalLayer": "cartilage",
+    "layer": "organs",
+    "reason": "Gelatinous intervertebral-disc core, distinct from the surrounding fibrocartilaginous annulus."
+  },
+  {
+    "id": "ZA20e43f1c68bc",
+    "name": "Nucleus pulposus T1-T2",
+    "sourceMaterial": "Cartilage",
+    "originalLayer": "cartilage",
+    "layer": "organs",
+    "reason": "Gelatinous intervertebral-disc core, distinct from the surrounding fibrocartilaginous annulus."
+  },
+  {
+    "id": "ZA6d69abc4de63",
+    "name": "Nucleus pulposus T10-T11",
+    "sourceMaterial": "Cartilage",
+    "originalLayer": "cartilage",
+    "layer": "organs",
+    "reason": "Gelatinous intervertebral-disc core, distinct from the surrounding fibrocartilaginous annulus."
+  },
+  {
+    "id": "ZAce874b9e4603",
+    "name": "Nucleus pulposus T11-T12",
+    "sourceMaterial": "Cartilage",
+    "originalLayer": "cartilage",
+    "layer": "organs",
+    "reason": "Gelatinous intervertebral-disc core, distinct from the surrounding fibrocartilaginous annulus."
+  },
+  {
+    "id": "ZAdf41edf5a0df",
+    "name": "Nucleus pulposus T12-L1",
+    "sourceMaterial": "Cartilage",
+    "originalLayer": "cartilage",
+    "layer": "organs",
+    "reason": "Gelatinous intervertebral-disc core, distinct from the surrounding fibrocartilaginous annulus."
+  },
+  {
+    "id": "ZA0ce008ce9dbb",
+    "name": "Nucleus pulposus T2-T3",
+    "sourceMaterial": "Cartilage",
+    "originalLayer": "cartilage",
+    "layer": "organs",
+    "reason": "Gelatinous intervertebral-disc core, distinct from the surrounding fibrocartilaginous annulus."
+  },
+  {
+    "id": "ZA5f39d1dc5cdb",
+    "name": "Nucleus pulposus T3-T4",
+    "sourceMaterial": "Cartilage",
+    "originalLayer": "cartilage",
+    "layer": "organs",
+    "reason": "Gelatinous intervertebral-disc core, distinct from the surrounding fibrocartilaginous annulus."
+  },
+  {
+    "id": "ZA4b064e41c1ef",
+    "name": "Nucleus pulposus T4-T5",
+    "sourceMaterial": "Cartilage",
+    "originalLayer": "cartilage",
+    "layer": "organs",
+    "reason": "Gelatinous intervertebral-disc core, distinct from the surrounding fibrocartilaginous annulus."
+  },
+  {
+    "id": "ZA153148ab7faa",
+    "name": "Nucleus pulposus T5-T6",
+    "sourceMaterial": "Cartilage",
+    "originalLayer": "cartilage",
+    "layer": "organs",
+    "reason": "Gelatinous intervertebral-disc core, distinct from the surrounding fibrocartilaginous annulus."
+  },
+  {
+    "id": "ZAba6ace6c624b",
+    "name": "Nucleus pulposus T6-T7",
+    "sourceMaterial": "Cartilage",
+    "originalLayer": "cartilage",
+    "layer": "organs",
+    "reason": "Gelatinous intervertebral-disc core, distinct from the surrounding fibrocartilaginous annulus."
+  },
+  {
+    "id": "ZA9db083f5c48d",
+    "name": "Nucleus pulposus T7-T8",
+    "sourceMaterial": "Cartilage",
+    "originalLayer": "cartilage",
+    "layer": "organs",
+    "reason": "Gelatinous intervertebral-disc core, distinct from the surrounding fibrocartilaginous annulus."
+  },
+  {
+    "id": "ZAe95bd82309be",
+    "name": "Nucleus pulposus T8-T9",
+    "sourceMaterial": "Cartilage",
+    "originalLayer": "cartilage",
+    "layer": "organs",
+    "reason": "Gelatinous intervertebral-disc core, distinct from the surrounding fibrocartilaginous annulus."
+  },
+  {
+    "id": "ZA6d14b58720dd",
+    "name": "Nucleus pulposus T9-T10",
+    "sourceMaterial": "Cartilage",
+    "originalLayer": "cartilage",
+    "layer": "organs",
+    "reason": "Gelatinous intervertebral-disc core, distinct from the surrounding fibrocartilaginous annulus."
+  },
+  {
+    "id": "ZA845a3c620be8",
+    "name": "Posterior leaflet of left atrioventricular valve",
+    "sourceMaterial": "Ligament",
+    "originalLayer": "organs",
+    "layer": "organs",
+    "reason": "Cardiac valve leaflets are fibrous connective tissue, not cartilage."
+  },
+  {
+    "id": "ZA04670077be8b",
+    "name": "Right coronary leaflet",
+    "sourceMaterial": "Cartilage",
+    "originalLayer": "cartilage",
+    "layer": "organs",
+    "reason": "Cardiac valve leaflets are fibrous connective tissue, not cartilage."
+  },
+  {
+    "id": "ZA769e36bd1dd0",
+    "name": "Right semilunar leaflet of pulmonary valve",
+    "sourceMaterial": "Cartilage",
+    "originalLayer": "organs",
+    "layer": "organs",
+    "reason": "Cardiac valve leaflets are fibrous connective tissue, not cartilage."
+  },
+  {
+    "id": "ZAd525497ddf95",
+    "name": "Septal leaflet of right atrioventricular valve",
+    "sourceMaterial": "Ligament",
+    "originalLayer": "organs",
+    "layer": "organs",
+    "reason": "Cardiac valve leaflets are fibrous connective tissue, not cartilage."
+  },
+  {
+    "id": "ZAfa5a2ef1092f",
+    "name": "Left superior tarsus",
+    "sourceMaterial": "Cartilage",
+    "originalLayer": "cartilage",
+    "layer": "organs",
+    "reason": "Eyelid tarsal plates are dense connective tissue, not cartilage or skeletal muscle."
+  },
+  {
+    "id": "ZAea000632c84b",
+    "name": "Right superior tarsus",
+    "sourceMaterial": "Cartilage",
+    "originalLayer": "cartilage",
+    "layer": "organs",
+    "reason": "Eyelid tarsal plates are dense connective tissue, not cartilage or skeletal muscle."
+  },
+  {
+    "id": "ZAac2632d3e57b",
+    "name": "Left tentorium cerebelli",
+    "sourceMaterial": "Cartilage",
+    "originalLayer": "cartilage",
+    "layer": "organs",
+    "reason": "Cranial dural folds are dense connective tissue, not cartilage or neurons."
+  },
+  {
+    "id": "ZA3c28b9893036",
+    "name": "Right tentorium cerebelli",
+    "sourceMaterial": "Cartilage",
+    "originalLayer": "cartilage",
+    "layer": "organs",
+    "reason": "Cranial dural folds are dense connective tissue, not cartilage or neurons."
+  }
+]

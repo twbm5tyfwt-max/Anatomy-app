@@ -144,8 +144,8 @@ try {
         10,
       );
       await page
-        .getByRole("button", { name: "Landmark labels", exact: true })
-        .click();
+        .getByRole("checkbox", { name: "Landmark labels", exact: true })
+        .check();
       await page
         .locator(".pro-landmarks > button")
         .filter({ hasText: "Spinous process" })

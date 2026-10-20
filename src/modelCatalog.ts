@@ -1,3 +1,6 @@
+import { readingFor } from "./AnatomyReading";
+import { definitionFor } from "./ReferenceDefinition";
+import { boneNoteFor } from "./boneNotes";
 import { connectiveNotes } from "./connectiveNotes";
 import manifest from "./model-manifest.json";
 import muscleTables from "./generated/muscle-notes.json";
@@ -506,14 +509,10 @@ export function getModelStudy(m: ModelPart): ModelStudy {
   const action = Object.entries(actions)
     .sort((a, b) => b[0].length - a[0].length)
     .find(([key]) => name.includes(key));
-  const isBone =
-    m.system === "skeletal" &&
-    (m.layer === "bones" ||
-      m.ancestry.includes("Bone organ") ||
-      /sacrum|sternum|manubrium|xiphoid/.test(name));
+  const isBone = m.system === "skeletal" && m.layer === "bones";
   let kind = isBone
     ? "Bone"
-    : m.system === "muscular"
+    : m.layer === "muscles"
       ? "Skeletal muscle"
       : "Anatomical structure";
   let fn = "";
@@ -573,10 +572,27 @@ export function getModelStudy(m: ModelPart): ModelStudy {
     m.layer === "cartilage" ||
     (!fn && /cartilage|disk|disc|meniscus/.test(name))
   ) {
-    kind = "Supporting tissue";
+    kind = "Cartilage / joint support";
+    level = "overview";
     fn = /intervertebral/.test(name)
-      ? "Fibrocartilaginous joint between adjacent vertebral bodies. The annulus fibrosus contains the nucleus pulposus; the disc distributes compression and permits limited movement. No intervertebral disc lies between C1 and C2."
-      : "Supports joint surfaces and distributes mechanical loads. Articular cartilage reduces friction; menisci and labra are distinct fibrocartilaginous structures.";
+      ? "The fibrocartilaginous annulus surrounds a gelatinous nucleus pulposus; together they distribute spinal loading and permit limited movement. No disc lies between C1 and C2."
+      : /menisc|labrum|articular disc|interpubic|symphys/.test(name)
+        ? "Fibrocartilaginous joint structure that distributes load and helps joint congruence or stability. It is distinct from the hyaline cartilage covering articular bone surfaces."
+        : /epiglott|epiglotic|corniculate|auditory tube/.test(name)
+          ? "Flexible elastic-cartilage support for the named airway or auditory structure. Elastic fibers permit bending and recoil; this is not an articular surface."
+          : /bronch|trachea/.test(name)
+            ? "Cartilage supports the conducting airway wall and helps keep it open. It is not itself the air-conducting lumen or the gas-exchanging alveolar lining."
+            : /costal/.test(name)
+              ? "Hyaline costal cartilage links ribs to their anterior connections and permits flexibility of the thoracic cage during breathing."
+              : /nasal|alar/.test(name)
+                ? "Supports the flexible cartilaginous framework of the nose; it is distinct from the paired nasal bones."
+                : /thyroid|cricoid|arytenoid/.test(name)
+                  ? "Forms part of the laryngeal framework supporting the airway and vocal apparatus. Most of these regions are hyaline cartilage; arytenoid apices/processes can contain elastic cartilage."
+                  : /triradiate/.test(name)
+                    ? "Developmental hyaline growth cartilage at the junction of ilium, ischium and pubis. It normally fuses with skeletal maturity; this source inclusion is a teaching reference."
+                    : "Hyaline articular cartilage provides a low-friction surface and distributes contact loads. A source-classified surface patch is not a complete tissue-thickness reconstruction.";
+    curatedSource =
+      "OpenStax Anatomy and Physiology 2e, chapters 4, 8–9, 14 and 22: cartilage, joints, auditory structures and airways. Source geometry retained; display materials are not histology classifications.";
   }
   if (!fn) {
     fn =
@@ -638,18 +654,24 @@ export function getModelStudy(m: ModelPart): ModelStudy {
     curatedSource =
       "OpenStax Anatomy and Physiology 2e, §19.1 Heart Anatomy; source geometry: Z-Anatomy.";
   }
-  if (/leaflet.*valve/.test(name)) {
+  if (m.system === "cardiovascular" && /leaflet/.test(name)) {
     kind = "Valve leaflet";
-    fn = /pulmonary/.test(name)
-      ? "One component of the pulmonary semilunar valve. Valve closure limits backflow from the pulmonary trunk into the right ventricle during ventricular relaxation."
-      : "One component of an atrioventricular valve. Closure limits backflow into the atrium during ventricular contraction; chordae tendineae and papillary muscles support the leaflets.";
+    fn = /coronary/.test(name)
+      ? "One component of the aortic semilunar valve. Closure limits backflow from the aorta into the left ventricle during relaxation; semilunar cusps do not have chordae tendineae."
+      : /pulmonary/.test(name)
+        ? "One component of the pulmonary semilunar valve. Valve closure limits backflow from the pulmonary trunk into the right ventricle during ventricular relaxation."
+        : "One component of an atrioventricular valve. Closure limits backflow into the atrium during ventricular contraction; chordae tendineae and papillary muscles support the leaflets.";
     level = "overview";
     note =
       "Valve leaflets are fibrous connective tissue with an endothelial covering, not articular cartilage or skeletal ligaments. Only some source leaflets are separately modeled.";
     curatedSource =
       "OpenStax Anatomy and Physiology 2e, §19.1 Heart Anatomy; source geometry: Z-Anatomy.";
   }
-  if (m.system === "respiratory" && /bronchus/.test(name)) {
+  if (
+    m.system === "respiratory" &&
+    m.layer !== "cartilage" &&
+    /bronchus/.test(name)
+  ) {
     kind = "Conducting airway";
     fn =
       "Conducts air between the larger airways and more distal lung branches. Bronchi have cartilage support and smooth muscle. Most gas exchange occurs across the alveolar-capillary barrier, not in the conducting bronchus.";
@@ -672,6 +694,59 @@ export function getModelStudy(m: ModelPart): ModelStudy {
   if (m.system === "lymphatic" && /node/i.test(name))
     note =
       "Regional groups may contain several nodes in one source object. No individual-node segmentation or fine vessel network is inferred.";
+  if (/nucleus pulposus/.test(name)) {
+    kind = "Gelatinous disc core";
+    fn =
+      "Hydrated, proteoglycan-rich core that transmits compressive loads within the intervertebral disc. It is surrounded by the fibrocartilaginous annulus; it is not hyaline cartilage.";
+    level = "overview";
+    note =
+      "The fibrocartilage tissue link refers to the surrounding annulus, not to the nucleus itself.";
+    curatedSource =
+      "OpenStax Anatomy and Physiology 2e, vertebral column and intervertebral-joint anatomy (chapters 7 and 9).";
+  }
+  if (/falx cerebri|tentorium cerebelli/.test(name)) {
+    kind = "Dural fold";
+    fn =
+      "A tough connective-tissue reflection of cranial dura that partitions and supports parts of the brain. It is neither cartilage nor neural tissue.";
+    level = "overview";
+    curatedSource =
+      "OpenStax Anatomy and Physiology 2e, cranial meninges (chapter 13).";
+  }
+  if (/(?:superior|inferior) tarsus/.test(name)) {
+    kind = "Eyelid tarsal plate";
+    fn =
+      "Dense connective-tissue support that gives the eyelid shape and houses tarsal glands. It is not cartilage, a foot bone, or a contracting skeletal muscle.";
+    level = "overview";
+    curatedSource =
+      "OpenStax Anatomy and Physiology 2e, accessory eye anatomy (chapter 14).";
+  }
+  if (isBone && /tooth|incisor|canine|premolar|molar/.test(name))
+    kind = "Tooth";
+  const archive = readingFor(m.id);
+  const definition = definitionFor(m.id);
+  if (level === "identification" && archive) {
+    const overview =
+      archive.sections.find((section) =>
+        /^function|^action/i.test(section.heading),
+      ) ||
+      archive.sections.find((section) => section.heading === "Identification");
+    if (overview) {
+      fn = overview.text;
+      note =
+        "Archived anatomical reference; structure-specific clinical or attachment validation is not implied.";
+      curatedSource = `Wikipedia contributors; ${archive.url}; archived/adapted by Z-Anatomy, CC BY-SA 4.0. Article history and adaptation notes are retained in the reference panel.`;
+    }
+  } else if (level === "identification" && definition) {
+    fn = definition.definition;
+    note =
+      "Published anatomical term definition, not a complete human attachment or innervation entry.";
+    curatedSource = `Uberon ${definition.id}, CC BY 3.0. Definition citations and source link are retained in the reference panel.`;
+  }
+  const boneNote = isBone ? boneNoteFor(m.name) : undefined;
+  if (boneNote && !known) {
+    fn = boneNote.function;
+    level = "overview";
+  }
   const family = known?.name || table?.name || action?.[0] || m.name;
   const guideKey = Object.keys(boneGuides).find((k) => name.includes(k));
   const result: ModelStudy = {
@@ -682,6 +757,7 @@ export function getModelStudy(m: ModelPart): ModelStudy {
     system: m.system,
     region: getRegion(m),
     location:
+      boneNote?.location ||
       connective?.location ||
       known?.location ||
       getRegion(m) +
@@ -696,10 +772,16 @@ export function getModelStudy(m: ModelPart): ModelStudy {
       known?.description ||
       note ||
       "This model represents anatomy from one adult male reference. It is optimized for interactive study and is not a diagnostic or surgical model.",
+    landmarks: boneNote?.landmarks || known?.landmarks,
+    articulations: boneNote?.articulations || known?.articulations,
+    attachments: boneNote?.attachments || known?.attachments,
     origin: connective?.origin || known?.origin || table?.origin,
     insertion: connective?.insertion || known?.insertion || table?.insertion,
     actions: known?.actions || table?.actions,
     source:
+      (boneNote
+        ? "OpenStax Anatomy and Physiology 2e, §§7.2–8.4 (bones, landmarks, joints) and §§11.3–11.6 (representative muscle attachments). Text guides are distinct from source-anchored 3D points."
+        : "") ||
       curatedSource ||
       known?.source ||
       table?.source ||

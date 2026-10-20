@@ -59,9 +59,18 @@ try {
       ).toHaveCount(0);
       for (const name of ["Right humerus", "Right femur", "Left nasal bone"]) {
         await choose(name);
-        await page
-          .getByRole("button", { name: "Landmark labels", exact: true })
-          .click();
+        const landmarkOption = page.getByRole("checkbox", {
+          name: "Landmark labels",
+          exact: true,
+        });
+        if (await landmarkOption.isEnabled()) await landmarkOption.check();
+        else {
+          await expect(landmarkOption).toBeDisabled();
+          await page
+            .getByRole("button", { name: "Landmarks", exact: true })
+            .click();
+          await expect(page.locator(".bone-landmark-guide")).toBeVisible();
+        }
         await page
           .getByRole("button", { name: "Reset anatomy", exact: true })
           .click();
@@ -90,6 +99,7 @@ try {
         .locator(".region-structure-list:visible")
         .getByRole("button", { name: "Right medial meniscus", exact: true })
         .click();
+      await settled();
       const distance = await activeCanvas().getAttribute(
         "data-camera-distance",
       );
@@ -159,6 +169,9 @@ try {
         .check();
       await page
         .getByRole("button", { name: "Save study workspace", exact: true })
+        .click();
+      await page
+        .getByRole("button", { name: "3D study model", exact: true })
         .click();
       await settled();
       await expect(page.locator(".collection-actions")).toContainText(

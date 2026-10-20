@@ -4,7 +4,7 @@ A React 19 / TypeScript anatomy and PT/AT educational study app with a real segm
 
 ## Open the downloadable app
 
-Download `delivery/forma-preview.zip` from the `forma-app` branch on GitHub, extract it, and open `forma-preview.html` in a browser with WebGL support. The HTML bundles the anatomy model, images, fonts, and document parsers; no Node installation or server is required for that copy. Local file navigation is blocked by this environment's managed browser, so the standalone copy is tested through an internal HTTP server with all assets embedded.
+Download `delivery/forma-preview.zip` from the `forma-app` branch on GitHub, extract it, and open `forma-preview.html` in a browser with WebGL support. The HTML bundles the anatomy model, images, fonts, and document parsers; no Node installation or server is required for that copy. The standalone copy embeds the model assets, image-reader worker/engine/language, reference images and parsers. Its embedded HTTP-served workflows are tested; this environment blocks direct file:// browser navigation. Verification results are recorded in delivery/VALIDATION.md.
 
 This environment setup screen's Index visualization is not a reliable live preview. Use the GitHub download, not a `/workspace` chat link.
 
@@ -22,7 +22,7 @@ npm run dev -- --port 3000
 
 ## Body and Explore workspace
 
-- One registered body, with selectable structures, tissue regions, and reviewed landmark pins. Highlight in place, slowly focus the camera, isolate, hide, restore, undo, and reset. An optional Focus after selecting setting makes camera focus automatic.
+- One active reference model with selectable source structures. Clicking isolates with a slow camera close-up; Back to body restores context. Landmark-label and whole-muscle checkboxes appear during isolation. Hover, hide, restore, undo and reset remain available.
 - Independent skin, muscle, bone, organ, and connective layer visibility and opacity. Connective controls include cartilage, tendons, ligaments, fascia, capsules, and bursae. Six anatomical camera views, search, and an expanded viewer are available.
 - Spine, shoulder, pelvis, and knee presets; matched-scale vertebra comparison; C1/C2 and individually named cervical, thoracic, and lumbar vertebrae. Reviewed landmark notes distinguish projections, facets, and foramina. Source markers hide when occluded or their required context is hidden.
 - Whole muscles group source components on the same side. Pectoralis major has clavicular and sternocostal heads plus the source's abdominal region. Tissue regions are not presented as separate complete muscles.
@@ -33,7 +33,7 @@ npm run dev -- --port 3000
 
 The bundled Z-Anatomy atlas has 4,291 source-derived parts, including tissue surfaces and attachment illustrations. It preserves bone and joint source tessellation and shared coordinates. It does **not** provide Complete Anatomy's proprietary assets, photorealistic skin, or muscle fiber textures. Source anatomy can contain imperfections. Many small catalog structures still have identification/general-role notes rather than detailed reviewed actions, attachments, and innervation. Parent notes may apply to multiple muscle heads and are labeled accordingly.
 
-549 original skeletal annotation endpoints are recorded; the explicitly curated subset in `src/landmarkCatalog.ts` has explanatory notes. This is not a complete landmark map for every bone. Quiz eligibility is explicit, never inferred from catalog names. The source is a male reference; a complete female model and female-specific organs are not bundled. The female option is explicitly unavailable rather than a relabeled silhouette. It is not a patient-specific model.
+All 246 source-classified bone parts have introductory landmark, joint and representative attachment guides. Of 549 recorded source annotation endpoints, 548 pass assigned-source-object coordinate checks; one misplaced source marker is excluded. Only explicitly curated landmarks enter graded quizzes. Additional attributed anatomy readings and exact Uberon definitions expand study coverage; see STUDY_DATA_COVERAGE.md. A separate HRA female organ reference provides reproductive organs, body surface and selected organ interiors, with different musculoskeletal coverage from the male atlas. Neither model is patient-specific.
 
 2D reference plates and original educational schematics retain their previous coverage and limitations. Tissue diagrams are not photomicrographs. Display colors are illustrative.
 
@@ -41,7 +41,7 @@ The bundled Z-Anatomy atlas has 4,291 source-derived parts, including tissue sur
 
 Scoped multiple-choice, typed identification, illustrated tissue/muscle questions, and 2D muscle click questions remain available. Combine system and tissue topics, choose Foundations or Detailed, use practice/exam mode, set a timer, retry mistakes, and save difficult questions. Quiz generation remains restricted to the original structured study content or explicitly reviewed course cards; the entire 3D metadata catalog is not automatically treated as a verified quiz bank.
 
-PDF text and `.pptx` slide extraction preserves page/slide references. Scanned pages and images require manual transcription and review. No course material goes to a server or AI service. Extracted text, themes, progress, and bookmarks use localStorage; originals use IndexedDB. Clearing browser data removes them. Browser-local data does not automatically move between different origins or files.
+PDF text and `.pptx` slide extraction preserves page/slide references. In custom study workspaces, local English OCR reads images and up to 20 scanned PDF pages; extracted text and structure matches require review. No course material goes to a server or AI service. Extracted text, themes, progress, and bookmarks use localStorage; originals use IndexedDB. Clearing browser data removes them. Browser-local data does not automatically move between different origins or files.
 
 ## Validation
 
@@ -82,7 +82,7 @@ The scene has graphite, ivory, and midnight gradients, and anatomical view names
 
 Structure-to-tissue links open diagrams or published microscopy plates over the same camera/selection. Photo plates retain source labels, credits, and specimen captions, including animal specimens. Not every subtype has a matching photo; overview plates are identified as such. Prepared heart and magnified airway diagrams are schematics, not validated mesh cross-sections.
 
-Use + beside Body/Explore to upload PDF/PPTX/text or transcribe an image, review exact structures/sides/components, and save an independent study model. Files are parsed locally without an AI/OCR service. Originals use IndexedDB; notes/references, collections, results and viewing settings use localStorage. New storage keys preserve the original bookmark/result/course-card keys. Each collection has its own layers, selection and camera. Quizzes and games stay within confirmed IDs.
+Use + beside Body/Explore to upload images/PDF/PPTX/text, review OCR and exact structures/sides/components, and save an independent study guide and linked model. Files are parsed locally with bundled English OCR, without a remote AI or OCR service. Originals use IndexedDB; notes/references, collections, results and viewing settings use localStorage. New storage keys preserve the original bookmark/result/course-card keys. Each collection has its own layers, selection and camera. Quizzes and games stay within confirmed IDs.
 
 PT / AT introduces regional anatomy and injury concepts, general healing stages, and exercise examples with precautions, regressions/progressions and source links. It is not diagnosis or individualized treatment. AAOS/NHS source retrieval was blocked by network policy, so current clinical revision dates/guideline conformance have not been verified. No exercise videos are copied or fabricated.
 
@@ -91,3 +91,14 @@ Games provide name/function matching, memory pairs, tissue-diagram identificatio
 See [IMPLEMENTATION_CHECKLIST.md](IMPLEMENTATION_CHECKLIST.md) for every requirement, completed work and remaining asset/verification limits, and [LICENSES.md](LICENSES.md) for noncommercial website/app distribution. No paid service is required.
 
 The normal production build prepares `dist/legal/` with attribution, media-license notes, the requirement checklist, and collected software/font notices. Keep this folder and the source-specific license files under `dist/anatomy/` and `dist/models/` when hosting the website/app. The standalone ZIP includes these notices as separate files.
+
+## Latest requested workflow improvements
+
+- **Organ dissection:** Dissect organ opens source components and available published section references. Heart chamber walls can be removed to inspect actual septum/valve/papillary components. Lungs support side/lobe groups and bronchial-tree reveal, linked to the bronchiole–alveolus teaching guide. Organs without a modeled interior retain an explicit surface-only notice and an available source section plate.
+- **Visible tissue layers:** Dedicated ligament switch in the sidebar, individual knee tissue checkboxes, staged cover removal, displaced exploded view warning, and 3D cartilage examples linked to the tissue atlas. Source articular surface regions are distinguished from full tissue volumes.
+- **Pictures to guides:** Upload an image, scan, PDF, slide deck or notes. Bundled local English OCR reads image labels and the first 20 scanned PDF pages; upright, clear print works best. Review/correct text and side/component matches. Saved tabs include the original image, a written study guide, personal explanations, learned checks, a downloadable/printable HTML guide, and a separately scoped 3D model of confirmed available anatomy. A picture is not a reconstruction of hidden geometry. Unlabeled images need manual topic/structure identification.
+- **2D and tissues:** High-resolution published reference plates with zoom and direct 3D search; original interactive overview retained. Tissue views distinguish actual micrographs, diagrams, mixed-specimen references and missing matched specimens. Comparisons and body-camera return remain available.
+- **Games:** Choose a region/collection, check exact structures, then practice. Untimed default; up to 24 structures per session (8 for memory). No silent difficulty-based scope changes.
+- **PT/AT:** Regional anatomy preview and direct structure links, injury concepts, healing/approach education, technique-focused exercise cards, cautions and variations, linked clinical instructions. Current external guideline revisions remain unverified where source access is blocked; no personalized plan or unlicensed video is generated.
+
+`npm test` covers content/provenance and source geometry; `npm run test:e2e` includes original workflows and the new OCR/dissection/checklist acceptance suite. User storage keys and existing quiz/bookmark/course progress are preserved.

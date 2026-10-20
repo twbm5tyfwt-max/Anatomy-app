@@ -1,3 +1,6 @@
+import { AnatomyReading } from "./AnatomyReading";
+import { ReferenceDefinition } from "./ReferenceDefinition";
+import { HraExplorer, organRegion } from "./HraExplorer";
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowLeft,
@@ -158,7 +161,9 @@ export function Explorer3D({
     [selected, setSelected] = useState<string | null>(
       savedState.current?.selected || null,
     ),
-    [scope, setScope] = useState<"whole" | "component" | "tissue">("whole");
+    [scope, setScope] = useState<"whole" | "component" | "tissue">(
+      savedState.current?.selectionScope || "component",
+    );
   const [hidden, setHidden] = useState<string[]>(
       savedState.current?.hidden || [],
     ),
@@ -179,9 +184,10 @@ export function Explorer3D({
       ...savedState.current?.layers,
     }),
     [layerMenu, setLayerMenu] = useState<string | null>(null);
-  const [labels, setLabels] = useState(true),
-    [quality, setQuality] = useState(true),
-    [autoFocus, setAutoFocus] = useState(false);
+  const labels = true;
+  const [quality, setQuality] = useState(true);
+  const [showLandmarks, setShowLandmarks] = useState(false);
+  const [organOpen, setOrganOpen] = useState(false);
   const [view, setView] = useState<CameraView>("front"),
     [search, setSearch] = useState(""),
     [browse, setBrowse] = useState(false),
@@ -237,7 +243,9 @@ export function Explorer3D({
       ? displayName(model)
       : model.name
     : "";
-  const primaryGroup = model ? displayGroup(model).filter((m) => !m.parentId) : [];
+  const primaryGroup = model
+    ? displayGroup(model).filter((m) => !m.parentId)
+    : [];
   const localLandmarks = base ? landmarksFor(base.id) : [];
   const attachmentCandidates = modelParts.filter(
     (m) =>
@@ -269,6 +277,7 @@ export function Explorer3D({
     setAttachmentKind(null);
     setHover(null);
     setCandidates([]);
+    setShowLandmarks(false);
   }
   function restore() {
     remember();
@@ -338,7 +347,12 @@ export function Explorer3D({
     });
     setHidden((h) => h.filter((id) => !ids.includes(id)));
   }
-  function pick(id: string, focus = false) {
+  function openTissue(id: string, alveoli?: boolean) {
+    const camera = api.current?.snapshot();
+    if (camera) api.current?.restore(camera);
+    onTissue?.(id, alveoli);
+  }
+  function pick(id: string, focus = true) {
     if (compare) setCompare(false);
     const raw = byId.get(id);
     if (!raw) {
@@ -350,6 +364,7 @@ export function Explorer3D({
     const ids = m.parentId ? [m.id] : children([m.id]);
     setSelected(m.id);
     setScope(nextScope);
+    setShowLandmarks(false);
     setLandmark(null);
     setAttachmentKind(null);
     setInfoTab("Overview");
@@ -362,10 +377,11 @@ export function Explorer3D({
       setIsolated(ids);
       requestFrame(ids, "front");
       setView("front");
-    } else if (autoFocus) requestFrame(ids);
+    }
   }
   useEffect(() => {
     if (!request.version) return;
+    setVariant("male");
     const m = request.id.startsWith("model:")
       ? byId.get(request.id.slice(6))
       : modelParts.find((m) => modelMatchesStudy(m, request.id));
@@ -402,6 +418,7 @@ export function Explorer3D({
   useEffect(() => {
     const f = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
+        setOrganOpen(false);
         setExpanded(false);
         setBrowse(false);
         setLayerMenu(null);
@@ -454,6 +471,7 @@ export function Explorer3D({
   function focusLandmark(l: AnatomyLandmark) {
     setLandmark(l);
     setInfoTab("Landmarks");
+    setShowLandmarks(true);
     const ids = children(l.contextIds);
     ensure(ids);
     setIsolated(ids);
@@ -492,6 +510,7 @@ export function Explorer3D({
     requestFrame(context.length ? context : ids, "front");
   }
   function preset(name: string) {
+    setVariant("male");
     remember();
     clear();
     setCompare(false);
@@ -509,7 +528,8 @@ export function Explorer3D({
       tendons: 1,
       muscles: 1,
       fascia: 1,
-      organs: 1,
+      organs: name === "Knee" ? 0 : 1,
+      skin: 0,
     });
     let parts: ModelPart[] = [],
       frame: string[] = [];
@@ -565,12 +585,50 @@ export function Explorer3D({
       .map((m) => m.id)
       .filter((id) => !allowedIds || allowedIds.includes(id));
     onVisibleChange([
-      ...new Set(parts.filter((m) => ids.includes(m.id)).map((m) => m.system)),
+      ...new Set(
+        parts
+          .filter(
+            (m) =>
+              ids.includes(m.id) &&
+              m.layer !== "skin" &&
+              (name !== "Knee" || m.layer !== "organs"),
+          )
+          .map((m) => m.system),
+      ),
     ]);
     setIsolated(ids);
     setView("front");
     requestFrame(frame.length ? frame : ids, "front");
   }
+  useEffect(() => {
+    if (workspaceId !== "main") return;
+    const toggle = (e: Event) => {
+      const enabled = !!(e as CustomEvent).detail;
+      setVariant("male");
+      setIsolated(null);
+      setLayers((l) => ({ ...l, ligaments: enabled ? 1 : 0 }));
+      if (enabled) {
+        onVisibleChange([
+          ...new Set([
+            ...visible,
+            ...modelParts
+              .filter((m) => m.layer === "ligaments")
+              .map((m) => m.system),
+          ]),
+        ]);
+      }
+    };
+    window.addEventListener("forma-ligaments", toggle);
+    return () => window.removeEventListener("forma-ligaments", toggle);
+  }, [workspaceId, visible]);
+  useEffect(() => {
+    if (workspaceId === "main")
+      window.dispatchEvent(
+        new CustomEvent("forma-ligament-state", {
+          detail: layers.ligaments > 0,
+        }),
+      );
+  }, [workspaceId, layers.ligaments]);
   useEffect(() => {
     const f = (e: Event) => {
       if (workspaceId === "main") preset((e as CustomEvent).detail);
@@ -648,7 +706,9 @@ export function Explorer3D({
           .filter(
             (m) =>
               (dissectionStep >= 1 &&
-                /patella|quadriceps.*tendon/i.test(m.name)) ||
+                /patella|quadriceps.*tendon|tendons.*(?:rectus femoris|vastus)/i.test(
+                  m.name,
+                )) ||
               (dissectionStep >= 2 && m.layer === "capsules") ||
               (dissectionStep >= 3 && m.layer === "bones"),
           )
@@ -660,6 +720,7 @@ export function Explorer3D({
       : undefined;
   const snapshotRef = useRef({
     selected,
+    selectionScope: scope,
     hidden,
     isolated,
     layers,
@@ -668,6 +729,7 @@ export function Explorer3D({
   });
   snapshotRef.current = {
     selected,
+    selectionScope: scope,
     hidden,
     isolated,
     layers,
@@ -687,7 +749,7 @@ export function Explorer3D({
       save();
       window.removeEventListener("pagehide", save);
     };
-  }, [workspaceId, selected, hidden, isolated, layers, visible]);
+  }, [workspaceId, selected, scope, hidden, isolated, layers, visible]);
   const sceneProps = {
     visible,
     selected: selectedIds,
@@ -706,7 +768,7 @@ export function Explorer3D({
     quality,
     background,
     onCandidates: setCandidates,
-    landmarks: infoTab === "Landmarks" && !exploded ? localLandmarks : [],
+    landmarks: isolated && showLandmarks && !exploded ? localLandmarks : [],
     activeLandmark: landmark?.id,
     labels,
     onSelect: (id: string) => pick(id),
@@ -724,10 +786,38 @@ export function Explorer3D({
       }
     },
   };
+  if (variant === "female")
+    return (
+      <HraExplorer
+        appearance={appearance}
+        initialRegion={exploreRegion || (model ? organRegion(model) : "Body")}
+        onMale={() => setVariant("male")}
+        onTissue={onTissue}
+      />
+    );
   return (
     <div
       className={`pro-atlas ${expanded ? "is-expanded" : ""} ${compare ? "pro-is-comparing" : ""} ${appearance.studio === "adaptive" && appearance.mode === "light" ? "pro-light-studio" : ""}`}
     >
+      {organOpen && model && (
+        <div className="modal-backdrop organ-modal-backdrop">
+          <div
+            className="organ-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Organ dissection"
+          >
+            <HraExplorer
+              appearance={appearance}
+              initialRegion={organRegion(model)}
+              fallbackPart={model}
+              organOnly
+              onMale={() => setOrganOpen(false)}
+              onTissue={onTissue}
+            />
+          </div>
+        </div>
+      )}
       <header className="pro-header">
         <div
           className="pro-workspace-tabs"
@@ -761,6 +851,14 @@ export function Explorer3D({
             </button>
           )}
         </div>
+        {!allowedIds && (
+          <button
+            className="pro-reference"
+            onClick={() => setVariant("female")}
+          >
+            Female reference
+          </button>
+        )}
         <div className="pro-search">
           <Search size={15} />
           <input
@@ -862,6 +960,36 @@ export function Explorer3D({
           </label>
           {exploreRegion === "Knee" && (
             <>
+              <div className="knee-layer-checks">
+                {[
+                  "bones",
+                  "cartilage",
+                  "ligaments",
+                  "tendons",
+                  "capsules",
+                  "bursae",
+                ].map((l) => (
+                  <label key={l}>
+                    <input
+                      type="checkbox"
+                      checked={(layers[l] || 0) > 0}
+                      onChange={(e) => {
+                        setLayers((v) => ({
+                          ...v,
+                          [l]: e.target.checked ? 1 : 0,
+                        }));
+                        if (e.target.checked)
+                          ensure(
+                            currentRegionParts
+                              .filter((m) => m.layer === l)
+                              .map((m) => m.id),
+                          );
+                      }}
+                    />
+                    {l === "cartilage" ? "Articular surfaces & menisci" : l}
+                  </label>
+                ))}
+              </div>
               <label>
                 Dissection{" "}
                 <select
@@ -897,13 +1025,26 @@ export function Explorer3D({
             <span>
               Native source components; use the list to hide chambers. Internal
               surface completeness is not validated.{" "}
-              <button onClick={() => onTissue?.("cardiac-muscle")}>
+              <button
+                onClick={() => {
+                  const heart = regionParts("Heart").find(
+                    (m) => m.layer === "organs",
+                  );
+                  if (heart) {
+                    pick(heart.id);
+                    setOrganOpen(true);
+                  }
+                }}
+              >
+                Open 3D heart dissection
+              </button>
+              <button onClick={() => openTissue("cardiac-muscle")}>
                 Prepared heart diagram & tissue
               </button>
             </span>
           )}
           {exploreRegion === "Lungs" && (
-            <button onClick={() => onTissue?.("simple-squamous", true)}>
+            <button onClick={() => openTissue("simple-squamous", true)}>
               Airway → alveolus magnified guide
             </button>
           )}
@@ -917,6 +1058,60 @@ export function Explorer3D({
             </small>
           )}
         </section>
+      )}
+      {workspace === "explore" && (
+        <details className="cartilage-examples">
+          <summary>Learn cartilage on the 3D model</summary>
+          <p>
+            Hyaline cartilage gives joint surfaces a low-friction covering.
+            Fibrocartilage handles compression and tension in menisci/discs.
+            Elastic cartilage supports flexible structures such as the
+            epiglottis.
+          </p>
+          <div>
+            {(
+              [
+                [
+                  "Hyaline · femoral articular surface",
+                  modelParts.find(
+                    (m) =>
+                      m.layer === "cartilage" &&
+                      /femur/i.test(m.name) &&
+                      /right/i.test(m.name),
+                  ),
+                ],
+                [
+                  "Fibrocartilage · medial meniscus",
+                  modelParts.find((m) => m.name === "Right medial meniscus"),
+                ],
+                [
+                  "Elastic cartilage · epiglottis",
+                  modelParts.find(
+                    (m) => m.layer === "cartilage" && /epiglott/i.test(m.name),
+                  ),
+                ],
+              ] as const
+            ).map(([label, m]) => (
+              <button
+                key={label}
+                disabled={!m}
+                onClick={() => {
+                  setExploreRegion("");
+                  setExploded(false);
+                  setDissectionStep(0);
+                  if (m) pick(m.id);
+                }}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <small>
+            These are source-modeled surfaces or structures. Some articular
+            cartilage is a classified surface patch, not a full tissue-thickness
+            volume.
+          </small>
+        </details>
       )}
       <div className={`pro-workspace ${study ? "has-selection" : ""}`}>
         <section className="pro-viewer">
@@ -1244,13 +1439,46 @@ export function Explorer3D({
             )}
           </div>
           <div className="pro-selection-strip">
-            <button
-              onClick={() =>
-                setInfoTab(infoTab === "Landmarks" ? "Overview" : "Landmarks")
-              }
-            >
-              Landmark labels
-            </button>
+            {isolated && model && (
+              <>
+                <label>
+                  <input
+                    type="checkbox"
+                    disabled={!localLandmarks.length}
+                    title={
+                      localLandmarks.length
+                        ? "Show source-mapped landmark points"
+                        : "No mapped points; use the anatomical text guide in Landmarks"
+                    }
+                    checked={showLandmarks}
+                    onChange={(e) => {
+                      setShowLandmarks(e.target.checked);
+                      if (e.target.checked) setInfoTab("Landmarks");
+                      else setLandmark(null);
+                    }}
+                  />
+                  Landmark labels
+                </label>
+                {primaryGroup.length > 1 && (
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={scope === "whole"}
+                      onChange={(e) => {
+                        const next = e.target.checked
+                          ? displayGroup(model).map((m) => m.id)
+                          : children([base?.id || model.id]);
+                        setScope(e.target.checked ? "whole" : "component");
+                        setIsolated(next);
+                        ensure(next);
+                        requestFrame(next);
+                      }}
+                    />
+                    Whole muscle
+                  </label>
+                )}
+              </>
+            )}
             <label>
               Studio{" "}
               <select
@@ -1268,14 +1496,6 @@ export function Explorer3D({
             <label>
               <input
                 type="checkbox"
-                checked={labels}
-                onChange={(e) => setLabels(e.target.checked)}
-              />
-              Labels
-            </label>
-            <label>
-              <input
-                type="checkbox"
                 checked={quality}
                 onChange={(e) => setQuality(e.target.checked)}
               />
@@ -1289,14 +1509,12 @@ export function Explorer3D({
                 onChange={(e) => setVariant(e.target.value)}
               >
                 <option value="male">Male source anatomy</option>
-                <option value="female" disabled>
-                  Female full model — asset unavailable
-                </option>
+                <option value="female">Female organ reference (HRA)</option>
               </select>
             </label>
             <span>
-              Shared anatomy is not gender identity. A female-specific 3D
-              dataset has not been licensed/bundled.
+              Reference anatomy is separate from gender identity. Female
+              organ-reference coverage differs from the male atlas.
             </span>
           </div>
         </section>
@@ -1352,9 +1570,22 @@ export function Explorer3D({
                 {getRegion(model)}
               </p>
               <div className="linked-learning">
-                <button onClick={() => onTissue?.(associatedTissue(model))}>
-                  Tissue & microscopic features
-                </button>
+                {study.kind === "Tooth" ? (
+                  <p className="small muted">
+                    Tooth hard tissues include enamel, dentin and cementum; they
+                    are not compact bone. A matched dental microscopy reference
+                    is not bundled.
+                  </p>
+                ) : (
+                  <>
+                    {" "}
+                    <button onClick={() => openTissue(associatedTissue(model))}>
+                      {/nucleus pulposus/i.test(model.name)
+                        ? "Surrounding annulus tissue"
+                        : "Tissue & microscopic features"}
+                    </button>
+                  </>
+                )}
                 {onPT && (
                   <button onClick={() => onPT(getRegion(model))}>
                     PT / AT connections
@@ -1390,29 +1621,6 @@ export function Explorer3D({
                   <p>{spineRegionNotes[spineRegion(base!.name)]}</p>
                 </div>
               )}
-              {primaryGroup.length > 1 && (
-                <details className="pro-components">
-                  <summary>
-                    Muscle regions <span>{primaryGroup.length}</span>
-                  </summary>
-                  {primaryGroup.map((m) => (
-                    <button
-                      key={m.id}
-                      onClick={() => {
-                        setSelected(m.id);
-                        setScope("component");
-                      }}
-                    >
-                      {componentName(m)}
-                    </button>
-                  ))}
-                  {scope !== "whole" && (
-                    <button onClick={() => setScope("whole")}>
-                      Select whole muscle
-                    </button>
-                  )}
-                </details>
-              )}
               {modelParts.some((m) => m.parentId === model.id) && (
                 <details>
                   <summary>Associated tissue surfaces</summary>
@@ -1425,6 +1633,14 @@ export function Explorer3D({
                     ))}
                 </details>
               )}
+              {model.layer === "organs" && (
+                <button
+                  className="pro-study-button"
+                  onClick={() => setOrganOpen(true)}
+                >
+                  Dissect organ · internal views
+                </button>
+              )}
               <div className="pro-info-tabs">
                 {["Overview", "Landmarks", "Attachments"].map((t) => (
                   <button
@@ -1434,16 +1650,43 @@ export function Explorer3D({
                       setInfoTab(t);
                     }}
                   >
-                    {t}
+                    {t === "Attachments" && base?.layer === "organs"
+                      ? "Relationships"
+                      : t}
                   </button>
                 ))}
               </div>
               {infoTab === "Overview" ? (
                 <div className="pro-notes">
-                  <h4>Function</h4>
-                  <p>{study.function}</p>
+                  <h4>
+                    {study.detailLevel === "identification"
+                      ? "Anatomical overview"
+                      : "Function"}
+                  </h4>
+                  <p style={{ whiteSpace: "pre-wrap" }}>{study.function}</p>
+                  <ReferenceDefinition id={base?.id || model.id} />
+                  <AnatomyReading id={base?.id || model.id} />
                   <h4>Location & relationships</h4>
                   <p>{study.location}</p>
+                  <h4>Identifying features</h4>
+                  <p>{study.features}</p>
+                  {(["parts", "tissues", "route", "supply"] as const)
+                    .filter((k) => study[k])
+                    .map((k) => (
+                      <section key={k}>
+                        <h4>
+                          {
+                            {
+                              parts: "Major parts",
+                              tissues: "Associated tissues",
+                              route: "Course",
+                              supply: "Supply / drainage",
+                            }[k]
+                          }
+                        </h4>
+                        <p>{study[k]}</p>
+                      </section>
+                    ))}
                   {study.actions && (
                     <>
                       <h4>Actions</h4>
@@ -1460,6 +1703,17 @@ export function Explorer3D({
                 </div>
               ) : infoTab === "Landmarks" ? (
                 <div className="pro-landmarks">
+                  <AnatomyReading id={base?.id || model.id} topic="landmarks" />
+                  {study.landmarks && (
+                    <section className="bone-landmark-guide">
+                      <h4>Anatomical landmark guide</h4>
+                      <p>{study.landmarks}</p>
+                      <small>
+                        Text identification guide. Only separately
+                        source-anchored points appear on the model.
+                      </small>
+                    </section>
+                  )}
                   {landmark ? (
                     <div className="pro-landmark-detail">
                       <button
@@ -1476,6 +1730,7 @@ export function Explorer3D({
                       <p>{landmark.function}</p>
                       <h4>Distinguishing features</h4>
                       <p>{landmark.features}</p>
+                      <AnatomyReading id={landmark.id} />
                       {landmark.contents && (
                         <>
                           <h4>What passes through</h4>
@@ -1533,6 +1788,22 @@ export function Explorer3D({
                 </div>
               ) : (
                 <div className="pro-notes">
+                  <AnatomyReading
+                    id={base?.id || model.id}
+                    topic="attachments"
+                  />
+                  {base?.layer === "bones" && (
+                    <>
+                      <h4>Articulations</h4>
+                      <p>{study.articulations}</p>
+                      <h4>Muscle & ligament attachments</h4>
+                      <p>{study.attachments}</p>
+                      <small>
+                        Representative relationships; a text attachment is
+                        distinct from an available 3D attachment patch.
+                      </small>
+                    </>
+                  )}
                   {base?.layer === "muscles" &&
                     /head|part of|belly of/i.test(base.name) && (
                       <p>
@@ -1586,11 +1857,11 @@ export function Explorer3D({
                       </div>
                     ) : null,
                   )}
-                  {!study.origin && (
+                  {!study.origin && base?.layer !== "bones" && (
                     <p>
-                      Detailed attachment/innervation notes are not yet reviewed
-                      for this structure. Source overlays are available only
-                      where the atlas provides them.
+                      {base?.layer === "organs"
+                        ? "Read the cited anatomical reference for parts, course and relationships. Skeletal-muscle origin/insertion fields do not apply to most organs and vessels."
+                        : "See the anatomical structure/attachment reading above where available. Source patches identify only the atlas-provided attachment regions; a complete reviewed innervation and point map is not implied."}
                     </p>
                   )}
                 </div>
@@ -1617,8 +1888,9 @@ export function Explorer3D({
               <span className="pro-eyebrow">ANATOMY AT YOUR FINGERTIPS</span>
               <h2>Select. Explore. Understand.</h2>
               <p>
-                Click a structure on the body to highlight it in place. Use
-                Focus for a slow close-up, or Isolate to study it on its own.
+                Click a structure to isolate it and move smoothly into a
+                close-up. Rotate to inspect it; use Back to body to restore
+                context.
               </p>
               <div className="pro-start-actions">
                 <button onClick={() => pick(sourceId("Vertebra L3"), true)}>
@@ -1631,21 +1903,11 @@ export function Explorer3D({
                   Shoulder relationships <Focus size={14} />
                 </button>
               </div>
-              <div className="pro-display-options">
-                <h4>Display</h4>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={autoFocus}
-                    onChange={(e) => setAutoFocus(e.target.checked)}
-                  />
-                  Focus after selecting
-                </label>
-                <p>
-                  Focus moves the camera smoothly; anatomy stays in its
-                  registered position.
-                </p>
-              </div>
+              <p>
+                Clicking isolates the selected structure with a slow close-up.
+                Use Back to body to restore context. Landmark and whole-muscle
+                checkboxes appear during isolation.
+              </p>
               <div className="pro-atlas-source">
                 <strong>Z-Anatomy atlas</strong>
                 <p>

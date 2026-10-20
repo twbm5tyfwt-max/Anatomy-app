@@ -34351,7 +34351,7 @@
         ]
       ],
       "triangles": 5158,
-      "layer": "cartilage",
+      "layer": "organs",
       "sourceName": "Falx cerebri",
       "sourceMaterial": "Cartilage",
       "region": "Head & neck",
@@ -48611,7 +48611,7 @@
         ]
       ],
       "triangles": 108,
-      "layer": "cartilage",
+      "layer": "organs",
       "sourceName": "Inferior tarsus.l",
       "sourceMaterial": "Cartilage",
       "region": "Head & neck",
@@ -48643,7 +48643,7 @@
         ]
       ],
       "triangles": 108,
-      "layer": "cartilage",
+      "layer": "organs",
       "sourceName": "Inferior tarsus.r",
       "sourceMaterial": "Cartilage",
       "region": "Head & neck",
@@ -59626,7 +59626,7 @@
         ]
       ],
       "triangles": 914,
-      "layer": "cartilage",
+      "layer": "organs",
       "sourceName": "Left coronary leaflet",
       "sourceMaterial": "Cartilage",
       "region": "Torso",
@@ -76551,7 +76551,7 @@
         ]
       ],
       "triangles": 316,
-      "layer": "cartilage",
+      "layer": "organs",
       "sourceName": "Non-coronary leaflet",
       "sourceMaterial": "Cartilage",
       "region": "Torso",
@@ -77070,7 +77070,7 @@
         ]
       ],
       "triangles": 960,
-      "layer": "cartilage",
+      "layer": "organs",
       "sourceName": "Nucleus pulposus C2-C3",
       "sourceMaterial": "Cartilage",
       "region": "Torso",
@@ -77103,7 +77103,7 @@
         ]
       ],
       "triangles": 960,
-      "layer": "cartilage",
+      "layer": "organs",
       "sourceName": "Nucleus pulposus C3-C4",
       "sourceMaterial": "Cartilage",
       "region": "Torso",
@@ -77136,7 +77136,7 @@
         ]
       ],
       "triangles": 960,
-      "layer": "cartilage",
+      "layer": "organs",
       "sourceName": "Nucleus pulposus C4-C5",
       "sourceMaterial": "Cartilage",
       "region": "Torso",
@@ -77169,7 +77169,7 @@
         ]
       ],
       "triangles": 960,
-      "layer": "cartilage",
+      "layer": "organs",
       "sourceName": "Nucleus pulposus C5-C6",
       "sourceMaterial": "Cartilage",
       "region": "Torso",
@@ -77202,7 +77202,7 @@
         ]
       ],
       "triangles": 960,
-      "layer": "cartilage",
+      "layer": "organs",
       "sourceName": "Nucleus pulposus C6-C7",
       "sourceMaterial": "Cartilage",
       "region": "Torso",
@@ -77234,7 +77234,7 @@
         ]
       ],
       "triangles": 960,
-      "layer": "cartilage",
+      "layer": "organs",
       "sourceName": "Nucleus pulposus C7-T1",
       "sourceMaterial": "Cartilage",
       "region": "Torso",
@@ -77267,7 +77267,7 @@
         ]
       ],
       "triangles": 960,
-      "layer": "cartilage",
+      "layer": "organs",
       "sourceName": "Nucleus pulposus L1-L2",
       "sourceMaterial": "Cartilage",
       "region": "Torso",
@@ -77300,7 +77300,7 @@
         ]
       ],
       "triangles": 960,
-      "layer": "cartilage",
+      "layer": "organs",
       "sourceName": "Nucleus pulposus L2-L3",
       "sourceMaterial": "Cartilage",
       "region": "Torso",
@@ -77333,7 +77333,7 @@
         ]
       ],
       "triangles": 960,
-      "layer": "cartilage",
+      "layer": "organs",
       "sourceName": "Nucleus pulposus L3-L4",
       "sourceMaterial": "Cartilage",
       "region": "Torso",
@@ -77366,7 +77366,7 @@
         ]
       ],
       "triangles": 960,
-      "layer": "cartilage",
+      "layer": "organs",
       "sourceName": "Nucleus pulposus L4-L5",
       "sourceMaterial": "Cartilage",
       "region": "Torso",
@@ -77399,7 +77399,7 @@
         ]
       ],
       "triangles": 960,
-      "layer": "cartilage",
+      "layer": "organs",
       "sourceName": "Nucleus pulposus L5-S1",
       "sourceMaterial": "Cartilage",
       "region": "Torso",
@@ -77432,7 +77432,7 @@
         ]
       ],
       "triangles": 960,
-      "layer": "cartilage",
+      "layer": "organs",
       "sourceName": "Nucleus pulposus T1-T2",
       "sourceMaterial": "Cartilage",
       "region": "Torso",
@@ -77465,7 +77465,7 @@
         ]
       ],
       "triangles": 960,
-      "layer": "cartilage",
+      "layer": "organs",
       "sourceName": "Nucleus pulposus T10-T11",
       "sourceMaterial": "Cartilage",
       "region": "Torso",
@@ -77498,7 +77498,7 @@
         ]
       ],
       "triangles": 960,
-      "layer": "cartilage",
+      "layer": "organs",
       "sourceName": "Nucleus pulposus T11-T12",
       "sourceMaterial": "Cartilage",
       "region": "Torso",
@@ -77532,7 +77532,7 @@
         ]
       ],
       "triangles": 960,
-      "layer": "cartilage",
+      "layer": "organs",
       "sourceName": "Nucleus pulposus T12-L1",
       "sourceMaterial": "Cartilage",
       "region": "Torso",
@@ -77565,7 +77565,7 @@
         ]
       ],
       "triangles": 960,
-      "layer": "cartilage",
+      "layer": "organs",
       "sourceName": "Nucleus pulposus T2-T3",
       "sourceMaterial": "Cartilage",
       "region": "Torso",
@@ -77598,7 +77598,7 @@
         ]
       ],
       "triangles": 960,
-      "layer": "cartilage",
+      "layer": "organs",
       "sourceName": "Nucleus pulposus T3-T4",
       "sourceMaterial": "Cartilage",
       "region": "Torso",
@@ -77631,7 +77631,7 @@
         ]
       ],
       "triangles": 960,
-      "layer": "cartilage",
+      "layer": "organs",
       "sourceName": "Nucleus pulposus T4-T5",
       "sourceMaterial": "Cartilage",
       "region": "Torso",
@@ -77664,7 +77664,7 @@
         ]
       ],
       "triangles": 960,
-      "layer": "cartilage",
+      "layer": "organs",
       "sourceName": "Nucleus pulposus T5-T6",
       "sourceMaterial": "Cartilage",
       "region": "Torso",
@@ -77697,7 +77697,7 @@
         ]
       ],
       "triangles": 960,
-      "layer": "cartilage",
+      "layer": "organs",
       "sourceName": "Nucleus pulposus T6-T7",
       "sourceMaterial": "Cartilage",
       "region": "Torso",
@@ -77730,7 +77730,7 @@
         ]
       ],
       "triangles": 960,
-      "layer": "cartilage",
+      "layer": "organs",
       "sourceName": "Nucleus pulposus T7-T8",
       "sourceMaterial": "Cartilage",
       "region": "Torso",
@@ -77763,7 +77763,7 @@
         ]
       ],
       "triangles": 960,
-      "layer": "cartilage",
+      "layer": "organs",
       "sourceName": "Nucleus pulposus T8-T9",
       "sourceMaterial": "Cartilage",
       "region": "Torso",
@@ -77796,7 +77796,7 @@
         ]
       ],
       "triangles": 960,
-      "layer": "cartilage",
+      "layer": "organs",
       "sourceName": "Nucleus pulposus T9-T10",
       "sourceMaterial": "Cartilage",
       "region": "Torso",
@@ -104539,7 +104539,7 @@
         ]
       ],
       "triangles": 918,
-      "layer": "cartilage",
+      "layer": "organs",
       "sourceName": "Right coronary leaflet",
       "sourceMaterial": "Cartilage",
       "region": "Torso",
@@ -119121,7 +119121,7 @@
         ]
       ],
       "triangles": 178,
-      "layer": "cartilage",
+      "layer": "organs",
       "sourceName": "Superior tarsus.l",
       "sourceMaterial": "Cartilage",
       "region": "Head & neck",
@@ -119153,7 +119153,7 @@
         ]
       ],
       "triangles": 178,
-      "layer": "cartilage",
+      "layer": "organs",
       "sourceName": "Superior tarsus.r",
       "sourceMaterial": "Cartilage",
       "region": "Head & neck",
@@ -123846,7 +123846,7 @@
         ]
       ],
       "triangles": 4480,
-      "layer": "cartilage",
+      "layer": "organs",
       "sourceName": "Tentorium cerebelli.l",
       "sourceMaterial": "Cartilage",
       "region": "Head & neck",
@@ -123878,7 +123878,7 @@
         ]
       ],
       "triangles": 4480,
-      "layer": "cartilage",
+      "layer": "organs",
       "sourceName": "Tentorium cerebelli.r",
       "sourceMaterial": "Cartilage",
       "region": "Head & neck",

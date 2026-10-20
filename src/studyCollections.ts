@@ -5,6 +5,8 @@ export type Reference = {
   text: string;
   kind: "page" | "slide" | "note" | "image";
   fileId?: string;
+  extraction?: string;
+  confidence?: number;
 };
 export type StudyCollection = {
   id: string;
