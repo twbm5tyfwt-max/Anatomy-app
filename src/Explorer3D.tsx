@@ -171,10 +171,16 @@ function Scene(props: SceneProps) {
       );
       const ray = new THREE.Raycaster();
       ray.setFromCamera(pointer, camera);
-      const hit = ray.intersectObjects(
+      const hits = ray.intersectObjects(
         [...records.values()].filter((r) => r.mesh.visible).map((r) => r.mesh),
         false,
-      )[0];
+      );
+      const hit =
+        hits.find(
+          (h) =>
+            (records.get(h.object.userData.modelId)?.material.opacity ?? 1) >
+            0.5,
+        ) || hits[0];
       if (hit) live.current.onSelect(hit.object.userData.modelId);
     };
     renderer.domElement.addEventListener("pointerdown", pointerDown);
@@ -406,6 +412,7 @@ export function Explorer3D({
       setInspect(false);
       setSelected(null);
       setSearch("");
+      setView("front");
       api.current?.reset();
     }
   }, [activeSystem]);
@@ -414,6 +421,7 @@ export function Explorer3D({
     api.current?.view(v);
   }
   function back() {
+    setView("front");
     setInspect(false);
     api.current?.reset();
   }
@@ -544,7 +552,10 @@ export function Explorer3D({
           <div className="scene-side-tools">
             <button
               aria-label="Reset 3D view"
-              onClick={() => api.current?.reset()}
+              onClick={() => {
+                setView("front");
+                api.current?.reset();
+              }}
             >
               <RotateCcw size={17} />
             </button>
