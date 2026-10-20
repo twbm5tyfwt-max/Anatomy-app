@@ -1,4 +1,5 @@
 import { Notebook } from "./Notebook";
+import { bodyModel } from "./modelCatalog";
 import { tissueColor } from "./tissueColors";
 import { AnatomyReading } from "./AnatomyReading";
 import { ReferenceDefinition } from "./ReferenceDefinition";
@@ -51,6 +52,7 @@ import {
   parentModel,
 } from "./modelDisplay";
 import {
+  landmarks,
   landmarksFor,
   spineModels,
   spineCode,
@@ -111,6 +113,29 @@ function primaryIds(sourceNames: string[]) {
   return modelParts
     .filter((m) => !m.parentId && sourceNames.includes(m.sourceName || ""))
     .map((m) => m.id);
+}
+const stem = (n: string) =>
+  n
+    .toLowerCase()
+    .replace(/\b(right|left|first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth|eleventh|twelfth|[0-9]+(st|nd|rd|th)?|[a-z]?[0-9]+)\b/g, "")
+    .replace(/[^a-z]+/g, " ")
+    .trim();
+/** Bones that do have mapped points and look like the same kind (another rib, another vertebra). */
+function similarMapped(name: string) {
+  const want = stem(name).split(" ").pop() || "";
+  const mapped = new Set(landmarks.map((l) => l.modelId));
+  const out = modelParts.filter(
+    (m) =>
+      m.layer === "bones" &&
+      mapped.has(m.id) &&
+      !/left/i.test(m.name) &&
+      want.length > 2 &&
+      stem(m.name).split(" ").pop() === want,
+  );
+  return (out.length
+    ? out
+    : modelParts.filter((m) => m.layer === "bones" && mapped.has(m.id) && !/left/i.test(m.name))
+  ).slice(0, 8);
 }
 function sourceId(name: string) {
   return modelParts.find((m) => m.sourceName === name && !m.parentId)?.id || "";
@@ -926,12 +951,30 @@ export function Explorer3D({
           )}
         </div>
         {!allowedIds && (
-          <button
-            className="pro-reference"
-            onClick={() => setVariant("female")}
-          >
-            Female reference
-          </button>
+          <div className="pro-model-switch" role="group" aria-label="Body model">
+            {(["male", "female"] as const).map((b) => (
+              <button
+                key={b}
+                aria-pressed={bodyModel === b}
+                title={
+                  b === "male"
+                    ? "The full atlas as published"
+                    : "The same full atlas with female reproductive anatomy fitted in and male-only structures removed"
+                }
+                onClick={() => {
+                  if (bodyModel === b) return;
+                  try {
+                    localStorage.setItem("forma-body-model", b);
+                  } catch {
+                    /* storage unavailable: nothing to switch */
+                  }
+                  location.reload();
+                }}
+              >
+                {b === "male" ? "Male" : "Female"}
+              </button>
+            ))}
+          </div>
         )}
         <div className="pro-search">
           <Search size={15} />
@@ -970,6 +1013,16 @@ export function Explorer3D({
           <Maximize size={17} />
         </button>
       </header>
+      {bodyModel === "female" && !allowedIds && (
+        <p className="pro-female-note" role="note">
+          <strong>Female model.</strong> The same full atlas (skeleton, muscles, vessels,
+          nerves, organs), with the 38 female reproductive structures from the Human
+          Reference Atlas fitted into the pelvis and the male-only structures removed.
+          Bone and surface proportions are shared, not female-specific, and organ positions
+          are approximate.{" "}
+          <button onClick={() => setVariant("female")}>Open the full HRA organ reference</button>
+        </p>
+      )}
       {workspace === "explore" && (
         <div className="pro-presets">
           <span>Explore a region</span>
@@ -1882,20 +1935,15 @@ export function Explorer3D({
                   ) : (
                     <>
                       <p>
-                        No reviewed source-anchor map is available for this
-                        structure yet. Detailed points are available on
-                        representative C1, C2, C4, T8, and L3 vertebrae and
-                        selected limb/pelvic bones.
+                        No source-anchored points are mapped on this bone yet,
+                        so none are shown on the model rather than guessing.
+                        The text guide above lists what to look for. These
+                        similar bones do have 3D points:
                       </p>
-                      {[
-                        "Atlas (C1)",
-                        "Axis (C2)",
-                        "Vertebra C4",
-                        "Vertebra T8",
-                        "Vertebra L3",
-                      ].map((n) => (
-                        <button key={n} onClick={() => pick(sourceId(n), true)}>
-                          {n}
+                      {similarMapped(base?.name || model.name).map((m) => (
+                        <button key={m.id} onClick={() => pick(m.id, true)}>
+                          <span>{m.name}</span>
+                          <MapPin size={13} />
                         </button>
                       ))}
                     </>

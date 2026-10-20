@@ -50,4 +50,5 @@ export const anatomyImages: Record<string, string> = {
 export const anatomyModels: Record<string, string> = {
   atlas: "/models/anatomy.glb",
   female: "/models/hra-female.glb",
+  femaleExtras: "/models/female-extras.glb",
 };

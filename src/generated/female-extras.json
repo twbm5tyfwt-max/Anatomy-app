@@ -1,0 +1,1192 @@
+{
+ "offset": [
+  0.0074,
+  0.848,
+  0.0828
+ ],
+ "maleOnly": [
+  "FMA19618",
+  "ZA3d0c79c20acf",
+  "ZA2e6eeeb35025",
+  "ZAa980e4c4bb24",
+  "ZA171386bae091",
+  "ZAa607568e3752",
+  "FMA18257",
+  "FMA18256",
+  "FMA18247",
+  "FMA9600",
+  "ZA52deff6ab538",
+  "ZA0ff4805e4ddc",
+  "FMA7212",
+  "FMA7211"
+ ],
+ "models": [
+  {
+   "id": "HRAcc8fde0c5715",
+   "name": "Cervicovaginal junction",
+   "sourceName": "VH_F_cervicovaginal_junction",
+   "ancestry": [
+    "VH F",
+    "Reproductive system",
+    "Vagina",
+    "Cervicovaginal junction"
+   ],
+   "system": "reproductive",
+   "layer": "organs",
+   "pregnancy": false,
+   "bounds": [
+    [
+     -0.02404,
+     0.8504,
+     -0.00759
+    ],
+    [
+     0.01422,
+     0.87368,
+     0.01774
+    ]
+   ],
+   "triangles": 3766,
+   "sha1": "",
+   "source": "HRA",
+   "region": "Pelvis"
+  },
+  {
+   "id": "HRA69bf607788d8",
+   "name": "Vagina",
+   "sourceName": "VH_F_vagina",
+   "ancestry": [
+    "VH F",
+    "Reproductive system",
+    "Vagina"
+   ],
+   "system": "reproductive",
+   "layer": "organs",
+   "pregnancy": false,
+   "bounds": [
+    [
+     -0.02711,
+     0.79591,
+     -0.00005
+    ],
+    [
+     0.01742,
+     0.85445,
+     0.02367
+    ]
+   ],
+   "triangles": 8780,
+   "sha1": "",
+   "source": "HRA",
+   "region": "Pelvis"
+  },
+  {
+   "id": "HRA8124293f5709",
+   "name": "Ampulla of uterine tube right",
+   "sourceName": "VH_F_ampulla_of_uterine_tube_R",
+   "ancestry": [
+    "VH F",
+    "Reproductive system",
+    "Fallopian tube",
+    "Fallopian tube right",
+    "Ampulla of uterine tube right"
+   ],
+   "system": "reproductive",
+   "layer": "organs",
+   "pregnancy": false,
+   "bounds": [
+    [
+     -0.06633,
+     0.89075,
+     0.03083
+    ],
+    [
+     -0.03983,
+     0.9325,
+     0.04569
+    ]
+   ],
+   "triangles": 10440,
+   "sha1": "",
+   "source": "HRA",
+   "region": "Pelvis"
+  },
+  {
+   "id": "HRA01f505414a27",
+   "name": "Isthmus of fallopian tube right",
+   "sourceName": "VH_F_isthmus_of_fallopian_tube_R",
+   "ancestry": [
+    "VH F",
+    "Reproductive system",
+    "Fallopian tube",
+    "Fallopian tube right",
+    "Isthmus of fallopian tube right"
+   ],
+   "system": "reproductive",
+   "layer": "organs",
+   "pregnancy": false,
+   "bounds": [
+    [
+     -0.04045,
+     0.88789,
+     0.04048
+    ],
+    [
+     -0.03192,
+     0.89243,
+     0.04423
+    ]
+   ],
+   "triangles": 1600,
+   "sha1": "",
+   "source": "HRA",
+   "region": "Pelvis"
+  },
+  {
+   "id": "HRA71740d891263",
+   "name": "Fibria of uterine tube right",
+   "sourceName": "VH_F_fibria_of_uterine_tube_R",
+   "ancestry": [
+    "VH F",
+    "Reproductive system",
+    "Fallopian tube",
+    "Fallopian tube right",
+    "Fibria of uterine tube right"
+   ],
+   "system": "reproductive",
+   "layer": "organs",
+   "pregnancy": false,
+   "bounds": [
+    [
+     -0.06435,
+     0.91895,
+     0.0253
+    ],
+    [
+     -0.05733,
+     0.92334,
+     0.03108
+    ]
+   ],
+   "triangles": 3530,
+   "sha1": "",
+   "source": "HRA",
+   "region": "Pelvis"
+  },
+  {
+   "id": "HRA1703f4adf9d0",
+   "name": "Uterine tube infundibulum right",
+   "sourceName": "VH_F_uterine_tube_infundibulum_R",
+   "ancestry": [
+    "VH F",
+    "Reproductive system",
+    "Fallopian tube",
+    "Fallopian tube right",
+    "Uterine tube infundibulum right"
+   ],
+   "system": "reproductive",
+   "layer": "organs",
+   "pregnancy": false,
+   "bounds": [
+    [
+     -0.06508,
+     0.92143,
+     0.02482
+    ],
+    [
+     -0.0575,
+     0.93241,
+     0.03193
+    ]
+   ],
+   "triangles": 2200,
+   "sha1": "",
+   "source": "HRA",
+   "region": "Pelvis"
+  },
+  {
+   "id": "HRA05a89e0edf76",
+   "name": "Uterine tube infundibulum left",
+   "sourceName": "VH_F_uterine_tube_infundibulum_L",
+   "ancestry": [
+    "VH F",
+    "Reproductive system",
+    "Fallopian tube",
+    "Fallopian tube left",
+    "Uterine tube infundibulum left"
+   ],
+   "system": "reproductive",
+   "layer": "organs",
+   "pregnancy": false,
+   "bounds": [
+    [
+     0.04388,
+     0.92214,
+     0.03113
+    ],
+    [
+     0.05234,
+     0.93318,
+     0.03873
+    ]
+   ],
+   "triangles": 2116,
+   "sha1": "",
+   "source": "HRA",
+   "region": "Pelvis"
+  },
+  {
+   "id": "HRA5b09bdd1d0ec",
+   "name": "Fibria of uterine tube left",
+   "sourceName": "VH_F_fibria_of_uterine_tube_L",
+   "ancestry": [
+    "VH F",
+    "Reproductive system",
+    "Fallopian tube",
+    "Fallopian tube left",
+    "Fibria of uterine tube left"
+   ],
+   "system": "reproductive",
+   "layer": "organs",
+   "pregnancy": false,
+   "bounds": [
+    [
+     0.04287,
+     0.91901,
+     0.03077
+    ],
+    [
+     0.05025,
+     0.92421,
+     0.03901
+    ]
+   ],
+   "triangles": 2871,
+   "sha1": "",
+   "source": "HRA",
+   "region": "Pelvis"
+  },
+  {
+   "id": "HRA0e75154c67c4",
+   "name": "Isthmus of fallopian tube left",
+   "sourceName": "VH_F_isthmus_of_fallopian_tube_L",
+   "ancestry": [
+    "VH F",
+    "Reproductive system",
+    "Fallopian tube",
+    "Fallopian tube left",
+    "Isthmus of fallopian tube left"
+   ],
+   "system": "reproductive",
+   "layer": "organs",
+   "pregnancy": false,
+   "bounds": [
+    [
+     0.01947,
+     0.88889,
+     0.04102
+    ],
+    [
+     0.02958,
+     0.89316,
+     0.04495
+    ]
+   ],
+   "triangles": 1870,
+   "sha1": "",
+   "source": "HRA",
+   "region": "Pelvis"
+  },
+  {
+   "id": "HRA397b8c3eae5a",
+   "name": "Ampulla of uterine tube left",
+   "sourceName": "VH_F_ampulla_of_uterine_tube_L",
+   "ancestry": [
+    "VH F",
+    "Reproductive system",
+    "Fallopian tube",
+    "Fallopian tube left",
+    "Ampulla of uterine tube left"
+   ],
+   "system": "reproductive",
+   "layer": "organs",
+   "pregnancy": false,
+   "bounds": [
+    [
+     0.02916,
+     0.89084,
+     0.03417
+    ],
+    [
+     0.05809,
+     0.93336,
+     0.04932
+    ]
+   ],
+   "triangles": 11424,
+   "sha1": "",
+   "source": "HRA",
+   "region": "Pelvis"
+  },
+  {
+   "id": "HRAd5eaaeec4875",
+   "name": "Uterovesical pouch",
+   "sourceName": "VH_F_uterovesical_pouch",
+   "ancestry": [
+    "VH F",
+    "Reproductive system",
+    "Ligaments of uterus and ovaries",
+    "Uterovesical pouch"
+   ],
+   "system": "reproductive",
+   "layer": "organs",
+   "pregnancy": false,
+   "bounds": [
+    [
+     -0.03257,
+     0.86117,
+     0.02073
+    ],
+    [
+     0.0192,
+     0.88884,
+     0.0848
+    ]
+   ],
+   "triangles": 25352,
+   "sha1": "",
+   "source": "HRA",
+   "region": "Pelvis"
+  },
+  {
+   "id": "HRAf2a92136ed72",
+   "name": "Right round ligament of uterus",
+   "sourceName": "VH_F_right_round_ligament_of_uterus",
+   "ancestry": [
+    "VH F",
+    "Reproductive system",
+    "Ligaments of uterus and ovaries",
+    "Round ligament of uterus",
+    "Right round ligament of uterus"
+   ],
+   "system": "reproductive",
+   "layer": "ligaments",
+   "pregnancy": false,
+   "bounds": [
+    [
+     0.00947,
+     0.83296,
+     0.04398
+    ],
+    [
+     0.05637,
+     0.89465,
+     0.09275
+    ]
+   ],
+   "triangles": 902,
+   "sha1": "",
+   "source": "HRA",
+   "region": "Pelvis"
+  },
+  {
+   "id": "HRAecf2a00f776e",
+   "name": "Left round ligament of uterus",
+   "sourceName": "VH_F_left_round_ligament_of_uterus",
+   "ancestry": [
+    "VH F",
+    "Reproductive system",
+    "Ligaments of uterus and ovaries",
+    "Round ligament of uterus",
+    "Left round ligament of uterus"
+   ],
+   "system": "reproductive",
+   "layer": "ligaments",
+   "pregnancy": false,
+   "bounds": [
+    [
+     -0.08403,
+     0.83159,
+     0.04209
+    ],
+    [
+     -0.0232,
+     0.89835,
+     0.0872
+    ]
+   ],
+   "triangles": 1024,
+   "sha1": "",
+   "source": "HRA",
+   "region": "Pelvis"
+  },
+  {
+   "id": "HRA63b12942b268",
+   "name": "Right uterosacral ligament",
+   "sourceName": "VH_F_right_uterosacral_ligament",
+   "ancestry": [
+    "VH F",
+    "Reproductive system",
+    "Ligaments of uterus and ovaries",
+    "Uterosacral ligament",
+    "Right uterosacral ligament"
+   ],
+   "system": "reproductive",
+   "layer": "ligaments",
+   "pregnancy": false,
+   "bounds": [
+    [
+     -0.02812,
+     0.86848,
+     -0.07696
+    ],
+    [
+     -0.01426,
+     0.92369,
+     0.00266
+    ]
+   ],
+   "triangles": 1990,
+   "sha1": "",
+   "source": "HRA",
+   "region": "Pelvis"
+  },
+  {
+   "id": "HRA0b1251da99c7",
+   "name": "Left uterosacral ligament",
+   "sourceName": "VH_F_left_uterosacral_ligament",
+   "ancestry": [
+    "VH F",
+    "Reproductive system",
+    "Ligaments of uterus and ovaries",
+    "Uterosacral ligament",
+    "Left uterosacral ligament"
+   ],
+   "system": "reproductive",
+   "layer": "ligaments",
+   "pregnancy": false,
+   "bounds": [
+    [
+     0.00789,
+     0.86985,
+     -0.07785
+    ],
+    [
+     0.01425,
+     0.92177,
+     0.00434
+    ]
+   ],
+   "triangles": 1948,
+   "sha1": "",
+   "source": "HRA",
+   "region": "Pelvis"
+  },
+  {
+   "id": "HRA00217df36c4b",
+   "name": "Right cardinal ligament of uterus",
+   "sourceName": "VH_F_right_cardinal_ligament_of_uterus",
+   "ancestry": [
+    "VH F",
+    "Reproductive system",
+    "Ligaments of uterus and ovaries",
+    "Cardinal ligament of uterus",
+    "Right cardinal ligament of uterus"
+   ],
+   "system": "reproductive",
+   "layer": "ligaments",
+   "pregnancy": false,
+   "bounds": [
+    [
+     -0.07644,
+     0.86622,
+     -0.03262
+    ],
+    [
+     -0.00973,
+     0.8916,
+     0.02073
+    ]
+   ],
+   "triangles": 4056,
+   "sha1": "",
+   "source": "HRA",
+   "region": "Pelvis"
+  },
+  {
+   "id": "HRAac9ca638eba9",
+   "name": "Left cardinal ligament of uterus",
+   "sourceName": "VH_F_left_cardinal_ligament_of_uterus",
+   "ancestry": [
+    "VH F",
+    "Reproductive system",
+    "Ligaments of uterus and ovaries",
+    "Cardinal ligament of uterus",
+    "Left cardinal ligament of uterus"
+   ],
+   "system": "reproductive",
+   "layer": "ligaments",
+   "pregnancy": false,
+   "bounds": [
+    [
+     0.00034,
+     0.86813,
+     -0.02725
+    ],
+    [
+     0.06284,
+     0.88688,
+     0.02337
+    ]
+   ],
+   "triangles": 4056,
+   "sha1": "",
+   "source": "HRA",
+   "region": "Pelvis"
+  },
+  {
+   "id": "HRA8c66180e2075",
+   "name": "Suspensory ligament of ovary right",
+   "sourceName": "VH_F_suspensory_ligament_of_ovary_R",
+   "ancestry": [
+    "VH F",
+    "Reproductive system",
+    "Ligaments of uterus and ovaries",
+    "Suspensory ligament of ovary",
+    "Suspensory ligament of ovary right"
+   ],
+   "system": "reproductive",
+   "layer": "ligaments",
+   "pregnancy": false,
+   "bounds": [
+    [
+     -0.07171,
+     0.91914,
+     0.02189
+    ],
+    [
+     -0.06379,
+     0.94996,
+     0.03543
+    ]
+   ],
+   "triangles": 880,
+   "sha1": "",
+   "source": "HRA",
+   "region": "Pelvis"
+  },
+  {
+   "id": "HRAde07d32f4423",
+   "name": "Suspensory ligament of ovary left",
+   "sourceName": "VH_F_suspensory_ligament_of_ovary_L",
+   "ancestry": [
+    "VH F",
+    "Reproductive system",
+    "Ligaments of uterus and ovaries",
+    "Suspensory ligament of ovary",
+    "Suspensory ligament of ovary left"
+   ],
+   "system": "reproductive",
+   "layer": "ligaments",
+   "pregnancy": false,
+   "bounds": [
+    [
+     0.04456,
+     0.91905,
+     0.01385
+    ],
+    [
+     0.05538,
+     0.95495,
+     0.03482
+    ]
+   ],
+   "triangles": 1270,
+   "sha1": "",
+   "source": "HRA",
+   "region": "Pelvis"
+  },
+  {
+   "id": "HRA839bf2e3d7f7",
+   "name": "Ovarian ligament left",
+   "sourceName": "VH_F_ovarian_ligament_L",
+   "ancestry": [
+    "VH F",
+    "Reproductive system",
+    "Ligaments of uterus and ovaries",
+    "Ovarian ligament",
+    "Ovarian ligament left"
+   ],
+   "system": "reproductive",
+   "layer": "ligaments",
+   "pregnancy": false,
+   "bounds": [
+    [
+     0.01478,
+     0.8864,
+     0.03814
+    ],
+    [
+     0.04728,
+     0.89787,
+     0.04167
+    ]
+   ],
+   "triangles": 208,
+   "sha1": "",
+   "source": "HRA",
+   "region": "Pelvis"
+  },
+  {
+   "id": "HRA0842810a540d",
+   "name": "Ovarian ligament right",
+   "sourceName": "VH_F_ovarian_ligament_R",
+   "ancestry": [
+    "VH F",
+    "Reproductive system",
+    "Ligaments of uterus and ovaries",
+    "Ovarian ligament",
+    "Ovarian ligament right"
+   ],
+   "system": "reproductive",
+   "layer": "ligaments",
+   "pregnancy": false,
+   "bounds": [
+    [
+     -0.05867,
+     0.88567,
+     0.03623
+    ],
+    [
+     -0.02537,
+     0.89904,
+     0.04038
+    ]
+   ],
+   "triangles": 198,
+   "sha1": "",
+   "source": "HRA",
+   "region": "Pelvis"
+  },
+  {
+   "id": "HRA5c7e5e333f48",
+   "name": "Mesosalpinx left",
+   "sourceName": "VH_F_mesosalpinx_L",
+   "ancestry": [
+    "VH F",
+    "Reproductive system",
+    "Ligaments of uterus and ovaries",
+    "Broad ligament",
+    "Mesosalpinx",
+    "Mesosalpinx left"
+   ],
+   "system": "reproductive",
+   "layer": "organs",
+   "pregnancy": false,
+   "bounds": [
+    [
+     0.01707,
+     0.88184,
+     0.03472
+    ],
+    [
+     0.06172,
+     0.93276,
+     0.05122
+    ]
+   ],
+   "triangles": 1914,
+   "sha1": "",
+   "source": "HRA",
+   "region": "Pelvis"
+  },
+  {
+   "id": "HRAca8462cbef2a",
+   "name": "Mesosalpinx right",
+   "sourceName": "VH_F_mesosalpinx_R",
+   "ancestry": [
+    "VH F",
+    "Reproductive system",
+    "Ligaments of uterus and ovaries",
+    "Broad ligament",
+    "Mesosalpinx",
+    "Mesosalpinx right"
+   ],
+   "system": "reproductive",
+   "layer": "organs",
+   "pregnancy": false,
+   "bounds": [
+    [
+     -0.07154,
+     0.88404,
+     0.03058
+    ],
+    [
+     -0.0251,
+     0.93262,
+     0.0491
+    ]
+   ],
+   "triangles": 1755,
+   "sha1": "",
+   "source": "HRA",
+   "region": "Pelvis"
+  },
+  {
+   "id": "HRA4d24e3947179",
+   "name": "Mesovarium right",
+   "sourceName": "VH_F_mesovarium_R",
+   "ancestry": [
+    "VH F",
+    "Reproductive system",
+    "Ligaments of uterus and ovaries",
+    "Broad ligament",
+    "Mesovarium",
+    "Mesovarium right"
+   ],
+   "system": "reproductive",
+   "layer": "organs",
+   "pregnancy": false,
+   "bounds": [
+    [
+     -0.0714,
+     0.89661,
+     0.0373
+    ],
+    [
+     -0.05909,
+     0.91772,
+     0.0427
+    ]
+   ],
+   "triangles": 183,
+   "sha1": "",
+   "source": "HRA",
+   "region": "Pelvis"
+  },
+  {
+   "id": "HRA0dbb17bf51c6",
+   "name": "Mesovarium left",
+   "sourceName": "VH_F_mesovarium_L",
+   "ancestry": [
+    "VH F",
+    "Reproductive system",
+    "Ligaments of uterus and ovaries",
+    "Broad ligament",
+    "Mesovarium",
+    "Mesovarium left"
+   ],
+   "system": "reproductive",
+   "layer": "organs",
+   "pregnancy": false,
+   "bounds": [
+    [
+     0.04342,
+     0.89585,
+     0.03397
+    ],
+    [
+     0.06096,
+     0.9213,
+     0.04384
+    ]
+   ],
+   "triangles": 644,
+   "sha1": "",
+   "source": "HRA",
+   "region": "Pelvis"
+  },
+  {
+   "id": "HRAf6fe2cc7b2c0",
+   "name": "Broad ligament",
+   "sourceName": "VH_F_broad_ligament",
+   "ancestry": [
+    "VH F",
+    "Reproductive system",
+    "Ligaments of uterus and ovaries",
+    "Broad ligament"
+   ],
+   "system": "reproductive",
+   "layer": "ligaments",
+   "pregnancy": false,
+   "bounds": [
+    [
+     -0.07652,
+     0.86533,
+     -0.05187
+    ],
+    [
+     0.06306,
+     0.92793,
+     0.07426
+    ]
+   ],
+   "triangles": 29442,
+   "sha1": "",
+   "source": "HRA",
+   "region": "Pelvis"
+  },
+  {
+   "id": "HRA1d8557484808",
+   "name": "Left ovary",
+   "sourceName": "VH_F_left_ovary",
+   "ancestry": [
+    "VH F",
+    "Reproductive system",
+    "Ovary",
+    "Left ovary"
+   ],
+   "system": "reproductive",
+   "layer": "organs",
+   "pregnancy": false,
+   "bounds": [
+    [
+     0.04562,
+     0.89698,
+     0.03206
+    ],
+    [
+     0.05789,
+     0.92092,
+     0.0426
+    ]
+   ],
+   "triangles": 424,
+   "sha1": "",
+   "source": "HRA",
+   "region": "Pelvis"
+  },
+  {
+   "id": "HRA3bf3a5dba534",
+   "name": "Right ovary",
+   "sourceName": "VH_F_right_ovary",
+   "ancestry": [
+    "VH F",
+    "Reproductive system",
+    "Ovary",
+    "Right ovary"
+   ],
+   "system": "reproductive",
+   "layer": "organs",
+   "pregnancy": false,
+   "bounds": [
+    [
+     -0.06932,
+     0.89691,
+     0.03198
+    ],
+    [
+     -0.05701,
+     0.9209,
+     0.04261
+    ]
+   ],
+   "triangles": 410,
+   "sha1": "",
+   "source": "HRA",
+   "region": "Pelvis"
+  },
+  {
+   "id": "HRA90b814af7454",
+   "name": "Abdominal ostium of uterine tube",
+   "sourceName": "VH_F_abdominal_ostium_of_uterine_tube",
+   "ancestry": [
+    "VH F",
+    "Reproductive system",
+    "Uterus",
+    "Abdominal ostium of uterine tube"
+   ],
+   "system": "reproductive",
+   "layer": "organs",
+   "pregnancy": false,
+   "bounds": [
+    [
+     -0.03235,
+     0.88747,
+     0.04069
+    ],
+    [
+     0.02014,
+     0.89112,
+     0.04292
+    ]
+   ],
+   "triangles": 546,
+   "sha1": "",
+   "source": "HRA",
+   "region": "Pelvis"
+  },
+  {
+   "id": "HRA9fbc15ea4073",
+   "name": "Body of uterus",
+   "sourceName": "VH_F_body_of_uterus",
+   "ancestry": [
+    "VH F",
+    "Reproductive system",
+    "Uterus",
+    "Body of uterus"
+   ],
+   "system": "reproductive",
+   "layer": "organs",
+   "pregnancy": false,
+   "bounds": [
+    [
+     -0.02678,
+     0.86946,
+     0.0171
+    ],
+    [
+     0.01634,
+     0.89953,
+     0.04475
+    ]
+   ],
+   "triangles": 5344,
+   "sha1": "",
+   "source": "HRA",
+   "region": "Pelvis"
+  },
+  {
+   "id": "HRAb14e814df9fc",
+   "name": "Fundus of uterus",
+   "sourceName": "VH_F_fundus_of_uterus",
+   "ancestry": [
+    "VH F",
+    "Reproductive system",
+    "Uterus",
+    "Fundus of uterus"
+   ],
+   "system": "reproductive",
+   "layer": "organs",
+   "pregnancy": false,
+   "bounds": [
+    [
+     -0.02597,
+     0.8801,
+     0.03324
+    ],
+    [
+     0.01544,
+     0.90121,
+     0.0553
+    ]
+   ],
+   "triangles": 3062,
+   "sha1": "",
+   "source": "HRA",
+   "region": "Pelvis"
+  },
+  {
+   "id": "HRA4454d66cb611",
+   "name": "Cornua",
+   "sourceName": "VH_F_cornua",
+   "ancestry": [
+    "VH F",
+    "Reproductive system",
+    "Uterus",
+    "Cornua"
+   ],
+   "system": "reproductive",
+   "layer": "organs",
+   "pregnancy": false,
+   "bounds": [
+    [
+     -0.03234,
+     0.88505,
+     0.03688
+    ],
+    [
+     0.02013,
+     0.89437,
+     0.04654
+    ]
+   ],
+   "triangles": 660,
+   "sha1": "",
+   "source": "HRA",
+   "region": "Pelvis"
+  },
+  {
+   "id": "HRAe2d53cba9ff6",
+   "name": "Lower uterine segment",
+   "sourceName": "VH_F_lower_uterine_segment",
+   "ancestry": [
+    "VH F",
+    "Reproductive system",
+    "Uterus",
+    "Lower uterine segment"
+   ],
+   "system": "reproductive",
+   "layer": "organs",
+   "pregnancy": false,
+   "bounds": [
+    [
+     -0.01349,
+     0.86568,
+     0.01137
+    ],
+    [
+     0.00454,
+     0.88603,
+     0.02594
+    ]
+   ],
+   "triangles": 1408,
+   "sha1": "",
+   "source": "HRA",
+   "region": "Pelvis"
+  },
+  {
+   "id": "HRA04fc2d1c4b84",
+   "name": "Posterior wall of uterus",
+   "sourceName": "VH_F_posterior_wall_of_uterus",
+   "ancestry": [
+    "VH F",
+    "Reproductive system",
+    "Uterus",
+    "Posterior wall of uterus"
+   ],
+   "system": "reproductive",
+   "layer": "organs",
+   "pregnancy": false,
+   "bounds": [
+    [
+     -0.02662,
+     0.8694,
+     0.02143
+    ],
+    [
+     0.01624,
+     0.89533,
+     0.05511
+    ]
+   ],
+   "triangles": 12022,
+   "sha1": "",
+   "source": "HRA",
+   "region": "Pelvis"
+  },
+  {
+   "id": "HRA6bd0d456a65e",
+   "name": "Anterior wall of uterus",
+   "sourceName": "VH_F_anterior_wall_of_uterus",
+   "ancestry": [
+    "VH F",
+    "Reproductive system",
+    "Uterus",
+    "Anterior wall of uterus"
+   ],
+   "system": "reproductive",
+   "layer": "organs",
+   "pregnancy": false,
+   "bounds": [
+    [
+     -0.02662,
+     0.87641,
+     0.0171
+    ],
+    [
+     0.01624,
+     0.90097,
+     0.05307
+    ]
+   ],
+   "triangles": 10148,
+   "sha1": "",
+   "source": "HRA",
+   "region": "Pelvis"
+  },
+  {
+   "id": "HRA6a69afa42b21",
+   "name": "Internal cervical os",
+   "sourceName": "VH_F_internal_cervical_os",
+   "ancestry": [
+    "VH F",
+    "Reproductive system",
+    "Uterus",
+    "Cervix",
+    "Internal cervical os"
+   ],
+   "system": "reproductive",
+   "layer": "organs",
+   "pregnancy": false,
+   "bounds": [
+    [
+     -0.00513,
+     0.87115,
+     0.01318
+    ],
+    [
+     -0.00167,
+     0.87493,
+     0.01743
+    ]
+   ],
+   "triangles": 216,
+   "sha1": "",
+   "source": "HRA",
+   "region": "Pelvis"
+  },
+  {
+   "id": "HRA2723421dae01",
+   "name": "External cervical os",
+   "sourceName": "VH_F_external_cervical_os",
+   "ancestry": [
+    "VH F",
+    "Reproductive system",
+    "Uterus",
+    "Cervix",
+    "External cervical os"
+   ],
+   "system": "reproductive",
+   "layer": "organs",
+   "pregnancy": false,
+   "bounds": [
+    [
+     -0.00682,
+     0.86105,
+     -0.00133
+    ],
+    [
+     0.00054,
+     0.86811,
+     0.00447
+    ]
+   ],
+   "triangles": 270,
+   "sha1": "",
+   "source": "HRA",
+   "region": "Pelvis"
+  },
+  {
+   "id": "HRA3b074c58ed73",
+   "name": "Cervix",
+   "sourceName": "VH_F_cervix",
+   "ancestry": [
+    "VH F",
+    "Reproductive system",
+    "Uterus",
+    "Cervix"
+   ],
+   "system": "reproductive",
+   "layer": "organs",
+   "pregnancy": false,
+   "bounds": [
+    [
+     -0.0172,
+     0.85422,
+     -0.00339
+    ],
+    [
+     0.01009,
+     0.88315,
+     0.02089
+    ]
+   ],
+   "triangles": 3508,
+   "sha1": "",
+   "source": "HRA",
+   "region": "Pelvis"
+  }
+ ]
+}

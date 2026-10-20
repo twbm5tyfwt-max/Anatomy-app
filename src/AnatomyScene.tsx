@@ -14,6 +14,7 @@ import {
   modelParts as defaultModelParts,
   type ModelPart,
   type AnatomyLayer,
+  bodyModel,
 } from "./modelCatalog";
 import { orderPicks } from "./interaction";
 import { muscleColor } from "./modelDisplay";
@@ -80,6 +81,8 @@ export type SceneProps = {
   quiz?: boolean;
   /** Flat atlas-plate presentation: near-orthographic camera, rotation locked, pan + zoom only. */
   plate?: boolean;
+  /** Cheaper rendering for older machines: no multisampling, pixel ratio 1. */
+  light?: boolean;
   targetMarker?: string;
   opacityOverrides?: Record<string, number>;
   /** Per-structure colours, e.g. one colour per head of a multi-part muscle. */
@@ -172,7 +175,9 @@ export function AnatomyScene(props: SceneProps) {
       return;
     }
     renderer.setPixelRatio(
-      Math.min(window.devicePixelRatio || 1, props.plate || props.quiz ? 1.5 : 2),
+      props.light
+        ? 1
+        : Math.min(window.devicePixelRatio || 1, props.plate || props.quiz ? 1.5 : 2),
     );
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -218,10 +223,9 @@ export function AnatomyScene(props: SceneProps) {
     const root = new THREE.Group();
     root.position.copy(bodyCenter).negate();
     scene.add(root);
-    const samples = Math.min(
-      props.plate || props.quiz ? 2 : 4,
-      renderer.capabilities.maxSamples,
-    );
+    const samples = props.light
+      ? 0
+      : Math.min(props.plate || props.quiz ? 2 : 4, renderer.capabilities.maxSamples);
     const renderTarget = new THREE.WebGLRenderTarget(1, 1, {
       type: THREE.HalfFloatType,
       samples,
@@ -540,7 +544,15 @@ export function AnatomyScene(props: SceneProps) {
     renderer.domElement.addEventListener("pointerup", pointerUp);
     renderer.domElement.addEventListener("pointermove", hover);
     renderer.domElement.addEventListener("pointerleave", leave);
-    anatomyAsset(props.assetUrl)
+    (async () => {
+      const asset = await anatomyAsset(props.assetUrl);
+      if (props.assetUrl || bodyModel !== "female") return asset;
+      // Female body: add the fitted female-specific structures to the shared atlas.
+      const extras = await anatomyAsset(anatomyModels.femaleExtras);
+      const merged = asset.clone(true);
+      merged.add(...extras.clone(true).children);
+      return merged;
+    })()
       .then((asset) => {
         if (cancelled) return;
         const copy = asset.clone(true),
@@ -789,6 +801,7 @@ export function AnatomyScene(props: SceneProps) {
         p.distinct,
         p.appearance.mode,
         p.appearance.studio,
+        document.documentElement.dataset.cb,
       ]);
       if (signature !== lastSignature || colors !== lastColors) {
         lastSignature = signature;

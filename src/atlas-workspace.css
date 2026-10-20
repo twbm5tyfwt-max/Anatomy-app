@@ -883,8 +883,8 @@
 .landmark-pin {
   position: absolute;
   transform: translate(-50%, -50%);
-  width: 27px;
-  height: 27px;
+  width: 34px;
+  height: 34px;
   display: grid;
   place-items: center;
   border-radius: 50%;
@@ -893,11 +893,11 @@
   cursor: pointer;
 }
 .landmark-pin > span {
-  width: 6px;
-  height: 6px;
-  background: #dbdfc8;
-  border: 1px solid #fff;
-  box-shadow: 0 0 0 2px #17232ccc;
+  width: 11px;
+  height: 11px;
+  background: #ffd36a;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 2px #17232ccc, 0 0 8px #ffd36a99;
   border-radius: 50%;
 }
 .landmark-pin.selected > span {
@@ -1375,4 +1375,45 @@
   border-radius: 5px;
   flex: none;
   box-shadow: 0 0 0 1px #0004;
+}
+
+.pro-model-switch {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  overflow: hidden;
+  background: var(--panel);
+}
+.pro-model-switch button {
+  padding: 6px 14px;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.pro-model-switch button[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+.pro-female-note {
+  margin: 0;
+  padding: 8px 18px;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  background: var(--accent-soft);
+  border-bottom: 1px solid var(--border);
+}
+.pro-female-note strong {
+  color: var(--text);
+}
+.pro-female-note button {
+  border: 0;
+  background: none;
+  color: var(--accent-ink);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
 }

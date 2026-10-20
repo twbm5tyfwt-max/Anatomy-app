@@ -216,8 +216,8 @@ try {
     "lungs have real lobe groups, branching bronchi and a camera-preserving alveolar guide",
     async () => {
       await page
-        .getByRole("button", { name: "Female reference", exact: true })
-        .click();
+        .getByRole("combobox", { name: "Anatomical model" })
+        .selectOption("female");
       await settled(refCanvas());
       await page
         .getByRole("combobox", { name: "Reference organ or region" })

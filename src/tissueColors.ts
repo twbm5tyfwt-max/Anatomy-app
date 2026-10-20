@@ -12,4 +12,24 @@ export const tissuePalette: Record<string, { color: string; label: string }> = {
   organs: { color: "#b78373", label: "Organ / vessel / nerve" },
 };
 export const tissueColor = (layer?: string) =>
-  (tissuePalette[layer || "organs"] || tissuePalette.organs).color;
+  isColourBlind()
+    ? colourBlind[layer || "organs"] || colourBlind.organs
+    : (tissuePalette[layer || "organs"] || tissuePalette.organs).color;
+
+/** Okabe–Ito based palette, safe for the common kinds of colour-blindness. */
+const colourBlind: Record<string, string> = {
+  bones: "#e9e2d0",
+  muscles: "#d55e00",
+  tendons: "#f0e442",
+  ligaments: "#009e73",
+  cartilage: "#0072b2",
+  fascia: "#999999",
+  capsules: "#cc79a7",
+  bursae: "#56b4e9",
+  organs: "#a6761d",
+};
+export const isColourBlind = () =>
+  typeof document !== "undefined" && document.documentElement.dataset.cb === "1";
+export const setColourBlind = (on: boolean) => {
+  if (typeof document !== "undefined") document.documentElement.dataset.cb = on ? "1" : "0";
+};
