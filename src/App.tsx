@@ -1,11 +1,11 @@
 import { PlateExplorer } from "./PlateExplorer";
+import { Atlas2D } from "./Atlas2D";
 import { anatomyImages } from "./assetPaths";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import {
   Activity,
   Palette,
   Box,
-  ArrowDown,
   ArrowRight,
   ArrowUpRight,
   BookOpen,
@@ -13,7 +13,6 @@ import {
   Brain,
   ChevronDown,
   ChevronRight,
-  Check,
   CheckCircle2,
   Compass,
   Droplets,
@@ -22,30 +21,25 @@ import {
   FlaskConical,
   Flower2,
   GraduationCap,
+  NotebookText,
   Heart,
   Layers,
   Leaf,
-  Lightbulb,
-  Maximize2,
   Menu,
   Microscope,
   Minus,
   Move,
   Plus,
-  RotateCcw,
   Search,
   ShieldCheck,
   Sparkles,
   Target,
-  Undo2,
   Wind,
   X,
   ZoomIn,
   ChartNoAxesCombined,
   Bone,
-  Info,
-  Scissors,
-  SlidersHorizontal,
+  Link2,
 } from "lucide-react";
 import {
   structures,
@@ -55,7 +49,6 @@ import {
   directions,
   type Tissue,
 } from "./content";
-import { Atlas, atlasAreas } from "./atlas";
 import {
   AppearanceSettings,
   applyAppearance,
@@ -67,6 +60,8 @@ import { AtlasHub } from "./AtlasHub";
 import { TissueBridge, HistologyFigure } from "./Histology";
 import { PTLearning } from "./PTLearning";
 import { StudyGames } from "./StudyGames";
+import { StudySnapshot } from "./StudySnapshot";
+import { StudyHub } from "./StudyHub";
 import { Tutorial } from "./Tutorial";
 import { readAtlasState } from "./workspaceStorage";
 import type { StudyCollection } from "./studyCollections";
@@ -74,7 +69,6 @@ import "./learning.css";
 import {
   modelParts,
   getModelStudy,
-  getRegion,
   resolveStructure,
 } from "./modelCatalog";
 import { TissueDiagram } from "./TissueDiagram";
@@ -97,7 +91,8 @@ type Tab =
   | "progress"
   | "course"
   | "pt"
-  | "games";
+  | "games"
+  | "study";
 const systemIcons = [
   Leaf,
   Bone,
@@ -113,11 +108,18 @@ const systemIcons = [
 ];
 export default function App() {
   const [tab, setTab] = useState<Tab>("explorer");
-  const [ligamentsVisible, setLigamentsVisible] = useState(false);
+  const [layerOn, setLayerOn] = useState<Record<string, boolean>>({});
+  const [layerFocus, setLayerFocus] = useState<Record<string, boolean>>({});
   useEffect(() => {
-    const f = (e: Event) => setLigamentsVisible(!!(e as CustomEvent).detail);
-    window.addEventListener("forma-ligament-state", f);
-    return () => window.removeEventListener("forma-ligament-state", f);
+    const f = (e: Event) => {
+      const next = (e as CustomEvent<Record<string, boolean>>).detail;
+      setLayerOn(next);
+      setLayerFocus((old) =>
+        Object.fromEntries(Object.entries(old).map(([k, v]) => [k, v && !!next[k]])),
+      );
+    };
+    window.addEventListener("forma-layer-state", f);
+    return () => window.removeEventListener("forma-layer-state", f);
   }, []);
   const [system, setSystem] = useState("muscular");
   const [visible, setVisible] = useState(
@@ -129,6 +131,7 @@ export default function App() {
   } | null>(null);
   const [ptRegion, setPtRegion] = useState("");
   const [gameCollection, setGameCollection] = useState("");
+  const [studyOpen, setStudyOpen] = useState<{ sub?: "cards"; collection?: string }>({});
   const [tour, setTour] = useState(false);
   const [tourSeen, setTourSeen] = useStored("forma-tour-seen", false);
   const [collections] = useStored<StudyCollection[]>(
@@ -150,15 +153,8 @@ export default function App() {
   const [region, setRegion] = useState("");
   const [navMode, setNavMode] = useState("Systems");
   const [selected, setSelected] = useState("pectoralis-major");
-  const [view, setView] = useState("front");
-  const [hidden, setHidden] = useState<string[]>([]);
-  const [history, setHistory] = useState<string[][]>([]);
-  const [plateMode, setPlateMode] = useState("reference");
-  const [labels, setLabels] = useState(true);
-  const [zoom, setZoom] = useState(1);
-  const [transparent, setTransparent] = useState(false);
+  const [plateMode, setPlateMode] = useState("atlas");
   const [search, setSearch] = useState("");
-  const [infoTab, setInfoTab] = useState("Overview");
   const [modal, setModal] = useState("");
   const [toast, setToast] = useState("");
   const [menu, setMenu] = useState(false);
@@ -170,11 +166,7 @@ export default function App() {
   const [saved, setSaved] = useStored<string[]>("forma-saved-questions", []);
   const [cards, setCards] = useStored<CourseCard[]>("forma-cards", []);
   const inputRef = useRef<HTMLInputElement>(null);
-  const s = resolveStructure(selected) || structures[0];
   const sys = systems.find((s) => s.id === system)!;
-  const layer = system === "skeletal" ? "skeletal" : "muscular";
-  const mapped = atlasAreas(layer, view).some((a) => a.id === selected);
-  const mappedCount = atlasAreas(layer, view).length;
   const matches = search
     ? [
         ...structures,
@@ -259,18 +251,8 @@ export default function App() {
     if (!item) return;
     setFocusVersion((v) => v + 1);
     setSelected(id);
-    setInfoTab("Overview");
     setSystem(item.system);
     setVisible((v) => (v.includes(item.system) ? v : [...v, item.system]));
-    setHidden((h) => h.filter((x) => x !== id));
-    if (item.system === "muscular") {
-      if (!atlasAreas("muscular", view).some((x) => x.id === id))
-        setView(
-          atlasAreas("muscular", "front").some((x) => x.id === id)
-            ? "front"
-            : "back",
-        );
-    }
     setSearch("");
     setTab("explorer");
     setMenu(false);
@@ -281,7 +263,6 @@ export default function App() {
     setRegion("");
     const first = structures.find((s) => s.system === id);
     if (first) setSelected(first.id);
-    setInfoTab("Overview");
     setMenu(false);
   }
   function toggleVisible(id: string) {
@@ -291,24 +272,9 @@ export default function App() {
       v.includes(id) ? v.filter((x) => x !== id) : [...v, id],
     );
   }
-  function mask(ids: string[]) {
-    setHistory([...history, hidden]);
-    setHidden(ids);
-  }
-  function reset() {
-    setHidden([]);
-    setHistory([]);
-    setZoom(1);
-    setTransparent(false);
-    setView("front");
-    setToast("Atlas view restored.");
-  }
-  const average = results.length
-    ? Math.round(results.reduce((n, r) => n + r.score, 0) / results.length)
-    : 0;
   return (
     <div
-      className={`app-shell ${tab === "explorer" && explorerMode === "3d" ? "anatomy-workspace" : ""}`}
+      className={`app-shell ${tab === "explorer" && explorerMode === "3d" ? "anatomy-workspace" : ""} ${["games", "study", "progress", "pt", "course"].includes(tab) ? "no-side" : ""}`}
     >
       <header className="topbar">
         <button
@@ -322,7 +288,7 @@ export default function App() {
           <span className="brand-mark">
             <Flower2 size={29} />
           </span>
-          forma<span className="brand-dot">.</span>
+          Burdett’s&nbsp;<span className="brand-dot">Anatomy</span>
         </button>
         <span className="brand-tagline">ANATOMY, UNDERSTOOD.</span>
         <nav className="main-nav" aria-label="Main navigation">
@@ -332,6 +298,7 @@ export default function App() {
             { id: "quizzes", name: "Quizzes", icon: GraduationCap },
             { id: "pt", name: "PT / AT", icon: Activity },
             { id: "games", name: "Games", icon: Brain },
+            { id: "study", name: "Study", icon: NotebookText },
             { id: "progress", name: "My Progress", icon: ChartNoAxesCombined },
           ].map((n) => (
             <button
@@ -476,25 +443,58 @@ export default function App() {
                   </div>
                 );
               })}
-              {explorerMode === "3d" && (
-                <label className="sidebar-ligaments">
-                  <input
-                    type="checkbox"
-                    checked={ligamentsVisible}
-                    onChange={(e) => {
-                      setLigamentsVisible(e.target.checked);
-                      setTab("explorer");
-                      window.dispatchEvent(
-                        new CustomEvent("forma-ligaments", {
-                          detail: e.target.checked,
-                        }),
-                      );
-                    }}
-                  />
-                  <span>Ligaments</span>
-                  <small>Show / hide all modeled ligaments</small>
-                </label>
-              )}
+              {explorerMode === "3d" &&
+                (
+                  [
+                    ["ligaments", "Ligaments", "ligament", Link2, "#18b3a0", "Show or hide every modeled ligament (male source atlas)"],
+                    ["cartilage", "Cartilage", "cartilage", Layers, "#4f9fe8", "Show or hide articular surfaces, menisci, discs and other cartilage (male source atlas)"],
+                  ] as const
+                ).map(([layer, label, single, LayerIcon, color, help]) => {
+                  const on = !!layerOn[layer],
+                    focus = !!layerFocus[layer];
+                  const fire = (name: string, detail: object) =>
+                    window.dispatchEvent(new CustomEvent(name, { detail }));
+                  return (
+                    <div
+                      key={layer}
+                      className={`system-row layer-row ${on ? "active" : ""} ${focus ? "system-highlighted" : ""}`}
+                    >
+                      <button
+                        className="system-name"
+                        aria-label={`${on ? "Hide" : "Show"} ${label.toLowerCase()}`}
+                        aria-pressed={on}
+                        title={help}
+                        onClick={() => {
+                          setTab("explorer");
+                          if (on) setLayerFocus((f) => ({ ...f, [layer]: false }));
+                          fire("forma-layer", { layer, on: !on });
+                        }}
+                      >
+                        <span className="system-symbol" style={{ color }}>
+                          <LayerIcon size={18} />
+                        </span>
+                        <span>{label}</span>
+                        <span className="system-eye">
+                          {on ? <Eye size={13} /> : <EyeOff size={13} />}
+                        </span>
+                      </button>
+                      <button
+                        className={`system-highlight-button ${focus ? "active" : ""}`}
+                        aria-pressed={focus}
+                        aria-label={`${focus ? "Turn off" : "Turn on"} ${single} focus`}
+                        title={`Focus on ${label.toLowerCase()}: fade bones and hide other tissues`}
+                        onClick={() => {
+                          setTab("explorer");
+                          setLayerFocus((f) => ({ ...f, [layer]: !focus }));
+                          fire("forma-layer", { layer, on: true });
+                          fire("forma-layer-focus", { layer, on: !focus });
+                        }}
+                      >
+                        <Target size={14} />
+                      </button>
+                    </div>
+                  );
+                })}
               {explorerMode === "3d" && (
                 <p className="system-help">
                   <Eye size={12} /> Show / hide <Target size={12} /> Highlight
@@ -582,7 +582,9 @@ export default function App() {
                           ? "PT / AT"
                           : tab === "games"
                             ? "Games"
-                            : "My Materials"}
+                            : tab === "study"
+                              ? "Study"
+                              : "My Materials"}
               </strong>
             </span>
             <span className="device-status">
@@ -666,6 +668,10 @@ export default function App() {
                     format: "mixed",
                   })
                 }
+                onCollectionCards={(c) => {
+                  setStudyOpen({ sub: "cards", collection: c.id });
+                  setTab("study");
+                }}
                 onCollectionGame={(c) => {
                   setGameCollection(c.id);
                   setTab("games");
@@ -708,16 +714,16 @@ export default function App() {
               <>
                 <div className="segmented plate-mode">
                   <button
+                    aria-pressed={plateMode === "atlas"}
+                    onClick={() => setPlateMode("atlas")}
+                  >
+                    Atlas plate
+                  </button>
+                  <button
                     aria-pressed={plateMode === "reference"}
                     onClick={() => setPlateMode("reference")}
                   >
-                    Reference atlas
-                  </button>
-                  <button
-                    aria-pressed={plateMode === "overview"}
-                    onClick={() => setPlateMode("overview")}
-                  >
-                    Interactive overview
+                    Published plates
                   </button>
                 </div>
                 {plateMode === "reference" ? (
@@ -733,468 +739,19 @@ export default function App() {
                     onTissue={() => setTab("tissues")}
                   />
                 ) : (
-                  <div className="explorer-grid">
-                    <section className="viewer panel">
-                      <div className="viewer-header">
-                        <div>
-                          <span
-                            className="system-color"
-                            style={{ background: sys.color }}
-                          />
-                          <h2>{sys.name} system</h2>
-                          <span className="atlas-badge">2D ATLAS</span>
-                        </div>
-                        <button
-                          className="icon-button"
-                          aria-label="Atlas view information"
-                          onClick={() => setModal("coverage")}
-                        >
-                          <Info size={17} />
-                        </button>
-                      </div>
-                      <div className="viewer-subbar">
-                        <span>
-                          {region || "Whole body"}
-                          <ChevronDown size={12} />
-                        </span>
-                        <span>
-                          {system === "muscular" || system === "skeletal"
-                            ? `${mappedCount} selectable regions in this view`
-                            : "Introductory system overview"}
-                        </span>
-                      </div>
-                      {system === "muscular" || system === "skeletal" ? (
-                        <div
-                          className={`anatomy-stage ${visible.includes("muscular") && visible.includes("skeletal") ? "compare-atlas" : ""}`}
-                        >
-                          <span className="stage-direction">
-                            {view === "front"
-                              ? "ANTERIOR VIEW"
-                              : "POSTERIOR VIEW"}
-                            <small>
-                              {system === "muscular"
-                                ? "Superficial + selected deep anatomy"
-                                : "Axial + appendicular skeleton"}
-                            </small>
-                          </span>
-                          <div className="stage-actions">
-                            <button
-                              className="icon-button"
-                              aria-label="Undo last removal"
-                              disabled={!history.length}
-                              onClick={() => {
-                                setHidden(history.at(-1)!);
-                                setHistory(history.slice(0, -1));
-                              }}
-                            >
-                              <Undo2 size={17} />
-                            </button>
-                            <button
-                              className="icon-button"
-                              aria-label="Reset atlas"
-                              onClick={reset}
-                            >
-                              <RotateCcw size={17} />
-                            </button>
-                            <button
-                              className="icon-button"
-                              aria-label="Expand source plate"
-                              onClick={() =>
-                                setModal(
-                                  system === "skeletal"
-                                    ? "bone-plate"
-                                    : "muscle-plate",
-                                )
-                              }
-                            >
-                              <Maximize2 size={17} />
-                            </button>
-                          </div>
-                          <div
-                            className={`atlas-wrapper ${!visible.includes(system) ? "plate-hidden" : ""} ${transparent ? "faded" : ""}`}
-                            style={{ transform: `scale(${zoom})` }}
-                          >
-                            <Atlas
-                              region={region}
-                              layer={layer}
-                              view={view}
-                              selected={selected}
-                              hidden={hidden}
-                              labels={labels}
-                              onSelect={select}
-                            />
-                          </div>
-                          {visible.includes("muscular") &&
-                            visible.includes("skeletal") && (
-                              <div className="comparison-mini">
-                                <span>
-                                  {layer === "muscular"
-                                    ? "Skeletal"
-                                    : "Muscular"}{" "}
-                                  reference
-                                </span>
-                                <Atlas
-                                  layer={
-                                    layer === "muscular"
-                                      ? "skeletal"
-                                      : "muscular"
-                                  }
-                                  view={view}
-                                  labels={false}
-                                  mini
-                                  onSelect={select}
-                                />
-                                <small>Separate plate · not registered</small>
-                              </div>
-                            )}
-                          {!visible.includes(system) && (
-                            <div className="plate-hidden-message">
-                              <EyeOff size={24} />
-                              <strong>{sys.name} plate hidden</strong>
-                              <button
-                                className="secondary"
-                                onClick={() => toggleVisible(system)}
-                              >
-                                Restore plate
-                              </button>
-                            </div>
-                          )}
-                          <span className="orientation">
-                            <span>S</span>
-                            <div>
-                              <span>{view === "front" ? "R" : "L"}</span>
-                              <span>+</span>
-                              <span>{view === "front" ? "L" : "R"}</span>
-                            </div>
-                            <span>I</span>
-                          </span>
-                          <div className="viewer-toolbar">
-                            <div className="segmented view-switch">
-                              <button
-                                className={view === "front" ? "active" : ""}
-                                onClick={() => setView("front")}
-                              >
-                                Front
-                              </button>
-                              <button
-                                className={view === "back" ? "active" : ""}
-                                onClick={() => setView("back")}
-                              >
-                                Back
-                              </button>
-                            </div>
-                            <span className="toolbar-divider" />
-                            <button
-                              className={`toolbar-button ${labels ? "active" : ""}`}
-                              disabled={system === "skeletal"}
-                              title={
-                                system === "skeletal"
-                                  ? "Labels are embedded in the skeleton source plate"
-                                  : "Toggle muscle labels"
-                              }
-                              onClick={() => setLabels(!labels)}
-                              aria-pressed={labels}
-                            >
-                              <span className="label-icon">Aa</span>
-                              {system === "skeletal"
-                                ? "Source labels"
-                                : "Labels"}
-                            </button>
-                            <span className="toolbar-divider" />
-                            <button
-                              className="icon-button"
-                              aria-label="Zoom out"
-                              disabled={zoom <= 0.7}
-                              onClick={() =>
-                                setZoom((z) => Math.max(0.7, z - 0.15))
-                              }
-                            >
-                              <Minus size={17} />
-                            </button>
-                            <span className="zoom-value">
-                              {Math.round(zoom * 100)}%
-                            </span>
-                            <button
-                              className="icon-button"
-                              aria-label="Zoom in"
-                              disabled={zoom >= 1.75}
-                              onClick={() =>
-                                setZoom((z) => Math.min(1.75, z + 0.15))
-                              }
-                            >
-                              <Plus size={17} />
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="system-overview-stage">
-                          <div
-                            className="large-system-icon"
-                            style={{ color: sys.color }}
-                          >
-                            {(() => {
-                              const Icon =
-                                systemIcons[
-                                  systems.findIndex((x) => x.id === system)
-                                ];
-                              return <Icon size={58} strokeWidth={1.2} />;
-                            })()}
-                          </div>
-                          <span className="eyebrow">
-                            ONE BODY. MANY CONNECTIONS.
-                          </span>
-                          <h2>{sys.name} system</h2>
-                          <p>{sys.overview}</p>
-                          <div className="overview-detail">
-                            <strong>Major structures</strong>
-                            <p>{sys.structures}</p>
-                            <strong>Working together</strong>
-                            <p>{sys.connections}</p>
-                          </div>
-                          <div className="overview-structures">
-                            {structures
-                              .filter((x) => x.system === system)
-                              .map((x) => (
-                                <button
-                                  key={x.id}
-                                  className={selected === x.id ? "active" : ""}
-                                  onClick={() => select(x.id)}
-                                >
-                                  {x.name}
-                                  <ArrowUpRight size={13} />
-                                </button>
-                              ))}
-                          </div>
-                          <p className="small muted">
-                            Study entries available below. Selectable atlas
-                            artwork for this system is planned.
-                          </p>
-                        </div>
-                      )}
-                      <div className="layer-controls">
-                        <span>
-                          <Layers size={16} />
-                          Atlas plates
-                        </span>
-                        <button
-                          className={system === "muscular" ? "active" : ""}
-                          onClick={() => selectSystem("muscular")}
-                        >
-                          <span className="dot muscle" />
-                          Muscles
-                        </button>
-                        <button
-                          className={system === "skeletal" ? "active" : ""}
-                          onClick={() => selectSystem("skeletal")}
-                        >
-                          <span className="dot skeleton" />
-                          Bones
-                        </button>
-                        <button
-                          className={transparent ? "active" : ""}
-                          onClick={() => setTransparent(!transparent)}
-                          aria-pressed={transparent}
-                        >
-                          <Eye size={13} />
-                          Fade
-                        </button>
-                        {hidden.length > 0 && (
-                          <button onClick={() => mask([])}>
-                            {hidden.length} hidden · restore
-                          </button>
-                        )}
-                      </div>
-                      <p className="atlas-footnote">
-                        <Info size={12} />
-                        OpenStax educational plates. Regional masks hide
-                        artwork; they do not reveal deeper layers.
-                      </p>
-                    </section>
-                    <aside className="structure-panel panel">
-                      <div className="structure-topline">
-                        <span className="badge">
-                          {s.origin
-                            ? "SKELETAL MUSCLE"
-                            : s.system === "skeletal"
-                              ? "BONE"
-                              : "STUDY STRUCTURE"}
-                        </span>
-                        <button
-                          className={`icon-button ${bookmarks.includes(s.id) ? "bookmarked" : ""}`}
-                          aria-label={
-                            bookmarks.includes(s.id)
-                              ? "Remove structure bookmark"
-                              : "Bookmark structure"
-                          }
-                          onClick={() => {
-                            setBookmarks(
-                              bookmarks.includes(s.id)
-                                ? bookmarks.filter((x) => x !== s.id)
-                                : [...bookmarks, s.id],
-                            );
-                            setToast(
-                              bookmarks.includes(s.id)
-                                ? "Bookmark removed."
-                                : "Saved to My Progress.",
-                            );
-                          }}
-                        >
-                          <Bookmark size={19} />
-                        </button>
-                      </div>
-                      <h2>{s.name}</h2>
-                      <span className="structure-subtitle">
-                        {s.aliases.length ? s.aliases.join(" · ") : s.region}
-                      </span>
-                      <div className="structure-tools">
-                        <button
-                          disabled={!mapped}
-                          onClick={() =>
-                            mask(
-                              hidden.includes(selected)
-                                ? hidden.filter((x) => x !== selected)
-                                : [...hidden, selected],
-                            )
-                          }
-                        >
-                          {hidden.includes(selected) ? (
-                            <Eye size={15} />
-                          ) : (
-                            <EyeOff size={15} />
-                          )}{" "}
-                          {hidden.includes(selected) ? "Restore" : "Hide"}
-                        </button>
-                        <button
-                          disabled={!mapped}
-                          onClick={() =>
-                            mask(
-                              atlasAreas(layer, view)
-                                .filter((a) => a.id !== selected)
-                                .map((a) => a.id),
-                            )
-                          }
-                        >
-                          <Scissors size={15} />
-                          Isolate
-                        </button>
-                        <button
-                          onClick={() =>
-                            openQuiz({ system: s.system, structure: s.id })
-                          }
-                        >
-                          <GraduationCap size={15} />
-                          Quiz
-                        </button>
-                      </div>
-                      {!mapped && (
-                        <p className="unmapped-note">
-                          Study content available. This structure has no
-                          selectable region in the current plate.
-                        </p>
-                      )}
-                      <div className="detail-tabs">
-                        {[
-                          "Overview",
-                          s.origin
-                            ? "Attachments"
-                            : s.landmarks
-                              ? "Landmarks"
-                              : "Details",
-                        ].map((t) => (
-                          <button
-                            key={t}
-                            className={infoTab === t ? "active" : ""}
-                            onClick={() => setInfoTab(t)}
-                          >
-                            {t}
-                          </button>
-                        ))}
-                      </div>
-                      <div className="structure-details">
-                        {infoTab === "Overview" ? (
-                          <>
-                            <p className="lead-description">{s.features}</p>
-                            <div className="detail-block">
-                              <span>
-                                <Target size={14} />
-                                PRIMARY FUNCTION
-                              </span>
-                              <p>{s.function}</p>
-                            </div>
-                            <div className="detail-block">
-                              <span>
-                                <Compass size={14} />
-                                LOCATION
-                              </span>
-                              <p>{s.location}</p>
-                            </div>
-                            {s.tip && (
-                              <div className="memory-tip">
-                                <Lightbulb size={19} />
-                                <div>
-                                  <strong>A way to remember</strong>
-                                  <p>{s.tip}</p>
-                                </div>
-                              </div>
-                            )}
-                            <details>
-                              <summary>
-                                Connections & identifying features
-                                <Plus size={13} />
-                              </summary>
-                              <p>{s.description}</p>
-                              <p>
-                                {
-                                  systems.find((x) => x.id === s.system)
-                                    ?.connections
-                                }
-                              </p>
-                            </details>
-                          </>
-                        ) : (
-                          <>
-                            {(s.origin
-                              ? [
-                                  ["Origin", s.origin],
-                                  ["Insertion", s.insertion],
-                                  ["Actions", s.actions],
-                                  ["Innervation", s.innervation],
-                                ]
-                              : s.landmarks
-                                ? [
-                                    ["Major landmarks", s.landmarks],
-                                    ["Articulations", s.articulations],
-                                    ["Attachment sites", s.attachments],
-                                  ]
-                                : [
-                                    ["Major parts", s.parts],
-                                    ["Associated tissues", s.tissues],
-                                    ["Course", s.route],
-                                    ["Supply / drainage", s.supply],
-                                  ]
-                            )
-                              .filter(([, value]) => value)
-                              .map(([label, value]) => (
-                                <div className="detail-block" key={label}>
-                                  <span>{label}</span>
-                                  <p>{value}</p>
-                                </div>
-                              ))}
-                          </>
-                        )}
-                      </div>
-                      <div className="structure-source">
-                        <BookOpen size={12} />
-                        <span>{s.source}</span>
-                        <button
-                          aria-label="View sources"
-                          onClick={() => setModal("sources")}
-                        >
-                          <ArrowUpRight size={12} />
-                        </button>
-                      </div>
-                    </aside>
-                  </div>
+                  <Atlas2D
+                    visible={visible}
+                    onVisibleChange={setVisible}
+                    appearance={appearance}
+                    on3D={(id) => {
+                      setExplorerMode("3d");
+                      if (id) {
+                        setSelected("model:" + id);
+                        setFocusVersion((v) => v + 1);
+                      }
+                    }}
+                    onTissue={() => setTab("tissues")}
+                  />
                 )}
               </>
             )}
@@ -1325,6 +882,18 @@ export default function App() {
               collections={readCollections(collections)}
             />
           )}
+          {tab === "study" && (
+            <StudyHub
+              key={studyOpen.collection || "study"}
+              collections={readCollections(collections)}
+              results={results}
+              missed={missed}
+              cards={cards}
+              onQuiz={openQuiz}
+              initialSub={studyOpen.sub}
+              initialCollection={studyOpen.collection}
+            />
+          )}
           {tab === "tissues" && (
             <Tissues
               onQuiz={(id) => openQuiz({ system: "", tissue: id })}
@@ -1365,6 +934,7 @@ export default function App() {
               saved={saved}
               onSelect={select}
               onQuiz={openQuiz}
+              onOpen={(t) => setTab(t)}
             />
           )}
           <footer className="app-footer">
@@ -1385,9 +955,9 @@ export default function App() {
           onClose={() => setTour(false)}
         />
       )}
-      {!tourSeen && !tour && (
+      {!tourSeen && !tour && tab === "explorer" && (
         <aside className="tour-invite">
-          <span>New to Forma?</span>
+          <span>New to Burdett’s Anatomy?</span>
           <button
             onClick={() => {
               setTour(true);
@@ -1498,7 +1068,7 @@ export default function App() {
                     : "Sources, credits & coverage"}
                 </h2>
                 <p>
-                  Forma is an introductory study collection with{" "}
+                  Burdett’s Anatomy is an introductory study collection with{" "}
                   {structures.length} structure entries, {tissues.length} tissue
                   entries, and overviews for all 11 organ systems. It is not a
                   complete anatomical atlas.
@@ -1855,7 +1425,9 @@ function Progress({
   saved,
   onSelect,
   onQuiz,
+  onOpen,
 }: {
+  onOpen: (tab: "study" | "games") => void;
   results: Result[];
   bookmarks: string[];
   cards: CourseCard[];
@@ -1916,6 +1488,7 @@ function Progress({
           Review {missed.length} missed items <ArrowRight size={16} />
         </button>
       </div>
+      <StudySnapshot onOpen={onOpen} />
       <div className="stat-grid">
         {[
           {

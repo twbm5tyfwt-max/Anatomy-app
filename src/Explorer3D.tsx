@@ -1,3 +1,5 @@
+import { Notebook } from "./Notebook";
+import { tissueColor } from "./tissueColors";
 import { AnatomyReading } from "./AnatomyReading";
 import { ReferenceDefinition } from "./ReferenceDefinition";
 import { HraExplorer, organRegion } from "./HraExplorer";
@@ -49,6 +51,7 @@ import {
   parentModel,
 } from "./modelDisplay";
 import {
+  landmarks,
   landmarksFor,
   spineModels,
   spineCode,
@@ -74,10 +77,10 @@ const byId = new Map(modelParts.map((m) => [m.id, m]));
 const layerGroups: [string, AnatomyLayer[]][] = [
   ["Skin", ["skin"]],
   ["Muscles", ["muscles"]],
-  [
-    "Connective",
-    ["tendons", "ligaments", "cartilage", "fascia", "capsules", "bursae"],
-  ],
+  ["Tendons", ["tendons"]],
+  ["Ligaments", ["ligaments"]],
+  ["Cartilage", ["cartilage"]],
+  ["Fascia & capsules", ["fascia", "capsules", "bursae"]],
   ["Bones", ["bones"]],
   ["Organs", ["organs"]],
 ];
@@ -109,6 +112,29 @@ function primaryIds(sourceNames: string[]) {
   return modelParts
     .filter((m) => !m.parentId && sourceNames.includes(m.sourceName || ""))
     .map((m) => m.id);
+}
+const stem = (n: string) =>
+  n
+    .toLowerCase()
+    .replace(/\b(right|left|first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth|eleventh|twelfth|[0-9]+(st|nd|rd|th)?|[a-z]?[0-9]+)\b/g, "")
+    .replace(/[^a-z]+/g, " ")
+    .trim();
+/** Bones that do have mapped points and look like the same kind (another rib, another vertebra). */
+function similarMapped(name: string) {
+  const want = stem(name).split(" ").pop() || "";
+  const mapped = new Set(landmarks.map((l) => l.modelId));
+  const out = modelParts.filter(
+    (m) =>
+      m.layer === "bones" &&
+      mapped.has(m.id) &&
+      !/left/i.test(m.name) &&
+      want.length > 2 &&
+      stem(m.name).split(" ").pop() === want,
+  );
+  return (out.length
+    ? out
+    : modelParts.filter((m) => m.layer === "bones" && mapped.has(m.id) && !/left/i.test(m.name))
+  ).slice(0, 8);
 }
 function sourceId(name: string) {
   return modelParts.find((m) => m.sourceName === name && !m.parentId)?.id || "";
@@ -246,6 +272,27 @@ export function Explorer3D({
   const primaryGroup = model
     ? displayGroup(model).filter((m) => !m.parentId)
     : [];
+  const partPalette = [
+    "#e6463c",
+    "#2f8de0",
+    "#2fb85f",
+    "#f2a313",
+    "#9a4fd6",
+    "#14b8a6",
+    "#e0559e",
+    "#8a6a3c",
+  ];
+  const partColors: Record<string, string> = {};
+  if (primaryGroup.length > 1 && scope === "whole")
+    [...primaryGroup]
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .forEach((m, i) => {
+        const c = partPalette[i % partPalette.length];
+        partColors[m.id] = c;
+        for (const child of modelParts)
+          if (child.parentId === m.id && child.layer === "muscles")
+            partColors[child.id] = c;
+      });
   const localLandmarks = base ? landmarksFor(base.id) : [];
   const attachmentCandidates = modelParts.filter(
     (m) =>
@@ -360,11 +407,25 @@ export function Explorer3D({
       return;
     }
     const m = raw;
-    const nextScope = m.parentId ? ("tissue" as const) : ("component" as const);
-    const ids = m.parentId ? [m.id] : children([m.id]);
+    // A muscle with several heads/parts opens as the whole muscle so every part is visible,
+    // each in its own colour; the legend then names them.
+    const multi =
+      parentModel(m).layer === "muscles" &&
+      displayGroup(m).filter((x) => !x.parentId).length > 1;
+    const nextScope = multi
+      ? ("whole" as const)
+      : m.parentId
+        ? ("tissue" as const)
+        : ("component" as const);
+    const ids = multi
+      ? displayGroup(m).map((x) => x.id)
+      : m.parentId
+        ? [m.id]
+        : children([m.id]);
     setSelected(m.id);
     setScope(nextScope);
-    setShowLandmarks(false);
+    // Landmark points appear as soon as a bone is isolated; the checkbox can hide them.
+    setShowLandmarks(focus);
     setLandmark(null);
     setAttachmentKind(null);
     setInfoTab("Overview");
@@ -602,33 +663,69 @@ export function Explorer3D({
   }
   useEffect(() => {
     if (workspaceId !== "main") return;
+    // Joint ligaments live in the skeletal system. A few retinacula/fibrous sheaths are filed
+    // under muscular and organ ligaments elsewhere; turning ligaments on must not switch
+    // those whole systems (nerves, viscera, muscles) on with it.
+    let savedLayers: Record<string, number> | null = null;
+    type LayerEvent = { layer: "ligaments" | "cartilage"; on: boolean };
     const toggle = (e: Event) => {
-      const enabled = !!(e as CustomEvent).detail;
+      const { layer, on } = (e as CustomEvent<LayerEvent>).detail;
+      if (on) {
+        // These layers exist only in the male source atlas and must not be hidden by an isolation.
+        setVariant("male");
+        setIsolated(null);
+        onVisibleChange([...new Set([...visible, "skeletal"])]);
+      } else savedLayers = null;
+      setLayers((l) => ({ ...l, [layer]: on ? 1 : 0 }));
+    };
+    // Focus: the chosen tissue at full strength, bones (and related cartilage) faded as
+    // context, everything else hidden. Switching it off restores the previous layers.
+    const focus = (e: Event) => {
+      const { layer, on } = (e as CustomEvent<LayerEvent>).detail;
       setVariant("male");
       setIsolated(null);
-      setLayers((l) => ({ ...l, ligaments: enabled ? 1 : 0 }));
-      if (enabled) {
-        onVisibleChange([
-          ...new Set([
-            ...visible,
-            ...modelParts
-              .filter((m) => m.layer === "ligaments")
-              .map((m) => m.system),
-          ]),
-        ]);
-      }
+      if (on) onVisibleChange([...new Set([...visible, "skeletal"])]);
+      setLayers((l) => {
+        if (on) {
+          savedLayers = savedLayers || l;
+          return {
+            ...l,
+            skin: 0,
+            muscles: 0,
+            tendons: 0,
+            ligaments: layer === "ligaments" ? 1 : 0,
+            cartilage: layer === "cartilage" ? 1 : layer === "ligaments" ? 0.5 : 0,
+            bones: 0.28,
+            fascia: 0,
+            capsules: 0,
+            bursae: 0,
+            organs: 0,
+            attachment: 0,
+          };
+        }
+        const back = savedLayers || { ...l, bones: 1, cartilage: 1 };
+        savedLayers = null;
+        return { ...back, [layer]: 1 };
+      });
     };
-    window.addEventListener("forma-ligaments", toggle);
-    return () => window.removeEventListener("forma-ligaments", toggle);
+    window.addEventListener("forma-layer-focus", focus);
+    window.addEventListener("forma-layer", toggle);
+    return () => {
+      window.removeEventListener("forma-layer", toggle);
+      window.removeEventListener("forma-layer-focus", focus);
+    };
   }, [workspaceId, visible]);
   useEffect(() => {
     if (workspaceId === "main")
       window.dispatchEvent(
-        new CustomEvent("forma-ligament-state", {
-          detail: layers.ligaments > 0,
+        new CustomEvent("forma-layer-state", {
+          detail: {
+            ligaments: layers.ligaments > 0,
+            cartilage: layers.cartilage > 0,
+          },
         }),
       );
-  }, [workspaceId, layers.ligaments]);
+  }, [workspaceId, layers.ligaments, layers.cartilage]);
   useEffect(() => {
     const f = (e: Event) => {
       if (workspaceId === "main") preset((e as CustomEvent).detail);
@@ -753,6 +850,7 @@ export function Explorer3D({
   const sceneProps = {
     visible,
     selected: selectedIds,
+    colorOverrides: partColors,
     hidden: [...hidden, ...stepHidden],
     allowedIds,
     isolated,
@@ -851,14 +949,6 @@ export function Explorer3D({
             </button>
           )}
         </div>
-        {!allowedIds && (
-          <button
-            className="pro-reference"
-            onClick={() => setVariant("female")}
-          >
-            Female reference
-          </button>
-        )}
         <div className="pro-search">
           <Search size={15} />
           <input
@@ -874,6 +964,12 @@ export function Explorer3D({
           />
           <kbd>⌘K</kbd>
         </div>
+        <Notebook
+          workspaceId={workspaceId}
+          selectedId={base?.id}
+          selectedName={model ? (scope === "whole" ? displayName(model) : base?.name) : undefined}
+          onJump={(id) => pick(id)}
+        />
         <button
           className="pro-reference"
           aria-label="2D reference"
@@ -1375,7 +1471,15 @@ export function Explorer3D({
                   }
                   onClick={() => toggleLayer(name, types)}
                 >
-                  <span className={`layer-dot ${name.toLowerCase()}`} />
+                  <span
+                    className="layer-dot"
+                    style={{
+                      background:
+                        name === "Skin"
+                          ? "#c3967c"
+                          : tissueColor(types[0]),
+                    }}
+                  />
                   {name}
                 </button>
                 <button
@@ -1565,6 +1669,33 @@ export function Explorer3D({
                 </button>
               </div>
               <h2>{title}</h2>
+              {primaryGroup.length > 1 && scope === "whole" && (
+                <div className="part-legend" role="group" aria-label="Parts of this muscle">
+                  <p>
+                    {primaryGroup.length} parts, each shown in its own colour.
+                    Pick a part to read about it.
+                  </p>
+                  <ul>
+                    {[...primaryGroup]
+                      .sort((a, b) => a.name.localeCompare(b.name))
+                      .map((m) => (
+                        <li key={m.id}>
+                          <button
+                            aria-pressed={selected === m.id}
+                            onClick={() => {
+                              setSelected(m.id);
+                              setLandmark(null);
+                              requestFrame([m.id, ...children([m.id])]);
+                            }}
+                          >
+                            <i style={{ background: partColors[m.id] }} />
+                            {componentName(m)}
+                          </button>
+                        </li>
+                      ))}
+                  </ul>
+                </div>
+              )}
               <p className="pro-structure-meta">
                 {systems.find((s) => s.id === study.system)?.name} ·{" "}
                 {getRegion(model)}
@@ -1767,20 +1898,15 @@ export function Explorer3D({
                   ) : (
                     <>
                       <p>
-                        No reviewed source-anchor map is available for this
-                        structure yet. Detailed points are available on
-                        representative C1, C2, C4, T8, and L3 vertebrae and
-                        selected limb/pelvic bones.
+                        No source-anchored points are mapped on this bone yet,
+                        so none are shown on the model rather than guessing.
+                        The text guide above lists what to look for. These
+                        similar bones do have 3D points:
                       </p>
-                      {[
-                        "Atlas (C1)",
-                        "Axis (C2)",
-                        "Vertebra C4",
-                        "Vertebra T8",
-                        "Vertebra L3",
-                      ].map((n) => (
-                        <button key={n} onClick={() => pick(sourceId(n), true)}>
-                          {n}
+                      {similarMapped(base?.name || model.name).map((m) => (
+                        <button key={m.id} onClick={() => pick(m.id, true)}>
+                          <span>{m.name}</span>
+                          <MapPin size={13} />
                         </button>
                       ))}
                     </>

@@ -1,4 +1,8 @@
 import { StudyGuide, SourceImage } from "./StudyGuide";
+import { StudyReview, RegionPicker } from "./StudyReview";
+import { landmarks as allLandmarks } from "./landmarkCatalog";
+const landmarkCount = (id: string) =>
+  allLandmarks.filter((l) => l.modelId === id).length;
 import { useEffect, useMemo, useState, type ComponentProps } from "react";
 import { Explorer3D } from "./Explorer3D";
 import { useStored, getFile, deleteFile } from "./storage";
@@ -12,6 +16,7 @@ import { readAtlasState } from "./workspaceStorage";
 type Props = ComponentProps<typeof Explorer3D> & {
   onCollectionQuiz: (c: StudyCollection) => void;
   onCollectionGame: (c: StudyCollection) => void;
+  onCollectionCards: (c: StudyCollection) => void;
 };
 export function AtlasHub(props: Props) {
   const [collections, setCollections] = useStored<StudyCollection[]>(
@@ -25,10 +30,10 @@ export function AtlasHub(props: Props) {
   useEffect(() => {
     const f = () => setActive("main");
     window.addEventListener("forma-region", f);
-    window.addEventListener("forma-ligaments", f);
+    window.addEventListener("forma-layer", f);
     return () => {
       window.removeEventListener("forma-region", f);
-      window.removeEventListener("forma-ligaments", f);
+      window.removeEventListener("forma-layer", f);
     };
   }, []);
   const [editing, setEditing] = useState<StudyCollection | null | undefined>();
@@ -106,6 +111,12 @@ export function AtlasHub(props: Props) {
       );
       return;
     }
+    if (!confirmed.length && review.matches.length) {
+      setError(
+        `${review.matches.length} terms were found but none are confirmed yet. Click “Add every suggestion” (or tick the structures you want) so the model isn't empty.`,
+      );
+      return;
+    }
     const c: StudyCollection = {
       id: editing?.id || crypto.randomUUID(),
       name: name.trim(),
@@ -179,6 +190,9 @@ export function AtlasHub(props: Props) {
                 <button onClick={() => props.onCollectionQuiz(c)}>
                   Quiz collection
                 </button>
+                <button onClick={() => props.onCollectionCards(c)}>
+                  Flashcards
+                </button>
                 <button onClick={() => props.onCollectionGame(c)}>
                   Play collection
                 </button>
@@ -246,6 +260,7 @@ export function AtlasHub(props: Props) {
               Workspace name
               <input
                 aria-label="Workspace name"
+                placeholder="e.g. Head & neck lab quiz"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
@@ -295,6 +310,7 @@ export function AtlasHub(props: Props) {
                 </button>
                 <textarea
                   aria-label={`Transcription ${r.file} ${r.page}`}
+                placeholder="Text read from this file. Fix any mistakes here."
                   value={r.text}
                   onChange={(e) =>
                     setRefs((old) =>
@@ -306,63 +322,18 @@ export function AtlasHub(props: Props) {
                 />
               </details>
             ))}
-            <h3>Review matches before creating the model</h3>
-            <p>
-              Nothing is confirmed automatically. Unsided or shortened terms can
-              match several structures: choose the exact side and component. A
-              matching name does not verify the rest of your notes.
-            </p>
-            <div className="match-review">
-              {review.matches.map((row) => (
-                <details key={row.term} open={review.matches.length < 10}>
-                  <summary>
-                    {row.term} ·{" "}
-                    {row.exact ? "exact name" : "resolve side / component"} (
-                    {row.ids.length})
-                  </summary>
-                  <small>
-                    {row.references
-                      .map((r) => `${r.file}, ${r.kind} ${r.page}`)
-                      .join("; ")}
-                  </small>
-                  {row.ids.map((id) => (
-                    <label key={id}>
-                      <input
-                        type="checkbox"
-                        checked={confirmed.includes(id)}
-                        onChange={() => toggle(id)}
-                      />
-                      {modelParts.find((m) => m.id === id)?.name}
-                    </label>
-                  ))}
-                </details>
-              ))}
-            </div>
-            {!!review.unmatched.length && (
-              <details>
-                <summary>
-                  {review.unmatched.length} unmatched / unsupported passages —
-                  review manually
-                </summary>
-                {review.unmatched.map((r, i) => (
-                  <p key={i}>
-                    {r.file} {r.kind} {r.page}:{" "}
-                    {r.text ||
-                      "No readable labels were found. Add a topic or transcription, then review matching structures."}
-                  </p>
-                ))}
-                <p>
-                  Alveoli/bronchioles have a teaching diagram only;
-                  female-specific organs are available in the separate HRA
-                  reference; this collection uses the male source atlas.
-                  Unmatched text is never converted into invented anatomy.
-                </p>
-              </details>
-            )}
+            <StudyReview
+              review={review}
+              confirmed={confirmed}
+              setConfirmed={setConfirmed}
+              hasImages={refs.some((r) => r.kind === "image")}
+            />
+            <RegionPicker confirmed={confirmed} setConfirmed={setConfirmed} />
             <label>
               Manually find a source structure
               <input
                 aria-label="Add structure manually"
+                placeholder="Type a name, e.g. maxilla"
                 value={manual}
                 onChange={(e) => setManual(e.target.value)}
               />
@@ -400,8 +371,18 @@ export function AtlasHub(props: Props) {
               ))}
             </details>
             {error && <p role="alert">{error}</p>}
+            <p className="study-summary">
+              {confirmed.length} structures confirmed ·{" "}
+              {
+                confirmed.filter(
+                  (id) => allLandmarks.some((l) => l.modelId === id),
+                ).length
+              }{" "}
+              bone(s) with mapped landmark points. Every bone also has a written
+              landmark guide.
+            </p>
             <button className="primary" disabled={busy} onClick={save}>
-              Save study workspace
+              Create study model{confirmed.length ? ` (${confirmed.length})` : ""}
             </button>
           </section>
         </div>
@@ -419,8 +400,20 @@ function CollectionViewer({
       .filter((m) => m.parentId && collection.ids.includes(m.parentId))
       .map((m) => m.id),
   ];
-  const [mode, setMode] = useState<"guide" | "model">("guide");
-  const [target, setTarget] = useState({ id: "", version: 0 });
+  // Open on the 3D model, with the bone that has the most mapped landmarks isolated and
+  // its points showing, so a study model made from notes is immediately useful.
+  const firstBone = collection.ids
+    .map((id) => modelParts.find((m) => m.id === id))
+    .filter((m) => m?.layer === "bones")
+    .sort((a, b) => landmarkCount(b!.id) - landmarkCount(a!.id))[0];
+  const [mode, setMode] = useState<"guide" | "model">(
+    ids.length ? "model" : "guide",
+  );
+  const [target, setTarget] = useState(
+    firstBone && landmarkCount(firstBone.id)
+      ? { id: "model:" + firstBone.id, version: 1 }
+      : { id: "", version: 0 },
+  );
   const [visible, setVisible] = useState(
     () =>
       readAtlasState(collection.id)?.visible || [

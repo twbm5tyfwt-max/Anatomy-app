@@ -41,6 +41,8 @@ export type QuizScope = {
   missedOnly: boolean;
   includeSystems?: string[];
   includeTissues?: string[];
+  /** Ready-made questions (e.g. from the muscle tables); used as-is. */
+  custom?: Question[];
 };
 export function shuffle<T>(items: T[]): T[] {
   const copy = [...items];
@@ -62,6 +64,8 @@ export function createQuestions(
   missed: string[] = [],
 ): Question[] {
   const qs: Question[] = [];
+  if (scope.custom?.length)
+    return shuffle(scope.custom.filter((q) => !scope.missedOnly || missed.includes(q.id)));
   if(scope.modelIds && !scope.course)return shuffle(collectionQuestions(scope).filter(q=>!scope.missedOnly||missed.includes(q.id))).slice(0,scope.count);
   if (scope.anatomy && !scope.course) {
     let bank = anatomyQuestions(scope, options).filter(

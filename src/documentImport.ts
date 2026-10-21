@@ -82,14 +82,17 @@ export async function importReferences(
         "This image cannot be decoded. Export it as JPG or PNG and try again.",
       );
     });
-    const factor = Math.min(1, 3000 / Math.max(bitmap.width, bitmap.height));
+    // Small screenshots/photos read poorly; scale toward ~2,400 px and stretch contrast.
+    const longest = Math.max(bitmap.width, bitmap.height);
+    const factor = longest < 1600 ? Math.min(3, 2400 / longest) : Math.min(1, 3000 / longest);
     const canvas = document.createElement("canvas");
     canvas.width = Math.round(bitmap.width * factor);
     canvas.height = Math.round(bitmap.height * factor);
-    canvas
-      .getContext("2d")!
-      .drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    const ctx = canvas.getContext("2d")!;
+    ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
     bitmap.close();
+    enhanceForOcr(ctx, canvas.width, canvas.height);
     const result = await readImageText(canvas, progress);
     pages.push(result.text);
     confidence = result.confidence;
@@ -109,4 +112,42 @@ export async function importReferences(
     extraction,
     confidence,
   }));
+}
+
+/** Greyscale + percentile contrast stretch: helps phone photos and low-contrast slides. */
+function enhanceForOcr(ctx: CanvasRenderingContext2D, w: number, h: number) {
+  const img = ctx.getImageData(0, 0, w, h);
+  const d = img.data;
+  const hist = new Uint32Array(256);
+  for (let i = 0; i < d.length; i += 4) {
+    const g = Math.round(0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2]);
+    d[i] = d[i + 1] = d[i + 2] = g;
+    hist[g]++;
+  }
+  const total = w * h;
+  let acc = 0,
+    lo = 0,
+    hi = 255;
+  for (let v = 0; v < 256; v++) {
+    acc += hist[v];
+    if (acc > total * 0.01) {
+      lo = v;
+      break;
+    }
+  }
+  acc = 0;
+  for (let v = 255; v >= 0; v--) {
+    acc += hist[v];
+    if (acc > total * 0.01) {
+      hi = v;
+      break;
+    }
+  }
+  if (hi - lo < 30) return;
+  const scale = 255 / (hi - lo);
+  for (let i = 0; i < d.length; i += 4) {
+    const v = Math.max(0, Math.min(255, (d[i] - lo) * scale));
+    d[i] = d[i + 1] = d[i + 2] = v;
+  }
+  ctx.putImageData(img, 0, 0);
 }

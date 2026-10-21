@@ -23,3 +23,79 @@ User requirements are in the uploaded specification. This file distinguishes wor
 Existing result/bookmark/course-card/local-file storage keys are retained. New collections, camera/settings, games and tutorial status use separate keys. Browser data remains local; clearing it removes saved work. No server upload or AI processing is introduced.
 
 Follow-up changes preserve the existing navigation, appearance controls, course materials, bookmarks, quiz/progress keys and the original interactive 2D overview. New source assets and guide data use separate identifiers/keys. Detailed inventory: STUDY_DATA_COVERAGE.md. Verification evidence: delivery/VALIDATION.md.
+
+## Follow-up round: simplification and polish (2026-10-20)
+
+Requested changes after reviewing the app: PT/AT "sucks", games are over-complicated and should let you pick sections then tick a checklist, add a ligament toggle on the side, the 2D model is poor, study models could not make a guide/model from pictures, and a cleaner product overall.
+
+| Request | Done | Verified by | Remaining / limits |
+| --- | --- | --- | --- |
+| **PT/AT rebuilt** | Seven regions (knee, shoulder, ankle & foot, hip & thigh, low back, neck), each with a 3D preview of the real structures, common injuries with involved structures and "when to be assessed" lists, healing stages by tissue type, 28 exercise examples (target, purpose, technique steps, common mistakes, precautions, easier/harder levels, source), a "why treatments are used" section, a muscle/injury/exercise finder, and a Sources tab. No doses, no personalised plans, no healing promises. | `src/studyMatch.test.ts` (content integrity, citations declared, no dose/guarantee wording); screenshots. | **Source review dates are not verified.** The build environment cannot open aaos.org/nhs.uk, so each link is marked "not live-checked". The content date (2026-10-20) is shown. **No exercise videos are embedded:** none are licensed or invented; each exercise links to the cited education page. Needs clinician review before any commercial release. |
+| **Games: pick → tick → play** | One page, three steps: choose a region or your collection, tick bones/muscles/ligaments/tendons/cartilage/other (per-group Select all/None, search, quick picks such as "Knee ligaments"), then choose one of five games and Untimed/60 s/120 s. Start is disabled until the selection is valid. Limits raised to 40 structures (10 for memory). | Browser test (select quick pick, start find-and-click); unit test of groups. | Game engine itself is unchanged: timer pauses during loading/rotation/feedback. |
+| **Ligaments in the side rail** | A first-class "Ligaments" row with show/hide and a focus button that fades bones and hides everything else. Ligaments are now teal (were the same cream as bone). Turning ligaments on no longer switches on nerves, viscera and muscles (it previously enabled every system a ligament-named part belonged to). Focus off restores your previous layers. | Browser screenshots; 354 ligament parts (316 skeletal). | A few retinacula/fibrous sheaths are filed under muscular in the source and show only when Muscles are on. Ligaments exist only in the male source atlas. |
+| **2D atlas** | New flat "Atlas plate" drawn from the same source model: anterior/posterior/left/right views, layer chips, labels with leader lines, search, info panel, hide/restore, pan/zoom. Published OpenStax plates kept as a second tab. The old hand-masked polygon overview was removed. | Smoke test; screenshots. | It is a flat projection of the 3D model, not a new illustration. Labels pick well-known superficial structures; deep structures are labeled only when unobstructed. |
+| **Study models from pictures** | Review step rewritten: exact matches pre-confirmed, ambiguous ones (side, head, shorthand, misread words) flagged with All / Right only / Left only / None, "Add every suggestion", a no-text "pick by region" builder, shorthand such as ACL/MCL/quads/rotator cuff, tolerance for OCR slips, image upscale + contrast before local OCR, and a clear message when a picture has no readable labels. Saving with unconfirmed suggestions is blocked so a model is never silently empty. Study guide is now collapsible with progress and filters (was an 18,000 px wall). | Browser test with a low-contrast image (OCR 94%, 10 terms found); unit tests for aliases/fuzzy. | A picture is never turned into 3D geometry; unlabeled or handwritten images need typed names or the region picker. Nothing leaves the browser. |
+| **Cleaner product / tutorial** | Tutorial copy updated for the new games, ligament row and PT sections. | - | See COMMERCIAL_READINESS.md. |
+
+Browser suites were updated for the replaced UI and run with software WebGL (timeouts raised to 30 s).
+
+## Round 3: clarity, landmarks, games, notes, practice exams (2026-10-20)
+
+| Request | Done | Verified by | Remaining / limits |
+| --- | --- | --- | --- |
+| Bones vs muscles hard to tell apart (especially in games) | One shared tissue palette (`src/tissueColors.ts`): bone cream, muscle red, tendon gold, ligament teal, cartilage blue, fascia/capsule/bursa tints. Used in the 3D scene, game scenes, a colour key above every game, colour dots in the game checklist, and the viewer's layer chips. The viewer's old "Connective" chip is now Tendons / Ligaments / Cartilage / Fascia & capsules. | Screenshots; unit test of groups. | Bone and muscle colours still follow Customize in the main viewer; games always use the fixed palette so they stay distinct. |
+| Unreadable white boxes | Cause: `--subtle` and `--text-primary` were never defined, so boxes fell back to near-white behind light text in dark mode. Defined for both themes; added an accessible accent-text colour for dark mode. | Automated WCAG contrast audit of every tab in dark mode: 0 text/background pairs under 3:1 (was 8). | Light-mode overlay text on the 3D canvas is flagged by the audit but sits on the dark canvas. |
+| Cartilage toggle like ligaments | Cartilage row in the left rail with show/hide and a focus mode (shared with ligaments, one code path). | Browser test. | Male source atlas only. |
+| Landmarks on the bone when clicked, and quizzable | Isolating a bone shows its mapped landmark points and labels immediately. New **Landmarks** game: a large pulsing dot on the bone, four named options, rotate freely, missed-landmark review and practice-mistakes. Checklist shows each bone's landmark count. | Browser test with the occipital bone. | Mapped points exist for 52 bones (548 points; e.g. humerus 29, tibia 30, mandible 15, maxilla 1). Other bones keep the written landmark guide only. Game names come from the source annotations and are not individually clinically reviewed. |
+| 2D laggy; labels only on click | Cause: labels for 60 structures were ray-tested against every mesh on every frame. Now only the clicked structure is labelled, label projection and pick tests wait until the camera settles, and plates/games use a lower pixel ratio and fewer MSAA samples. | Browser test; code path. | Frame rates were not measured on a real GPU (the test machine uses software rendering). |
+| Study model from a picture: read, choose bones, make 3D with landmarks | Notes picture -> reviewed list (plain left/right pairs such as "maxilla" add both sides; shorthand and misreads stay flagged) -> "Create study model" opens the 3D tab with the best-mapped bone isolated and its landmarks showing. Landmark counts appear in the review. | Browser test with a "Mandible / Maxilla" image: mandible shows 15 landmarks. | Maxilla has only one mapped point; its text guide is available. A picture is never turned into new geometry. |
+| Empty boxes | Placeholders on every blank input and textarea; contrast audit found no empty visible containers outside collapsed sections. | Automated audits. | - |
+| Find & click: unlimited tries, hint, 3 strikes then highlight | Wrong clicks say what you clicked and give a hint: 1 tissue and side, 2 the nearest neighbouring structures, 3 the target is highlighted. Only the first miss counts against the score; the structure goes on the missed list. Camera frames the roster instead of the whole body. | Browser test through three misses to the highlight. | - |
+| Multi-part muscles clear and colourful | A muscle with several heads/parts opens as the whole muscle, each part in its own colour, with a legend; pick a legend entry to read about that part. | Screenshot (biceps: long head red, short head blue). | Up to 8 distinct colours. |
+| Female model | Body opens with a transparent surface so organs read as part of a person (Solid / Hidden available), taller viewer, component list ordered organs first and capped at 80 until you search. | Screenshots. | Coverage is unchanged: HRA provides organs, body surface and only some bones/muscles. I need to know what specifically looked wrong to fix more. Transparent surface looks stippled on software rendering; real GPUs use smooth coverage. |
+| Rename to Burdett's Anatomy | Header, page title, tour, quiz collection label, README. Saved data keys are unchanged so progress survives. | Browser. | Export file names (`forma-preview.*`) are unchanged. |
+| Notebook / sticky notes | Notes button in every model view (full body and each study tab): coloured sticky notes, optionally attached to the selected structure (jump back to it), filter by structure, edit/delete, saved per workspace in this browser. | Browser test: add, reload, persists. | Notes live in browser storage (cleared with site data). |
+| Practice exams -> quiz, picture questions | **My practice exams** in Quizzes: paste or upload (PDF, slides, photo OCR, text), numbered questions with A-D options, "Answer:" lines, trailing answer keys, star markers and short-answer; editable review with a required correct answer; start, edit, delete. New **point-to-part** picture questions in study-collection quizzes: the part is hot pink among its neighbours; options come only from your confirmed structures. | 5 parser unit tests; browser tests for both. | Questions that depend on a picture can't be imported as pictures; pictures with arrows are not read. Pointing questions need at least three confirmed structures. |
+
+## Round 4: the Study tab (2026-10-20)
+
+All seven approved study ideas live in a new **Study** tab (Today · Flashcards · Weak spots · Muscle tables · Worksheets · Backup).
+
+| Idea | Done | Verified by | Remaining / limits |
+| --- | --- | --- | --- |
+| Backup and restore | One JSON file with everything saved in the browser (study tabs, notes, review deck, practice exams, quiz/game history, goals, appearance) plus optionally the uploaded pictures/documents. Restore either adds only what is missing or replaces matching items; the file is validated first and nothing is sent anywhere. | Browser test: download, delete data, restore, study tab is back. | A backup is a file you must keep yourself; there is no cloud sync. Very large uploads make large files. |
+| Review today (spaced repetition) | Leitner schedule (today, 1, 3, 7, 14, 30, 60 days). Cards come from study-tab flashcards, course cards, and automatically from questions and games you missed. Again/Hard/Good/Easy; Again returns the card later in the same session. | Unit tests for scheduling; browser test. | The intervals are a standard teaching schedule, not individually tuned. |
+| Daily goal, streak, exam countdown | Goal ring, 7-day strip, streak, exam name/date, countdown and the cards-per-day pace to cover your not-yet-known cards. Quizzes, games, landmark games and card reviews count. | Unit tests (streaks, dates); browser test (persists across reload). | Only activity logged from now on is counted. |
+| Flashcards from a study tab | A **Flashcards** button on every study tab, and a picker in Study. Front: the structure coloured among its neighbours (or a landmark dot on its bone); back: name, function, location, and origin/insertion/nerve for muscles. | Browser test and screenshots. | Landmark cards exist only for bones with mapped points (~50). |
+| Weak spots | Accuracy by region, a most-missed list (quizzes and games), and buttons to review them or quiz on them. | Browser test with seeded history. | Games record only misses, so game-only items show a miss count without a percentage. |
+| Muscle tables and OIAN quiz | Searchable table of the muscles that have a reviewed origin, insertion and action (nerve for about a third), with column covering for self-test, and a quiz in both directions. Rows whose text names the other limb (hand vs foot) are dropped rather than taught. | Unit tests (rows, unambiguous options); browser test. | Only muscles with reviewed entries appear; missing nerves are shown as "not in dataset". |
+| Printable label-the-diagram worksheets | Pictures captured from the 3D model with one structure in pink (several views are tried until it is visible), optional word bank, name/date/score lines and an answer-key page; open to print or download. | Browser test (6+ pictures, key, size) and a visual check. | Some small inner structures are framed very tightly. Landmark-dot worksheets are not offered because the dots are drawn outside the 3D canvas. |
+
+Fixes found on the way: the 3D viewer ignored later changes to which structures it should show (it only read them at start); it now responds. Point-to-part pictures, flashcards and worksheets frame the target tightly with neighbours of similar size.
+
+## Round 5: games overhaul, female model, landmarks
+
+| Item | Status | Where |
+|---|---|---|
+| Games home: Continue, Daily challenge, My 10 weakest, Speed round, saved playlists | Done | `StudyGames.tsx`, `GameSetup.tsx` |
+| Difficulty (Easy clues/free hints, Normal, Hard typed + 25 s) and pass-and-play for two | Done | `GameRunner.tsx` |
+| Play HUD: points, combo, streak, progress, pause, hint, full screen, keys 1-4/H/P/F/Enter | Done | `GameRunner.tsx` |
+| New modes: Speed, Survival, Colour the labels, Odd one out, Muscle match, Lab practical | Done | `GameRunner.tsx`, `gameRounds.ts` |
+| One persistent 3D stage per session (no reload per question), light graphics, colour-blind palette | Done | `GameRunner.tsx`, `tissueColors.ts` |
+| Mastery stars, personal bests, daily record, misses sent to Review today | Done | `gameStats.ts` |
+| Results: every answer with your reply, points, best streak, practice mistakes | Done (no per-item pictures) | `StudyGames.tsx` |
+| Female body model | Removed at the owner's request; the HRA female organ reference remains | n/a |
+| Landmarks: larger pins, list always shown, left bones get mirrored points, suggestions for unmapped bones | Done (about 100 of 142 bones have points; ribs 2-12 and most vertebrae have none) | `Explorer3D.tsx`, `landmarkCatalog.ts` |
+| Layer peel game | Skipped: would require layer ordering that is not anatomically reliable | n/a |
+
+## Round 6: audit and polish
+
+| Item | Status | Where |
+|---|---|---|
+| Phone bottom navigation was a 234 px box with 8 px text and hidden icons; now full width, 7 tabs with icons | Fixed | `polish.css` |
+| Games start bar overlapped content on phones; playlist save no longer floats | Fixed | `polish.css` |
+| Body-system sidebar hidden on pages that don't use it (Games, Study, Progress, PT/AT, My materials) | Done | `App.tsx`, `polish.css` |
+| Tour invitation only on the Body Explorer (it covered the Start button) | Fixed | `App.tsx` |
+| Progress page: streak, daily goal, cards due, game points, 7-day chart, mastery and personal bests | Added | `StudySnapshot.tsx` |
+| Installable app + offline cache after first visit (manifest, icons, service worker; web builds only) | Added | `public/manifest.webmanifest`, `public/sw.js`, `main.tsx` |
+| Crash screen that keeps saved work and offers Reload | Added | `ErrorBoundary.tsx` |

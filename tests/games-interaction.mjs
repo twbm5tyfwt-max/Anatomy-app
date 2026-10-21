@@ -9,7 +9,7 @@ const browser = await chromium.launch({
   headless: true,
   args: ["--no-sandbox"],
 });
-const base = process.env.FORMA_BASE_URL || "http://127.0.0.1:3003";
+const base = process.env.FORMA_BASE_URL || "http://127.0.0.1:3000";
 try {
   const page = await browser.newPage({
     viewport: { width: 1440, height: 1000 },
@@ -29,8 +29,10 @@ try {
     });
   await page.goto(base);
   await page.getByRole("button", { name: "Games", exact: true }).click();
-  await page.getByRole("combobox", { name: "Game timer" }).selectOption("60");
-  await page.getByRole("button", { name: "Start game", exact: true }).click();
+  await page.getByRole("button", { name: "Skull bones" }).click();
+  await page.getByRole("radio", { name: /Find & click/ }).click();
+  await page.getByRole("group", { name: "Timer" }).getByRole("button", { name: "60s" }).click();
+  await page.getByRole("button", { name: "Start", exact: true }).click();
   if (intercepted) {
     await expect(page.getByRole("timer")).toHaveText("60s");
     await page.waitForTimeout(1100);
@@ -68,11 +70,11 @@ try {
   const scopeIds=['Right humerus','Right femur'].map(name=>models.find(m=>m.name===name&&!m.parentId).id);
   await page.evaluate(ids=>localStorage.setItem('forma-collections-v1',JSON.stringify([{id:'stress-set',name:'Context stress set',ids,references:[],created:new Date().toISOString()}])),scopeIds);
   await page.reload();await page.getByRole('button',{name:'Games',exact:true}).click();
-  await page.getByRole('combobox',{name:'Game activity'}).selectOption('Structure → name');
-  await page.getByRole('combobox',{name:'Game collection'}).selectOption('stress-set');
-  await page.getByRole('combobox',{name:'Game region'}).selectOption('');
-  await page.getByRole('combobox',{name:'Game timer'}).selectOption('0');
-  await page.getByRole('button',{name:'Start game',exact:true}).click();
+  await page.getByRole('radio',{name:/Name it/}).click();
+  await page.getByRole('button',{name:'Context stress set'}).click();
+  await page.getByRole('group',{name:'Timer'}).getByRole('button',{name:'Untimed'}).click();
+  await expect(page.getByText('2 selected')).toBeVisible();
+  await page.getByRole('button',{name:'Start',exact:true}).click();
   for(let i=0;i<20;i++){
     const target=await page.locator('.game-model').getAttribute('data-target-id');
     const answerName=models.find(m=>m.id===target).name;

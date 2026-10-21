@@ -659,7 +659,7 @@
 .reference-stage {
   position: relative;
   min-width: 0;
-  height: 730px;
+  height: clamp(520px, calc(100vh - 230px), 780px);
   background: #101c2a;
 }
 .reference-stage .anatomy-scene {
@@ -939,14 +939,32 @@
   margin-bottom: 12px;
 }
 .reference-definition {
-  padding: 12px;
+  padding: 12px 14px;
   border-left: 3px solid var(--accent);
+  border-radius: 0 10px 10px 0;
   margin: 12px 0;
   background: var(--subtle, #f6f7fb);
-  line-height: 1.7;
+  color: var(--text);
+  line-height: 1.6;
+}
+.reference-definition h4 {
+  margin: 0 0 4px;
+  color: var(--text);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.reference-definition p {
+  color: var(--text);
+  margin: 4px 0;
+}
+.reference-definition a {
+  color: var(--accent-ink);
 }
 .reference-definition small {
-  font-size: 10px;
+  display: block;
+  font-size: 11.5px;
+  color: var(--text-secondary);
   overflow-wrap: anywhere;
 }
 .game-scope-checklist {

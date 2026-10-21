@@ -29,8 +29,15 @@ export function AnatomyQuestion({
         layers={{ ...defaultLayers, ...question.opacity }}
         opacityOverrides={question.opacity}
         onlyIds={question.ids}
-        appearance={{ ...defaultAppearance, accent: "#bbd86b" }}
+        appearance={{
+          ...defaultAppearance,
+          // a point-to-part question colours the target boldly; landmark questions stay subtle
+          accent: question.highlightIds?.length ? "#ff2d78" : "#bbd86b",
+        }}
         quality={false}
+        colorOverrides={Object.fromEntries(
+          (question.highlightIds || []).map((id) => [id, "#ff2d78"]),
+        )}
         landmarks={shown}
         labels={false}
         targetMarker={

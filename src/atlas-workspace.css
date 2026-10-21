@@ -376,8 +376,9 @@
   opacity: 0.25;
 }
 .layer-dot {
-  height: 6px;
-  width: 6px;
+  height: 9px;
+  width: 9px;
+  box-shadow: 0 0 0 1px #0003;
   display: inline-block;
   border-radius: 50%;
   background: #d3c7a4;
@@ -882,8 +883,8 @@
 .landmark-pin {
   position: absolute;
   transform: translate(-50%, -50%);
-  width: 27px;
-  height: 27px;
+  width: 34px;
+  height: 34px;
   display: grid;
   place-items: center;
   border-radius: 50%;
@@ -892,11 +893,11 @@
   cursor: pointer;
 }
 .landmark-pin > span {
-  width: 6px;
-  height: 6px;
-  background: #dbdfc8;
-  border: 1px solid #fff;
-  box-shadow: 0 0 0 2px #17232ccc;
+  width: 11px;
+  height: 11px;
+  background: #ffd36a;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 2px #17232ccc, 0 0 8px #ffd36a99;
   border-radius: 50%;
 }
 .landmark-pin.selected > span {
@@ -1307,4 +1308,112 @@
 .pro-is-comparing .pro-layer-dock,
 .pro-is-comparing .pro-selection-strip {
   display: none;
+}
+
+/* The point to name in a landmark question is large and pulses so it can't be missed. */
+.lm-model .landmark-pin.selected > span {
+  width: 16px;
+  height: 16px;
+  background: #ffcf33;
+  border: 2px solid #1b2538;
+  box-shadow: 0 0 0 3px #ffcf3388;
+  animation: lm-pulse 1.4s ease-out infinite;
+}
+@keyframes lm-pulse {
+  0% { box-shadow: 0 0 0 0 #ffcf33cc; }
+  100% { box-shadow: 0 0 0 16px #ffcf3300; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lm-model .landmark-pin.selected > span { animation: none; }
+}
+
+.anatomy-scene .three-canvas.moving ~ .anatomy-leaders,
+.anatomy-scene .three-canvas.moving ~ div .landmark-pin,
+.anatomy-scene .three-canvas.moving ~ div .anchored-label {
+  opacity: 0;
+  transition: opacity 0.08s;
+}
+
+.part-legend {
+  margin: 10px 0 14px;
+}
+.part-legend p {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.part-legend ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.part-legend button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  padding: 9px 12px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: var(--page);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+.part-legend button[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  font-weight: 600;
+}
+.part-legend i {
+  width: 16px;
+  height: 16px;
+  border-radius: 5px;
+  flex: none;
+  box-shadow: 0 0 0 1px #0004;
+}
+
+.pro-model-switch {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  overflow: hidden;
+  background: var(--panel);
+}
+.pro-model-switch button {
+  padding: 6px 14px;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.pro-model-switch button[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+.pro-female-note {
+  margin: 0;
+  padding: 8px 18px;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  background: var(--accent-soft);
+  border-bottom: 1px solid var(--border);
+}
+.pro-female-note strong {
+  color: var(--text);
+}
+.pro-female-note button {
+  border: 0;
+  background: none;
+  color: var(--accent-ink);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
 }

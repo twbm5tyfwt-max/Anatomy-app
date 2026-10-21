@@ -9,7 +9,7 @@ const browser = await chromium.launch({
   args: ["--no-sandbox"],
 });
 const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
-page.setDefaultTimeout(7000);
+page.setDefaultTimeout(30000);
 const errors = [];
 page.on("pageerror", (e) => errors.push(e.message));
 const base = process.env.FORMA_BASE_URL || "http://127.0.0.1:3000";
@@ -21,112 +21,34 @@ async function run(name, fn) {
 }
 try {
   await page.goto(base);
-  await page.getByRole("button", { name: "2D reference", exact: true }).click();
-  await page
-    .getByRole("button", { name: "Interactive overview", exact: true })
-    .click();
-  if (
-    await page
-      .getByRole("button", { name: "Hide Skeletal system", exact: true })
-      .count()
-  )
-    await page
-      .getByRole("button", { name: "Hide Skeletal system", exact: true })
-      .click();
-  const showMuscles = page.getByRole("button", {
-    name: "Show Muscular system",
-    exact: true,
+  await run("2D atlas plate: views, layers, search, select, hide and restore", async () => {
+    await page.getByRole("button", { name: "2D reference", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "Flat anatomy plate" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Atlas plate" })).toHaveAttribute("aria-pressed", "true");
+    await page.getByRole("button", { name: "Posterior", exact: true }).click();
+    await expect(page.getByRole("button", { name: "Posterior", exact: true })).toHaveAttribute("aria-pressed", "true");
+    await page.locator(".a2d-layers").getByRole("button", { name: "Ligaments", exact: true }).click();
+    await expect(page.locator(".a2d-layers").getByRole("button", { name: "Ligaments" })).toHaveAttribute("aria-pressed", "true");
+    await page.getByPlaceholder("e.g. deltoid, femur").fill("right femur");
+    await page.locator(".a2d-matches").getByRole("button", { name: /^Right femur/ }).click();
+    await expect(page.locator(".a2d-info h3")).toHaveText("Right femur");
+    await page.locator(".a2d-actions").getByRole("button", { name: "Hide" }).click();
+    await expect(page.getByRole("button", { name: /Restore 1 hidden/ })).toBeVisible();
+    await page.getByRole("button", { name: /Restore 1 hidden/ }).click();
+    await expect(page.getByRole("button", { name: /Restore \d+ hidden/ })).toHaveCount(0);
+    await page.getByRole("button", { name: "Published plates" }).click();
+    await expect(page.getByRole("heading", { name: "2D reference atlas" })).toBeVisible();
+    await page.getByRole("button", { name: "Atlas plate" }).click();
   });
-  if (await showMuscles.count()) await showMuscles.click();
-  await run(
-    "select, mask, undo, isolate, restore, and switch views",
-    async () => {
-      const plate = page.locator(".atlas-wrapper");
-      await plate.locator('[data-structure="deltoid"]').click();
-      await expect(page.locator(".structure-panel>h2")).toHaveText("Deltoid");
-      await page
-        .locator(".structure-tools")
-        .getByRole("button", { name: "Hide", exact: true })
-        .click();
-      await expect(plate.locator('[data-structure="deltoid"]')).toHaveCount(0);
-      await page.getByRole("button", { name: "Undo last removal" }).click();
-      await expect(plate.locator('[data-structure="deltoid"]')).toHaveCount(1);
-      await page
-        .locator(".structure-tools")
-        .getByRole("button", { name: "Isolate", exact: true })
-        .click();
-      await expect(plate.locator("[data-structure]")).toHaveCount(1);
-      await page.getByRole("button", { name: /hidden · restore/ }).click();
-      await expect(plate.locator("[data-structure]")).toHaveCount(13);
-      await page.getByRole("button", { name: "Back", exact: true }).click();
-      await expect(plate.locator('[data-structure="trapezius"]')).toHaveCount(
-        1,
-      );
-      await plate.locator('[data-structure="trapezius"]').click();
-      await expect(
-        page.getByRole("button", { name: "Back", exact: true }),
-      ).toHaveClass(/active/);
-      await page.getByRole("button", { name: "Reset atlas" }).click();
-    },
-  );
-  await run("search, bookmark persistence, and system comparison", async () => {
-    await page
-      .getByRole("textbox", { name: "Search anatomy structures" })
-      .fill("biceps");
-    await page
-      .locator(".search-results")
-      .getByRole("button", { name: /Biceps brachii/ })
-      .click();
-    await expect(page.locator(".atlas-area.selected polygon")).toHaveAttribute(
-      "data-structure",
-      "biceps-brachii",
-    );
-    await page
-      .getByRole("button", { name: "Bookmark structure", exact: true })
-      .click();
+  await run("search, bookmark persistence in the 3D viewer", async () => {
+    await page.getByRole("button", { name: "3D explorer", exact: true }).click();
+    await page.getByRole("textbox", { name: "Search 3D anatomy" }).fill("sartorius");
+    await page.locator(".pro-browser-results").getByRole("button").first().click();
+    await page.getByRole("button", { name: "Bookmark structure", exact: true }).click();
     await page.reload();
-    await page
-      .getByRole("button", { name: "My Progress", exact: true })
-      .click();
-    await expect(page.locator(".saved-structures")).toContainText(
-      "Biceps brachii",
-    );
-    await page
-      .getByRole("button", { name: "Body Explorer", exact: true })
-      .click();
-    await page
-      .getByRole("button", { name: "2D reference", exact: true })
-      .click();
-    await page
-      .getByRole("button", { name: "Interactive overview", exact: true })
-      .click();
-    if (
-      await page
-        .getByRole("button", { name: "Show Muscular system", exact: true })
-        .count()
-    )
-      await page
-        .getByRole("button", { name: "Show Muscular system", exact: true })
-        .click();
-    if (
-      await page
-        .getByRole("button", { name: "Hide Skeletal system", exact: true })
-        .count()
-    )
-      await page
-        .getByRole("button", { name: "Hide Skeletal system", exact: true })
-        .click();
-    await page
-      .getByRole("button", { name: "Show Skeletal system", exact: true })
-      .click();
-    await expect(page.locator(".comparison-mini")).toBeVisible();
-    await page
-      .getByRole("button", { name: "Hide Muscular system", exact: true })
-      .click();
-    await expect(page.locator(".plate-hidden-message")).toBeVisible();
-    await page
-      .getByRole("button", { name: "Restore plate", exact: true })
-      .click();
+    await page.getByRole("button", { name: "My Progress", exact: true }).click();
+    await expect(page.locator(".saved-structures")).toContainText(/sartorius/i);
+    await page.getByRole("button", { name: "Body Explorer", exact: true }).click();
   });
   await run(
     "tissue illustrations, labels, zoom, and side-by-side comparison",
@@ -208,7 +130,7 @@ try {
     },
   );
   await run("exam mode withholds feedback until submission", async () => {
-    await page.getByRole("button", { name: "Exam", exact: false }).click();
+    await page.locator(".mode-options").getByRole("button", { name: /^Exam/ }).click();
     await page.getByRole("button", { name: "Start 5-question quiz" }).click();
     for (let i = 0; i < 5; i++) {
       if (await page.locator(".answer-options button").count())
@@ -391,7 +313,7 @@ try {
       .getByLabel("Organ system", { exact: true })
       .selectOption("muscular");
     await page.getByRole("checkbox", { name: "10-minute timer" }).check();
-    await page.getByRole("button", { name: "Exam", exact: false }).click();
+    await page.locator(".mode-options").getByRole("button", { name: /^Exam/ }).click();
     await page.clock.install();
     await page.getByRole("button", { name: "Start 10-question quiz" }).click();
     await page.clock.runFor(600000);

@@ -1,4 +1,4 @@
-# Open Forma
+# Open Burdett’s Anatomy
 
 Download `forma-preview.zip`, extract it, then open `forma-preview.html` in Chrome, Edge or Firefox. No installation, Node server, account or API key is required. The file is large because it includes both reference atlases, microscopy/section plates, fonts, document parsers and local English OCR.
 

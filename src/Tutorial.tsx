@@ -14,7 +14,7 @@ const steps = [
   },
   {
     title: "Layers and transparency",
-    text: "Show tissues with the layer buttons; the arrows open opacity sliders. Below 45% opacity, deeper opaque structures are picked first. Hidden tissues never receive pointer hits.",
+    text: "Show tissues with the layer buttons; the arrows open opacity sliders. The Ligaments row in the left rail shows every modeled ligament in teal; its target button fades bones so ligaments stand out. Hidden tissues never receive pointer hits.",
     selector: ".pro-layer-dock, .reference-systems",
     tab: "explorer",
   },
@@ -44,14 +44,20 @@ const steps = [
   },
   {
     title: "Games",
-    text: "Choose a region or collection, check the exact structures to study, then start. Untimed is the default; find-and-click pauses during loading, rotation and feedback.",
-    selector: ".learning-toolbar",
+    text: "Three steps: pick a region or collection, tick the bones, muscles, ligaments or other structures you want to be quizzed on, then choose a game. Untimed is the default; find-and-click pauses during loading, rotation and feedback.",
+    selector: ".gs, .main-nav",
     tab: "games",
   },
   {
+    title: "Study tools",
+    text: "Study has your daily review (spaced repetition that includes things you missed), weak spots, flashcards from any study tab, muscle origin/insertion/action/nerve tables, printable label-the-diagram worksheets, a streak and exam countdown, and a backup file for everything you save.",
+    selector: ".sh, .main-nav",
+    tab: "study",
+  },
+  {
     title: "PT / AT study",
-    text: "Connect anatomy to injury concepts, rehabilitation goals and exercise examples. These are educational resources, not individualized treatment plans; check source and review status.",
-    selector: ".learning-toolbar",
+    text: "Pick a region to see its structures in 3D, then study common injuries, healing stages, exercise examples with technique, mistakes and precautions, and the Sources tab. Educational only, not a treatment plan.",
+    selector: ".pt-page, .main-nav",
     tab: "pt",
   },
 ];

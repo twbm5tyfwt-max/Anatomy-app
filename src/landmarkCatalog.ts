@@ -878,7 +878,7 @@ const sourceId = (name: string) =>
 const validatedIds = new Set(
   validation.results.filter((r) => r.valid).map((r) => r.id),
 );
-export const landmarks: AnatomyLandmark[] = anchorData.flatMap((a) => {
+const rightLandmarks: AnatomyLandmark[] = anchorData.flatMap((a) => {
   if (!validatedIds.has(a.id)) return [];
   const curated = notes[a.name.toLowerCase()];
   const reference = readingFor(a.id);
@@ -934,6 +934,29 @@ export const landmarks: AnatomyLandmark[] = anchorData.flatMap((a) => {
     },
   ];
 });
+/**
+ * The source maps points on right-side bones only. The left bones are exact mirror images
+ * across the midline (x = 0), so each point is reflected onto its left twin.
+ */
+const mirrored: AnatomyLandmark[] = rightLandmarks.flatMap((l) => {
+  const right = sourceModels.find((m) => m.id === l.modelId);
+  if (!right?.sourceName?.endsWith(".r")) return [];
+  const left = sourceModels.find(
+    (m) => m.sourceName === right.sourceName!.replace(/\.r$/, ".l") && !("parentId" in m),
+  );
+  if (!left || rightLandmarks.some((x) => x.modelId === left.id)) return [];
+  return [
+    {
+      ...l,
+      id: l.id + "-L",
+      modelId: left.id,
+      anchor: [-l.anchor[0], l.anchor[1], l.anchor[2]],
+      contextIds: l.contextIds.map((id) => (id === l.modelId ? left.id : id)),
+      source: l.source + " Mirrored from the right-side point across the midline.",
+    },
+  ];
+});
+export const landmarks: AnatomyLandmark[] = [...rightLandmarks, ...mirrored];
 export function landmarksFor(modelId: string) {
   const priority = [
     "Vertebral foramen",

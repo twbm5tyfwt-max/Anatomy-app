@@ -15,6 +15,23 @@ import { viewNames, viewTips, associatedTissue } from "./atlasDomain";
 import { boneNoteFor } from "./boneNotes";
 import type { Appearance } from "./Appearance";
 
+const systemOrder = [
+  "reproductive",
+  "urinary",
+  "digestive",
+  "cardiovascular",
+  "respiratory",
+  "nervous",
+  "lymphatic",
+  "endocrine",
+  "muscular",
+  "skeletal",
+  "integumentary",
+];
+const systemRank = (s: string) => {
+  const i = systemOrder.indexOf(s);
+  return i < 0 ? 99 : i;
+};
 export function organRegion(m: ModelPart): string {
   const a = [m.name, ...m.ancestry].join(" ").toLowerCase();
   const entries: [RegExp, string][] = [
@@ -99,7 +116,8 @@ export function HraExplorer({
   const [systems, setSystems] = useState<string[] | null>(null);
   const [stages, setStages] = useState<string[]>([]);
   const [revealed, setRevealed] = useState<string[]>([]);
-  const [bodySkin, setBodySkin] = useState(false);
+  // The body opens with a see-through surface so organs read as part of a person.
+  const [skinMode, setSkinMode] = useState<"hidden" | "ghost" | "solid">("ghost");
   const [lungScope, setLungScope] = useState("");
   const api = useRef<SceneApi | null>(null);
   const regionData = useMemo(() => organParts(region), [region]);
@@ -115,7 +133,7 @@ export function HraExplorer({
   const availableSystems = [...new Set(parts.map((m) => m.system))];
   const shownSystems = systems || availableSystems;
   const bodySkinHidden =
-    region === "Body" && !bodySkin
+    region === "Body" && skinMode === "hidden"
       ? parts.filter((m) => m.layer === "skin").map((m) => m.id)
       : [];
   const stageHidden = parts
@@ -167,7 +185,7 @@ export function HraExplorer({
     setHidden([]);
     setRevealed([]);
     setStages([]);
-    setBodySkin(false);
+    setSkinMode("ghost");
     setSystems(null);
     setLabels(false);
     setCandidates([]);
@@ -303,15 +321,19 @@ export function HraExplorer({
         )}
         {region === "Body" && (
           <label>
-            <input
-              type="checkbox"
-              checked={bodySkin}
+            Body surface{" "}
+            <select
+              aria-label="Body surface"
+              value={skinMode}
               onChange={(e) => {
-                setBodySkin(e.target.checked);
+                setSkinMode(e.target.value as typeof skinMode);
                 setIsolated(null);
               }}
-            />
-            Body surface
+            >
+              <option value="ghost">Transparent</option>
+              <option value="solid">Solid</option>
+              <option value="hidden">Hidden</option>
+            </select>
           </label>
         )}
         {region === "Lungs" && (
@@ -412,7 +434,7 @@ export function HraExplorer({
                 bones: 1,
                 muscles: 1,
                 organs: 1,
-                skin: 1,
+                skin: skinMode === "ghost" && region === "Body" ? 0.2 : 1,
                 cartilage: 1,
                 ligaments: 1,
                 tendons: 1,
@@ -540,12 +562,18 @@ export function HraExplorer({
               ))}
           </div>
           <div className="reference-components">
-            {parts
+            {[...parts]
               .filter(
                 (m) =>
                   !search ||
                   m.name.toLowerCase().includes(search.toLowerCase()),
               )
+              .sort(
+                (a, b) =>
+                  systemRank(a.system) - systemRank(b.system) ||
+                  a.name.localeCompare(b.name),
+              )
+              .slice(0, search ? 400 : 80)
               .map((m) => (
                 <div key={m.id}>
                   <input
@@ -554,7 +582,7 @@ export function HraExplorer({
                     checked={!hiddenIds.includes(m.id)}
                     onChange={(e) => {
                       setIsolated(null);
-                      if (m.layer === "skin") setBodySkin(e.target.checked);
+                      if (m.layer === "skin") setSkinMode(e.target.checked ? "solid" : "hidden");
                       if (e.target.checked) setRevealed((v) => [...v, m.id]);
                       else setRevealed((v) => v.filter((id) => id !== m.id));
                       setHidden((h) =>

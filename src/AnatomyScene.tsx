@@ -1,3 +1,4 @@
+import { tissueColor } from "./tissueColors";
 import { anatomyModels } from "./assetPaths";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
@@ -43,6 +44,8 @@ export type SceneApi = {
   view: (v: CameraView) => void;
   zoom: (factor: number) => void;
   home: () => void;
+  /** A JPEG of what the viewer currently shows (used for printable worksheets). */
+  capture: () => string;
 };
 export type SceneProps = {
   catalog?: ModelPart[];
@@ -75,8 +78,14 @@ export type SceneProps = {
   initialView?: CameraView;
   frameSize?: number;
   quiz?: boolean;
+  /** Flat atlas-plate presentation: near-orthographic camera, rotation locked, pan + zoom only. */
+  plate?: boolean;
+  /** Cheaper rendering for older machines: no multisampling, pixel ratio 1. */
+  light?: boolean;
   targetMarker?: string;
   opacityOverrides?: Record<string, number>;
+  /** Per-structure colours, e.g. one colour per head of a multi-part muscle. */
+  colorOverrides?: Record<string, string>;
   onSelect?: (id: string) => void;
   onLandmark?: (id: string) => void;
   onHover?: (text: string | null) => void;
@@ -164,7 +173,11 @@ export function AnatomyScene(props: SceneProps) {
       );
       return;
     }
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setPixelRatio(
+      props.light
+        ? 1
+        : Math.min(window.devicePixelRatio || 1, props.plate || props.quiz ? 1.5 : 2),
+    );
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.05;
@@ -178,12 +191,22 @@ export function AnatomyScene(props: SceneProps) {
         : "3D anatomical atlas. Drag to rotate; scroll or pinch to zoom. Click a structure to select.",
     );
     const scene = new THREE.Scene(),
-      camera = new THREE.PerspectiveCamera(35, 1, 0.01, 15);
+      camera = new THREE.PerspectiveCamera(props.plate ? 7 : 35, 1, 0.01, 15);
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.1;
     controls.minDistance = 0.015;
-    controls.maxDistance = 8;
+    controls.maxDistance = props.plate ? 120 : 8;
+    if (props.plate) {
+      controls.enableRotate = false;
+      controls.screenSpacePanning = true;
+      controls.mouseButtons = {
+        LEFT: THREE.MOUSE.PAN,
+        MIDDLE: THREE.MOUSE.DOLLY,
+        RIGHT: THREE.MOUSE.PAN,
+      };
+      controls.touches = { ONE: THREE.TOUCH.PAN, TWO: THREE.TOUCH.DOLLY_PAN };
+    }
     controls.zoomSpeed = 0.8;
     controls.rotateSpeed = 0.7;
     scene.add(new THREE.HemisphereLight(0xffffff, 0x394047, 1.4));
@@ -199,7 +222,9 @@ export function AnatomyScene(props: SceneProps) {
     const root = new THREE.Group();
     root.position.copy(bodyCenter).negate();
     scene.add(root);
-    const samples = Math.min(4, renderer.capabilities.maxSamples);
+    const samples = props.light
+      ? 0
+      : Math.min(props.plate || props.quiz ? 2 : 4, renderer.capabilities.maxSamples);
     const renderTarget = new THREE.WebGLRenderTarget(1, 1, {
       type: THREE.HalfFloatType,
       samples,
@@ -233,7 +258,9 @@ export function AnatomyScene(props: SceneProps) {
     };
     const records = new Map<string, Record3D>();
     let desiredAo = false;
-    let needsRender = true,
+    let lastActive = 0,
+      idleDirty = true,
+      needsRender = true,
       lastSignature = "",
       lastColors = "",
       lastLabelSignature = "";
@@ -326,6 +353,11 @@ export function AnatomyScene(props: SceneProps) {
       start(center, Math.max(0.025, distance), view, duration);
     };
     const api: SceneApi = {
+      capture() {
+        // Render and read back in the same task so the drawing buffer is still valid.
+        composer.render();
+        return renderer.domElement.toDataURL("image/jpeg", 0.88);
+      },
       snapshot() {
         return {
           position: camera.position.toArray(),
@@ -672,7 +704,12 @@ export function AnatomyScene(props: SceneProps) {
           0,
           Math.max(0, distance - 0.002),
         );
-        const blocker = ray.intersectObjects(solid, false)[0];
+        const hits = ray.intersectObjects(solid, false);
+        // On a flat plate the anchor sits inside its own structure, so only other
+        // structures in front of it hide the label.
+        const blocker = p.plate
+          ? hits.find((h) => h.object.userData.modelId !== l.modelId)
+          : hits[0];
         if (blocker && blocker.distance < distance - 0.0025) continue;
         shown.push({
           id: l.id,
@@ -688,7 +725,7 @@ export function AnatomyScene(props: SceneProps) {
         .sort((a, b) =>
           a.id === p.activeLandmark ? -1 : b.id === p.activeLandmark ? 1 : 0,
         )
-        .slice(0, p.quiz ? 20 : 8);
+        .slice(0, p.quiz ? 20 : p.plate ? 26 : 16);
       for (const side of [-1, 1]) {
         let last = 45;
         const items = filtered
@@ -744,6 +781,9 @@ export function AnatomyScene(props: SceneProps) {
         p.offsets,
         hoverId,
         p.landmarks?.map((l) => l.id),
+        p.onlyIds,
+        p.colorOverrides,
+        p.opacityOverrides,
       ]);
       const colors = JSON.stringify([
         p.appearance.bone,
@@ -752,6 +792,7 @@ export function AnatomyScene(props: SceneProps) {
         p.distinct,
         p.appearance.mode,
         p.appearance.studio,
+        document.documentElement.dataset.cb,
       ]);
       if (signature !== lastSignature || colors !== lastColors) {
         lastSignature = signature;
@@ -804,9 +845,9 @@ export function AnatomyScene(props: SceneProps) {
             !p.highlightedSystems.includes(r.model.system) &&
             !selected.has(id);
           let color = new THREE.Color(
-            l === "bones"
+            l === "bones" && !p.quiz
               ? p.appearance.bone
-              : l === "muscles"
+              : l === "muscles" && !p.quiz
                 ? p.appearance.muscle
                 : l === "attachment"
                   ? r.model.attachmentKind === "origin"
@@ -814,15 +855,7 @@ export function AnatomyScene(props: SceneProps) {
                     : "#6dc8d8"
                   : l === "skin"
                     ? "#bd9680"
-                    : l === "cartilage"
-                      ? "#a9c2cb"
-                      : l === "tendons" ||
-                          l === "ligaments" ||
-                          l === "fascia" ||
-                          l === "capsules" ||
-                          l === "bursae"
-                        ? "#dfd2b8"
-                        : "#b78373",
+                    : tissueColor(l),
           );
           if (l === "muscles" && !p.quiz)
             color.copy(
@@ -832,8 +865,10 @@ export function AnatomyScene(props: SceneProps) {
             color.set(/vein|vena/i.test(r.model.name) ? "#698ab7" : "#b34b50");
           if (r.model.system === "nervous") color.set("#d2bb6e");
           if (r.model.system === "lymphatic") color.set("#7a9c76");
+          const custom = p.colorOverrides?.[id];
+          if (custom) color.set(custom);
           if (dim) color.multiplyScalar(0.3);
-          if (selected.has(id))
+          if (selected.has(id) && !custom)
             color.lerp(
               new THREE.Color(p.appearance.accent),
               p.quiz ? 0.65 : 0.18,
@@ -932,9 +967,22 @@ export function AnatomyScene(props: SceneProps) {
           !tween &&
           pointers.size === 0;
         composer.render();
+        needsRender = false;
+        lastActive = now;
+        // Label projection and pickability checks cast many rays; run them only once the
+        // camera has settled so dragging, panning and zooming stay smooth.
+        idleDirty = true;
+        el.classList.toggle("moving", pointers.size > 0 || !!tween);
+      } else if (
+        idleDirty &&
+        pointers.size === 0 &&
+        !tween &&
+        now - lastActive > 140
+      ) {
         project();
         reportPickable();
-        needsRender = false;
+        idleDirty = false;
+        el.classList.remove("moving");
       }
       raf = requestAnimationFrame(tick);
     };

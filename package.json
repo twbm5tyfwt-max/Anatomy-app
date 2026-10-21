@@ -8,12 +8,13 @@
     "build": "node scripts/prepare-notices.mjs && tsc -b && vite build",
     "preview": "vite preview --host 0.0.0.0",
     "test": "vitest run",
-    "test:e2e": "node tests/smoke.mjs && node tests/three.mjs && node tests/learning.mjs && node tests/games-interaction.mjs && node tests/upgrades.mjs",
+    "test:e2e": "node tests/smoke.mjs && node tests/three.mjs && node tests/learning.mjs && node tests/games-interaction.mjs && node tests/upgrades.mjs && node tests/study.mjs && node tests/games-modes.mjs",
     "export:preview": "node scripts/export-preview.mjs",
     "test:3d": "node tests/three.mjs",
     "build:models": "node --max-old-space-size=6144 scripts/build-z-anatomy.mjs",
     "test:learning": "node tests/learning.mjs && node tests/games-interaction.mjs",
-    "test:upgrades": "node tests/upgrades.mjs"
+    "test:upgrades": "node tests/upgrades.mjs && node tests/study.mjs && node tests/games-modes.mjs",
+    "audit:license": "node scripts/license-audit.mjs"
   },
   "dependencies": {
     "@fontsource/dm-sans": "^5.3.0",

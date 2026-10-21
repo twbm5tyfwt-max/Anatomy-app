@@ -1,6 +1,19 @@
-# Forma — interactive 3D anatomy study
+# Burdett’s Anatomy — interactive 3D anatomy study
 
 A React 19 / TypeScript anatomy and PT/AT educational study app with a real segmented 3D explorer, customizable appearance, tissue study, quizzes, local course materials, and saved progress. No account, API key, or paid AI service is required.
+
+## What changed in the latest round
+
+- **PT/AT** rebuilt: seven regions with 3D previews, common injuries, healing stages by tissue, 28 exercise examples with technique, mistakes, precautions and easier/harder levels, and a Sources tab. Source links are marked "not live-checked"; no exercise videos are embedded.
+- **Games** are three steps: pick a region or collection, tick the bones, muscles, ligaments or other structures to be quizzed on, then pick a game and an optional timer.
+- **Ligaments** have their own row in the left rail (show/hide, plus a focus mode that fades bones). Ligaments are teal.
+- **2D reference** is now a flat atlas drawn from the same 3D model (four views, layers, labels, search); published OpenStax plates remain as a second tab.
+- **Study models** from pictures: clearer review (exact matches pre-confirmed, ambiguous ones flagged), shorthand like ACL/quads, tolerance for OCR slips, a region picker for pictures with no readable text, and a compact study guide with progress.
+- **Study tab**: daily spaced-repetition review (including things you missed), streak and exam countdown, weak spots, flashcards from any study tab, muscle origin/insertion/action/nerve tables with a quiz, printable label-the-diagram worksheets, and a backup/restore file.
+- **Also new**: Landmarks game, sticky-note notebook, practice-exam import, point-to-part picture questions, cartilage row, Burdett’s Anatomy name.
+- See `COMMERCIAL_READINESS.md` (and `npm run audit:license`) before selling anything: the current bundle is noncommercial only.
+
+> `delivery/forma-preview.zip` is the standalone build from the previous round. Regenerate it with `npm run build && npm run export:preview` to get these changes.
 
 ## Open the downloadable app
 

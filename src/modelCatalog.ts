@@ -3,6 +3,7 @@ import { definitionFor } from "./ReferenceDefinition";
 import { boneNoteFor } from "./boneNotes";
 import { connectiveNotes } from "./connectiveNotes";
 import manifest from "./model-manifest.json";
+import { hraNote, type HraPart } from "./hraCatalog";
 import muscleTables from "./generated/muscle-notes.json";
 import { structures, type Structure, type Region } from "./content";
 export type AnatomyLayer =
@@ -37,7 +38,10 @@ export type ModelPart = {
   attachmentKind?: "origin" | "insertion";
   sharedAttachment?: boolean;
 };
-export const modelParts = manifest.models as ModelPart[];
+/** Which body the whole app uses. Switching reloads the page so every list, quiz and game agrees. */
+export type BodyModel = "male" | "female";
+export const bodyModel: BodyModel = "male";
+export const modelParts: ModelPart[] = manifest.models as ModelPart[];
 export type Landmark = {
   name: string;
   description: string;
@@ -593,6 +597,15 @@ export function getModelStudy(m: ModelPart): ModelStudy {
                     : "Hyaline articular cartilage provides a low-friction surface and distributes contact loads. A source-classified surface patch is not a complete tissue-thickness reconstruction.";
     curatedSource =
       "OpenStax Anatomy and Physiology 2e, chapters 4, 8–9, 14 and 22: cartilage, joints, auditory structures and airways. Source geometry retained; display materials are not histology classifications.";
+  }
+  if (!fn && m.source === "HRA") {
+    const n = hraNote(m as HraPart);
+    kind = "Reproductive structure (Human Reference Atlas)";
+    if (n) {
+      fn = n[1];
+      note = n[2];
+      level = "overview";
+    }
   }
   if (!fn) {
     fn =
