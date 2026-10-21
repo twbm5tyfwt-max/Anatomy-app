@@ -1,4 +1,4 @@
-export const anatomyImages: Record<string, string> = {
+const rawImages: Record<string, string> = {
   "2008_Internal_Anatomy_of_the_HeartN.jpg":
     "/anatomy/2008_Internal_Anatomy_of_the_HeartN.jpg",
   "2312_Gross_Anatomy_of_the_Lungs.jpg":
@@ -47,7 +47,15 @@ export const anatomyImages: Record<string, string> = {
     "/anatomy/2615_Juxtaglomerular_Apparatus.jpg",
 };
 
-export const anatomyModels: Record<string, string> = {
+const rawModels: Record<string, string> = {
   atlas: "/models/anatomy.glb",
   female: "/models/hra-female.glb",
 };
+
+// Served from a sub-folder (GitHub Pages) as well as the site root. Embedded data URLs pass through.
+const withBase = (files: Record<string, string>) =>
+  Object.fromEntries(
+    Object.entries(files).map(([k, v]) => [k, v.startsWith("/") ? import.meta.env.BASE_URL + v.slice(1) : v]),
+  );
+export const anatomyImages: Record<string, string> = withBase(rawImages);
+export const anatomyModels: Record<string, string> = withBase(rawModels);
