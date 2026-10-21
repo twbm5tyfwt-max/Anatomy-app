@@ -60,6 +60,7 @@ import { AtlasHub } from "./AtlasHub";
 import { TissueBridge, HistologyFigure } from "./Histology";
 import { PTLearning } from "./PTLearning";
 import { StudyGames } from "./StudyGames";
+import { StudySnapshot } from "./StudySnapshot";
 import { StudyHub } from "./StudyHub";
 import { Tutorial } from "./Tutorial";
 import { readAtlasState } from "./workspaceStorage";
@@ -273,7 +274,7 @@ export default function App() {
   }
   return (
     <div
-      className={`app-shell ${tab === "explorer" && explorerMode === "3d" ? "anatomy-workspace" : ""}`}
+      className={`app-shell ${tab === "explorer" && explorerMode === "3d" ? "anatomy-workspace" : ""} ${["games", "study", "progress", "pt", "course"].includes(tab) ? "no-side" : ""}`}
     >
       <header className="topbar">
         <button
@@ -933,6 +934,7 @@ export default function App() {
               saved={saved}
               onSelect={select}
               onQuiz={openQuiz}
+              onOpen={(t) => setTab(t)}
             />
           )}
           <footer className="app-footer">
@@ -953,7 +955,7 @@ export default function App() {
           onClose={() => setTour(false)}
         />
       )}
-      {!tourSeen && !tour && (
+      {!tourSeen && !tour && tab === "explorer" && (
         <aside className="tour-invite">
           <span>New to Burdett’s Anatomy?</span>
           <button
@@ -1423,7 +1425,9 @@ function Progress({
   saved,
   onSelect,
   onQuiz,
+  onOpen,
 }: {
+  onOpen: (tab: "study" | "games") => void;
   results: Result[];
   bookmarks: string[];
   cards: CourseCard[];
@@ -1484,6 +1488,7 @@ function Progress({
           Review {missed.length} missed items <ArrowRight size={16} />
         </button>
       </div>
+      <StudySnapshot onOpen={onOpen} />
       <div className="stat-grid">
         {[
           {

@@ -374,3 +374,15 @@
   color: var(--accent-ink);
   font-weight: 600;
 }
+
+.snap { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 0 0 18px; }
+.snap article { display: grid; gap: 4px; align-content: start; padding: 16px; border-radius: 14px; background: var(--panel); border: 1px solid var(--border); }
+.snap b { font-size: 28px; color: var(--accent); }
+.snap span { font-size: 13px; color: var(--muted); }
+.snap button { justify-self: start; margin-top: 4px; padding: 4px 12px; border-radius: 999px; }
+.snap-wide { grid-column: span 2; }
+.snap-wide ul { list-style: none; padding: 0; margin: 4px 0 0; display: grid; gap: 2px; font-size: 13px; }
+.snap-week { display: flex; gap: 8px; align-items: flex-end; height: 70px; }
+.snap-week i { flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 3px; font-style: normal; }
+.snap-week u { width: 100%; max-width: 28px; background: var(--accent); border-radius: 4px 4px 0 0; }
+@media (max-width: 760px) { .snap { grid-template-columns: repeat(2, 1fr); } }

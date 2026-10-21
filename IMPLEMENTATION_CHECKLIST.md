@@ -87,3 +87,15 @@ Fixes found on the way: the 3D viewer ignored later changes to which structures 
 | Female body model | Removed at the owner's request; the HRA female organ reference remains | n/a |
 | Landmarks: larger pins, list always shown, left bones get mirrored points, suggestions for unmapped bones | Done (about 100 of 142 bones have points; ribs 2-12 and most vertebrae have none) | `Explorer3D.tsx`, `landmarkCatalog.ts` |
 | Layer peel game | Skipped: would require layer ordering that is not anatomically reliable | n/a |
+
+## Round 6: audit and polish
+
+| Item | Status | Where |
+|---|---|---|
+| Phone bottom navigation was a 234 px box with 8 px text and hidden icons; now full width, 7 tabs with icons | Fixed | `polish.css` |
+| Games start bar overlapped content on phones; playlist save no longer floats | Fixed | `polish.css` |
+| Body-system sidebar hidden on pages that don't use it (Games, Study, Progress, PT/AT, My materials) | Done | `App.tsx`, `polish.css` |
+| Tour invitation only on the Body Explorer (it covered the Start button) | Fixed | `App.tsx` |
+| Progress page: streak, daily goal, cards due, game points, 7-day chart, mastery and personal bests | Added | `StudySnapshot.tsx` |
+| Installable app + offline cache after first visit (manifest, icons, service worker; web builds only) | Added | `public/manifest.webmanifest`, `public/sw.js`, `main.tsx` |
+| Crash screen that keeps saved work and offers Reload | Added | `ErrorBoundary.tsx` |
